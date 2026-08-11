@@ -4,3 +4,14 @@ Para o segmento Corporate, as regras de extração estão descritas no seguinte 
 A tabela P1bis deverá ser alimentada inicialmente durante a M2 BTR com o perímetro NAT 02. Em seguida, a tabela deverá ser preenchida uma segunda vez após o recebimento dos dados contábeis, para incluir o perímetro Fora do NAT 02.
 O spool P1 será tratado com prioridade.
 Realizar uma estimativa de esforço para as modificações nos demais spools existentes, com o objetivo de incluí-las em futuras MEPs.
+
+
+---------------------------------
+
+Criar uma tabela na base de dados para suportar esse spool, pois todos os spools irão virar um insert.
+os nomes das colunas está no exel em anexo.
+criar uma formula nesse csv para pegar a criação dessas colunas.(já tem algo parecido.)
+filtrar o exel por P1 que é o que vamos mudar.
+não mexer no spool atual, criar outro com uma versão diferente.
+
+usar DEV2 para os testes
