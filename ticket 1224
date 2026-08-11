@@ -1,0 +1,6 @@
+Para lembrar, a fonte dos objetos de negócio Engagement P1 corresponde à tabela ENG_CORP_P1 do DDR. O spool de extração desses dados também contém regras de negócio. O objetivo desta regra de criação de uma tabela P1bis é transferir para a tabela as regras de negócio que atualmente estão implementadas no spool, uma vez que o spool extrai os dados diretamente das tabelas.
+Criar uma tabela P1bis contendo os dados de extração do spool P1 (incluindo as regras de negócio) e modificar o spool P1 para que ele passe a extrair os dados a partir da nova tabela P1bis.
+Para o segmento Corporate, as regras de extração estão descritas no seguinte código do DDR: 030_spool_Extract_CRRCORP.sql.
+A tabela P1bis deverá ser alimentada inicialmente durante a M2 BTR com o perímetro NAT 02. Em seguida, a tabela deverá ser preenchida uma segunda vez após o recebimento dos dados contábeis, para incluir o perímetro Fora do NAT 02.
+O spool P1 será tratado com prioridade.
+Realizar uma estimativa de esforço para as modificações nos demais spools existentes, com o objetivo de incluí-las em futuras MEPs.
