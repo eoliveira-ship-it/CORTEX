@@ -1,33 +1,33 @@
 Ordem de trabalho:
 •	SIRL-1224 (Evolução do código sem regressão na geração do ficheiro)
-o	Criar 1 tabela 
-	Podemos já por o nome das colunas como o identificador do campo do Notice, 
-•	Atualmente P1 21.28  é o ENG_CORP_P1.CHAMP_APPL_MRTR
-•	Na nova tabela podemos chamar P1_21_28 // a validar com a DSID
-•	Ideia para nome da tabela:
-o	Hoje: ENG_CORP_P1
-o	Nova tabela : ENG_CORP_P1_BIS
-o	Estrutura da tabela = Estrutura da Notice ?
-	Pode ajudar no create table ao usar a notice e criar o sql diretamente no excel
-	Os fillers seriam colunas ? Ou seriam apenas os únicos espaços em branco ?
-	Validar se podemos registar montantes e datas em varchar na nova tabela
-	Tabela a historizar em HCRR
-o	Criar 1 procedure num package
-o	Mudar os scripts SHL para adicionar a chamada da procedure
-o	Mudar o spool para limpar os selects que retiramos e metemos na procedure
-o	Spool vai usar a nova tabela segundo o formato
-	Vamos consolidar/merge a estrutura de cada “select”
-	Se estava a escrever em espaços brancos no spool, é inserir a null na nova tabela
-	Exemplo : P1 21.28 , tem extração em alguns e “espaço em branco” noutros.
-o	Instalar as evoluções em dev e assegurar testes
-	Antes de instalar as evols, correr o processo de geração do ficheiro, guardar o ficheiro CRRCORP.dat gerado
-	Instalar as evols, correr novamente o processo de geração do ficheiro e comparar.
-	Separar o ficheiro para ser mais fácil de validar : G:\DSID\KLx\12_KLX_RisqLeasing\Dividir o CRR 
-	Isto tem que ser validado antes de adicionar os ;
+	o	Criar 1 tabela 
+			Podemos já por o nome das colunas como o identificador do campo do Notice, 
+			•	Atualmente P1 21.28  é o ENG_CORP_P1.CHAMP_APPL_MRTR
+			•	Na nova tabela podemos chamar P1_21_28 // a validar com a DSID
+			•	Ideia para nome da tabela:
+				o	Hoje: ENG_CORP_P1
+				o	Nova tabela : ENG_CORP_P1_BIS
+				o	Estrutura da tabela = Estrutura da Notice ?
+						Pode ajudar no create table ao usar a notice e criar o sql diretamente no excel
+						Os fillers seriam colunas ? Ou seriam apenas os únicos espaços em branco ?
+						Validar se podemos registar montantes e datas em varchar na nova tabela
+						Tabela a historizar em HCRR
+	o	Criar 1 procedure num package
+	o	Mudar os scripts SHL para adicionar a chamada da procedure
+	o	Mudar o spool para limpar os selects que retiramos e metemos na procedure
+	o	Spool vai usar a nova tabela segundo o formato
+			Vamos consolidar/merge a estrutura de cada “select”
+			Se estava a escrever em espaços brancos no spool, é inserir a null na nova tabela
+			Exemplo : P1 21.28 , tem extração em alguns e “espaço em branco” noutros.
+	o	Instalar as evoluções em dev e assegurar testes
+			Antes de instalar as evols, correr o processo de geração do ficheiro, guardar o ficheiro CRRCORP.dat gerado
+			Instalar as evols, correr novamente o processo de geração do ficheiro e comparar.
+			Separar o ficheiro para ser mais fácil de validar : G:\DSID\KLx\12_KLX_RisqLeasing\Dividir o CRR 
+			Isto tem que ser validado antes de adicionar os ;
 
 •	SIRL-1123/SIRL-1222
-o	Simples; aidicionar o separador ; aplica-se a todos os selects (p1 e o resto ) [todo o spool] e alteração de tamanho
-o	Ter em atenção ao linesize do spool
-	Ou adicionamos colsep ou diretamente nas queries
+	o	Simples; aidicionar o separador ; aplica-se a todos os selects (p1 e o resto ) [todo o spool] e alteração de tamanho
+	o	Ter em atenção ao linesize do spool
+			Ou adicionamos colsep ou diretamente nas queries
 
 Em termos de doc, criar um SFD/STD único do projeto para agrupar todas as modificações. Template Ou Exemplo a partilhar. (RSE, etc)
