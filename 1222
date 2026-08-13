@@ -1,0 +1,79 @@
+SIRL-1222 - CORTEX SFG technique: Fonctionnalité E04-01-01 – Séparateurs et Fillers
+
+
+
+Por Hugo GOMES
+
+Ouvir
+
+4
+
+Adicionar reação
+Solution : 
+
+Implémenter le séparateur « ; ».  Attention : modifier simplement le spool et ajouter un point-virgule entre les colonnes du spool ne suffit pas ! La transformation est plus grande que cette action.
+
+Notices :
+
+Notice PACTV4.5_Grande Clientèle_Corporate_V45.00.xlsx 
+
+Notice PACTV4.5_Grande Clientèle_Corporate_V45.02.xlsx 
+
+Composants concernés : 
+
+DDR -> 030_spool_Extract_CRRCORP.sql
+
+DDR -> 030_spool_Extract_CRRADAP.sql
+
+ 
+
+Il faut ajouter un point-virgule (;) à tous les colonnes, de sorte que les champs qui sont « joints » au sein de chaque ligne devront être séparés.
+
+Exemple : 
+
+image-20260722-150336.png
+Les 175 caractères correspondent à la somme de plusieurs colonnes. Il faut les séparer.
+
+Voir toutes les colonnes entre P1 24.3 et P1 24.20.
+
+ 
+
+Si le champ de remplissage est la dernière colonne du fichier ?
+
+N'ajoutez pas de “;” à la fin.
+
+ 
+
+PACT Corporate v4.5
+
+En-tête
+
+Modifications à identifier/valider
+
+Détail / Body
+
+Ajouter « ;» comme séparateur de champs dans les fichiers CRRCORP.dat et CRRADAPT.dat.
+
+Utiliser toujours la notice pour créer le nouveau format d'extraction.
+
+En-queue 
+
+Modifications à identifier/valider
+
+ 
+
+PACT Adapté v4.5
+
+En-tête
+
+Modifications à identifier/valider
+
+Détail / Body
+
+Ajouter « ;» comme séparateur de champs dans les fichiers CRRCORP.dat et CRRADAPT.dat.
+
+Utiliser toujours la notice pour créer le nouveau format d'extraction.
+
+En-queue 
+
+Modifications à identifier/valider
