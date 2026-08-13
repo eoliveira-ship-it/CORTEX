@@ -1,0 +1,16 @@
+=LET(
+ ref, TRIM($E4),
+ fmt, UPPER(TRIM($T4)),
+ lng, $W4,
+ rule, $U4,
+ col, "P1_"&SUBSTITUTE(SUBSTITUTE(ref,".","_")," ","_"),
+ cut, IFERROR(LEFT(rule,SEARCH("cimale",rule)-1),""),
+ cut2, IFERROR(TRIM(LEFT(TRIM(cut),LEN(TRIM(cut))-2)),""),
+ dec, IFERROR(VALUE(TRIM(RIGHT(SUBSTITUTE(cut2," ",REPT(" ",50)),50))),0),
+ sgn, IF(ISNUMBER(SEARCH("signe",rule)),1,0),
+ sep, IF(ISNUMBER(SEARCH("parateur",rule)),1,0),
+ typ, IF(fmt="DATE","DATE",
+       IF(fmt="ALPHA","VARCHAR2("&lng&")",
+       IF(fmt="NUM","NUMBER("&(lng-sgn-sep)&IF(dec>0,","&dec,"")&")",
+       "VARCHAR2("&lng&")"))),
+ IF(LEFT(ref,3)<>"P1 ","","    "&col&"  "&typ&" ,  -- "&ref&" "&$F4))
