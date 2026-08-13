@@ -1,0 +1,87 @@
+SIRL 1224 - CORTEX SFG technique: E06-01-01 – Règles de gestion du spool du P1
+
+
+
+Por Hugo GOMES
+
+Ouvir
+
+4
+
+Adicionar reação
+Solution : 
+
+Créer une nouvelle table ENG_CORP_P1_BIS
+
+Table avec des colonnes : nomenclature P1_XX_YY
+
+Elle aura la structure du bloc P1 de la notice [Notice PACTV4.5_Grande Clientèle_Corporate_V45.00.xlsx]
+
+Les champs actuellement vides dans le spool seront nuls dans la table,
+
+En termes de correspondance, on peut dire que les champs P1 seront enregistrés dans la nouvelle table au format suivant :
+
+TEXTE => TEXTE
+
+DATE => DATE 
+
+MONTANT => MONTANT 
+
+VIDE/BLANC dans le spool => NULL
+
+Il est préférable d'avoir de garder les types de colonnes dans un format permettant l'exécution de requêtes SQL sur la table ENG_CORP_P1_BIS.
+
+Créer la procédure pour remplir la table ENG_CORP_P1_BIS dans le package : pack_alim_tab_envoi_crrv4
+
+Cette procédure remplira la nouvelle table à partir des sélections P1 de 030_spool_Extract_CRRCORP.sql
+
+Créer 1 solution temporaire : 030_spool_Extract_CRRCORP_vPACT.sql (copie 030_spool_Extract_CRRCORP.sql), ajouter au 030_CREATION_SPOOL_CRR.sh
+
+La première étape de la procédure consistera à vider la table avant de la remplir
+
+Placer l'appel à la nouvelle procédure dans 030_CREATION_SPOOL_CRR.sh
+
+Le flux sera le suivant :
+
+Remplissage de la nouvelle table ENG_CORP_P1_BIS
+
+Extraction des données
+
+Remplacer les requêtes SELECT dans 030_spool_Extract_CRRCORP_vPACT.sql par une seule requête SELECT sur la nouvelle table.
+
+ 
+
+Tests à effectuer avant de démarrer la phase de Recette / Non régression :
+
+Exécuter 030_CREATION_SPOOL_CRR.sh avant d'installer l'évolution.
+
+Sauvegarder le CRRCORP.dat pour comparaison ultérieure.
+
+Installer l'évolution.
+
+Exécuter 030_CREATION_SPOOL_CRR.sh.
+
+Sauvegarder le fichier CRRCORP.dat généré par l'évolution.
+
+Comparer les données des deux fichiers.
+
+G:\DSID\KLx\12_KLX_RisqLeasing\Dividir o CRR
+
+Résultat attendu :
+
+Les fichiers (avant et après l'évolution) doivent être identiques.
+
+ 
+
+Historisation (non- prioritaire) 
+
+Le nouveau tableau de données doit être envoyé à HCRR via 030_spool_data.sql + 030_spool_9M.sql
+
+Créer les tables et les procédures.
+
+ 
+
+Diagramme : 
+
+SIRL_1224.drawio.png
+ 
