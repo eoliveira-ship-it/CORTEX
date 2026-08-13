@@ -1,33 +1,7 @@
-=LET(
-ref,TRIM($E4),
-fmt,UPPER(TRIM($T4)),
-lng,$W4,
-rule,$U4,
-colName,"P1_"&SUBSTITUTE(SUBSTITUTE(ref,".","_")," ","_"),
-cutTxt,IFERROR(LEFT(rule,SEARCH("cimale",rule)-1),""),
-cutTxt2,IFERROR(TRIM(LEFT(TRIM(cutTxt),LEN(TRIM(cutTxt))-2)),""),
-nbDec,IFERROR(VALUE(TRIM(RIGHT(SUBSTITUTE(cutTxt2," ",REPT(" ",50)),50))),0),
-sgn,IF(ISNUMBER(SEARCH("signe",rule)),1,0),
-sep,IF(ISNUMBER(SEARCH("parateur",rule)),1,0),
-colType,
-IF(fmt="DATE",
-"DATE",
-IF(fmt="ALPHA",
-"VARCHAR2("&lng&")",
-IF(fmt="NUM",
-"NUMBER("&(lng-sgn-sep)&IF(nbDec>0,","&nbDec,"")&")",
-"VARCHAR2("&lng&")"
-)
-)
-),
-IF(
-LEFT(ref,3)<>"P1 ",
-"",
-"    "&colName&"  "&colType&" ,  -- "&ref&" "&$F4
-)
-)
+-- Formula geradora do DDL de ENG_CORP_P1_BIS (aba PACT Corp da Notice)
+-- Le a PROPRIA linha via ROW()/INDEX (nao desalinha onde quer que seja colada).
+-- Colunas usadas: A=OBJET, E=referencia, F=nome, T=FORMAT, U=regra, W=comprimento.
+-- Filtro: OBJET = "P1"  |  corpo "P1 X.Y" -> P1_X_Y  |  cabecalho "X.Y (P1)" -> P1_H_X_Y
+-- Tipos: ALPHA->VARCHAR2(len) | DATE->DATE | NUM->NUMBER(len-signe-separateur, decimais)
 
-
-
-
-=LET(ref,TRIM($E4),fmt,UPPER(TRIM($T4)),lng,$W4,rule,$U4,num,SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(ref,"(P1)",""),"P1","")," ",""),isH,ISNUMBER(SEARCH("(P1)",ref)),col,IF(isH,"P1_H_","P1_")&SUBSTITUTE(num,".","_"),cut,IFERROR(LEFT(rule,SEARCH("cimale",rule)-1),""),cut2,IFERROR(TRIM(LEFT(TRIM(cut),LEN(TRIM(cut))-2)),""),dec,IFERROR(VALUE(TRIM(RIGHT(SUBSTITUTE(cut2," ",REPT(" ",50)),50))),0),sgn,IF(ISNUMBER(SEARCH("signe",rule)),1,0),sep,IF(ISNUMBER(SEARCH("parateur",rule)),1,0),typ,IF(fmt="DATE","DATE",IF(fmt="ALPHA","VARCHAR2("&lng&")",IF(fmt="NUM","NUMBER("&(lng-sgn-sep)&IF(dec>0,","&dec,"")&")","VARCHAR2("&lng&")"))),IF($A4<>"P1","","    "&col&"  "&typ&" ,  -- "&$E4&" "&$F4))
+=LET(r,ROW(),ref,TRIM(INDEX($E:$E,r)),fmt,UPPER(TRIM(INDEX($T:$T,r))),lng,INDEX($W:$W,r),rule,INDEX($U:$U,r),nm,INDEX($F:$F,r),oc,INDEX($A:$A,r),num,SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(ref,"(P1)",""),"P1","")," ",""),isH,ISNUMBER(SEARCH("(P1)",ref)),col,IF(isH,"P1_H_","P1_")&SUBSTITUTE(num,".","_"),cut,IFERROR(LEFT(rule,SEARCH("cimale",rule)-1),""),cut2,IFERROR(TRIM(LEFT(TRIM(cut),LEN(TRIM(cut))-2)),""),dec,IFERROR(VALUE(TRIM(RIGHT(SUBSTITUTE(cut2," ",REPT(" ",50)),50))),0),sgn,IF(ISNUMBER(SEARCH("signe",rule)),1,0),sep,IF(ISNUMBER(SEARCH("parateur",rule)),1,0),typ,IF(fmt="DATE","DATE",IF(fmt="ALPHA","VARCHAR2("&lng&")",IF(fmt="NUM","NUMBER("&(lng-sgn-sep)&IF(dec>0,","&dec,"")&")","VARCHAR2("&lng&")"))),IF(oc<>"P1","","    "&col&"  "&typ&" ,  -- "&ref&" "&nm))
