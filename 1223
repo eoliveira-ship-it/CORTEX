@@ -1,0 +1,61 @@
+SIRL-1223 - CORTEX SFG technique: Fonctionnalité E04-01-03 – Modifications dans les notices CRR CORP et CRR ADAPTE et P3
+
+
+
+Por Hugo GOMES
+
+Ouvir
+
+2
+
+Adicionar reação
+Solution : 
+
+Check Notice : Notice PACTV4.5_Grande Clientèle_Corporate_V45.00.xlsx 
+
+P1 21.65
+
+8 Occurrences dans le Spool 030_spool_Extract_CRRCORP.sql
+
+Aujourd’hui
+
+Cible
+
+Aujourd’hui
+
+Cible
+
+
+
+RPAD(' ',5)|| --P1 21.65
+
+
+RPAD(' ',50)|| --P1 21.65
+
+
+
+
+ 
+
+P3C 21.65
+
+1 Ocurrence
+
+Procédure P_UTLF_CREDIT_P3
+
+Aujourd’hui
+
+Cible
+
+
+
+ RPAD(' ',5)         ||';'||--P3C 21.65
+
+
+ RPAD(' ',50)         ||';'||--P3C 21.65
+
+
+RPAD(' ',1132); -- BALE4
+
+
+RPAD(' ',1087); -- BALE4
