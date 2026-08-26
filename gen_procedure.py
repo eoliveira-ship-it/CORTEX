@@ -5,16 +5,54 @@ from conv_spool import convert
 lines = open('spool.sql', encoding='utf-8', errors='replace').read().split('\n')
 
 
+def strip_line(l, in_block):
+    """Retire les commentaires en tenant compte des blocs /* */ qui courent
+    sur plusieurs lignes, et des litteraux 'texte' (ou -- et /* ne comptent pas).
+    Retourne (code, commentaire_de_ligne, in_block)."""
+    code = ''
+    cm = ''
+    i = 0
+    in_str = False
+    while i < len(l):
+        two = l[i:i+2]
+        if in_block:
+            if two == '*/':
+                in_block = False
+                i += 2
+                continue
+            i += 1
+            continue
+        if in_str:
+            code += l[i]
+            if l[i] == "'":
+                in_str = False
+            i += 1
+            continue
+        if l[i] == "'":
+            in_str = True
+            code += l[i]
+            i += 1
+            continue
+        if two == '/*':
+            in_block = True
+            i += 2
+            continue
+        if two == '--':
+            cm = l[i:]
+            break
+        code += l[i]
+        i += 1
+    return code, cm, in_block
+
+
 def tokenize(a, b):
     seg = lines[a:b]
     buf = []
     anchors = {}
     lnmap = {}
+    in_block = False
     for k, l in enumerate(seg):
-        idx = l.find('--')
-        code = l[:idx] if idx >= 0 else l
-        cm = l[idx:] if idx >= 0 else ''
-        code = re.sub(r'/\*.*?\*/', '', code)
+        code, cm, in_block = strip_line(l, in_block)
         base = sum(len(x) for x in buf)
         m = re.search(r'--\s*P1\s+([\d.]+)', cm)
         # une ancre sur une ligne SANS code appartient a du code commente :
@@ -85,6 +123,26 @@ def tokenize(a, b):
 
 def col_of(ref):
     return 'P1_' + ref.split()[1].replace('.', '_') if ref else None
+
+
+HEADER_CONV = [
+    (r'DT_ARRETE', 'P1_H_0_1'),
+    (r'CD_CONSO_CPT', 'P1_H_0_2'),
+    (r"APPLI_SOURCE|'C_DDR'", 'P1_H_0_3'),
+    (r"^'M'$", 'P1_H_0_4'),
+    (r'^p_masysdate$', 'P1_H_0_5'),
+    (r"^'P1'$", 'P1_H_0_6'),
+]
+
+
+def header_col(expr, seq):
+    """Les 6 premieres positions de CHAQUE select sont l'en-tete du pave,
+    identique partout : arrete / entite / appli / 'M' / horodatage / 'P1'.
+    Mapping par convention du spool (a valider DSID)."""
+    if seq > 6:
+        return None
+    pat, col = HEADER_CONV[seq - 1]
+    return col if re.search(pat, expr.strip(), re.I) else None
 
 
 def is_sign(expr):
@@ -170,8 +228,9 @@ for num, perim, a, b, desc, where in VAR:
     nfill = 0
     nanch = 0
     nsign = 0
+    nhdr = 0
     for t in toks:
-        expr = convert(t['raw'])
+        expr = convert(t['raw']).replace(':MASYSDATE', 'p_masysdate')
         if expr.strip().upper() == 'NULL':
             nfill += 1
             continue
@@ -180,11 +239,18 @@ for num, perim, a, b, desc, where in VAR:
             continue
         seq += 1
         col = col_of(t['ref'])
+        ref = t['ref']
         if col:
             nanch += 1
         else:
-            col = 'COL_A_MAPPER_%02d_%03d' % (num, seq)
-        items.append((col, expr, t['line'], t['ref']))
+            hc = header_col(expr, seq)
+            if hc:
+                col = hc
+                ref = 'en-tete conv.'
+                nhdr += 1
+            else:
+                col = 'COL_A_MAPPER_%02d_%03d' % (num, seq)
+        items.append((col, expr, t['line'], ref))
     seen = {}
     ded = []
     for col, expr, ln, ref in items:
@@ -194,7 +260,7 @@ for num, perim, a, b, desc, where in VAR:
         else:
             seen[col] = 0
         ded.append((col, expr, ln, ref))
-    stats.append((num, len(toks), len(ded), nanch, nfill, nsign))
+    stats.append((num, len(toks), len(ded), nanch + nhdr, nfill, nsign))
 
     cl = '\n'.join('        %s%s' % (c, ',' if i < len(ded) - 1 else '')
                    for i, (c, _, _, _) in enumerate(ded))
@@ -234,7 +300,7 @@ extra = """-- ------------------------------------------------------------------
 -- ---------------------------------------------------------------------
 -- 1) A AJOUTER DANS LA SPEC DU PACKAGE  pack_alim_tab_envoi_crrv4
 -- ---------------------------------------------------------------------
---   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2);
+--   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2, p_masysdate IN VARCHAR2);
 
 
 -- ---------------------------------------------------------------------
@@ -242,7 +308,7 @@ extra = """-- ------------------------------------------------------------------
 -- ---------------------------------------------------------------------
 """
 
-body = "PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2)\nIS\nBEGIN\n"
+body = "PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2, p_masysdate IN VARCHAR2)\nIS\nBEGIN\n"
 body += ("    ------------------------------------------------------------------\n"
          "    -- Etape 1 : vider la table avant de la remplir (SFG SIRL-1224)\n"
          "    ------------------------------------------------------------------\n"

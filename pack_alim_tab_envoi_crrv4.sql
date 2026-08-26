@@ -49,7 +49,7 @@ create or replace PACKAGE pack_alim_tab_envoi_crrv4_new IS
 	   -- RSE_LOT3
 	   PROCEDURE P_ALIM_PERIM_ENVOI_CRR_P1;
 
-	   PROCEDURE P_ALIM_ENG_CORP_P1_BIS;
+	   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2, p_masysdate IN VARCHAR2);
 
 	  END pack_alim_tab_envoi_crrv4_new;
 /
@@ -13075,7 +13075,7 @@ end P_CALCUL_AGREGAT_P5;
 	  		pack_utilitaire.DB_TRAITE_ERREUR( SQLERRM, 'proc P_ALIM_PERIM_ENVOI_CRR_P1', 50072 );
 	  END P_ALIM_PERIM_ENVOI_CRR_P1;
 
-PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2)
+PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2, p_masysdate IN VARCHAR2)
 IS
 BEGIN
     ------------------------------------------------------------------
@@ -13090,12 +13090,12 @@ BEGIN
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_01_001,
-        COL_A_MAPPER_01_002,
-        COL_A_MAPPER_01_003,
-        COL_A_MAPPER_01_004,
-        COL_A_MAPPER_01_005,
-        COL_A_MAPPER_01_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_01_007,
         COL_A_MAPPER_01_008,
         COL_A_MAPPER_01_009,
@@ -13297,12 +13297,12 @@ BEGIN
     )
     SELECT
         'NAT02'                                                    AS CD_PERIMETRE,
-        C_ENR.dt_arrete                                            AS COL_A_MAPPER_01_001,  -- L590 [a mapper]
-        C_ENR.CD_CONSO_CPT                                         AS COL_A_MAPPER_01_002,  -- L591 [a mapper]
-        NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS COL_A_MAPPER_01_003,  -- L592 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_01_004,  -- L593 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_01_005,  -- L594 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_01_006,  -- L595 [a mapper]
+        C_ENR.dt_arrete                                            AS P1_H_0_1,  -- L590 [en-tete conv.]
+        C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L591 [en-tete conv.]
+        NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS P1_H_0_3,  -- L592 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L593 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L594 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L595 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_01_007,  -- L597 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_01_008,  -- L600 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_01_009,  -- L601 [a mapper]
@@ -13518,12 +13518,12 @@ BEGIN
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_02_001,
-        COL_A_MAPPER_02_002,
-        COL_A_MAPPER_02_003,
-        COL_A_MAPPER_02_004,
-        COL_A_MAPPER_02_005,
-        COL_A_MAPPER_02_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_02_007,
         COL_A_MAPPER_02_008,
         COL_A_MAPPER_02_009,
@@ -13716,12 +13716,12 @@ BEGIN
     )
     SELECT
         'NAT02'                                                    AS CD_PERIMETRE,
-        C_ENR.dt_arrete                                            AS COL_A_MAPPER_02_001,  -- L1089 [a mapper]
-        C_ENR.CD_CONSO_CPT                                         AS COL_A_MAPPER_02_002,  -- L1090 [a mapper]
-        NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS COL_A_MAPPER_02_003,  -- L1091 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_02_004,  -- L1092 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_02_005,  -- L1093 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_02_006,  -- L1094 [a mapper]
+        C_ENR.dt_arrete                                            AS P1_H_0_1,  -- L1089 [en-tete conv.]
+        C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L1090 [en-tete conv.]
+        NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS P1_H_0_3,  -- L1091 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L1092 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L1093 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L1094 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_02_007,  -- L1096 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_02_008,  -- L1099 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_02_009,  -- L1100 [a mapper]
@@ -13928,12 +13928,12 @@ BEGIN
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_03_001,
-        COL_A_MAPPER_03_002,
-        COL_A_MAPPER_03_003,
-        COL_A_MAPPER_03_004,
-        COL_A_MAPPER_03_005,
-        COL_A_MAPPER_03_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_03_007,
         COL_A_MAPPER_03_008,
         COL_A_MAPPER_03_009,
@@ -14135,12 +14135,12 @@ BEGIN
     )
     SELECT
         'NAT02'                                                    AS CD_PERIMETRE,
-        C_ENR.dt_arrete                                            AS COL_A_MAPPER_03_001,  -- L1592 [a mapper]
-        C_ENR.CD_CONSO_CPT                                         AS COL_A_MAPPER_03_002,  -- L1593 [a mapper]
-        NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS COL_A_MAPPER_03_003,  -- L1594 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_03_004,  -- L1595 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_03_005,  -- L1596 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_03_006,  -- L1597 [a mapper]
+        C_ENR.dt_arrete                                            AS P1_H_0_1,  -- L1592 [en-tete conv.]
+        C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L1593 [en-tete conv.]
+        NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS P1_H_0_3,  -- L1594 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L1595 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L1596 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L1597 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_03_007,  -- L1599 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_03_008,  -- L1602 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_03_009,  -- L1603 [a mapper]
@@ -14352,17 +14352,17 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #4  (Hors-NAT TRE100 - spool L2894)
-    --   colonnes : 112 (dont 27 ancrees --P1) | 383 fillers -> NULL | 4 signes absorbes par le NUMBER
+    --   colonnes : 108 (dont 27 ancrees --P1) | 382 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_04_001,
-        COL_A_MAPPER_04_002,
-        COL_A_MAPPER_04_003,
-        COL_A_MAPPER_04_004,
-        COL_A_MAPPER_04_005,
-        COL_A_MAPPER_04_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_04_007,
         COL_A_MAPPER_04_008,
         COL_A_MAPPER_04_009,
@@ -14380,15 +14380,15 @@ BEGIN
         COL_A_MAPPER_04_021,
         P1_5_5,
         P1_5_2,
-        COL_A_MAPPER_04_024,
         P1_4_2,
+        COL_A_MAPPER_04_025,
         COL_A_MAPPER_04_026,
         COL_A_MAPPER_04_027,
         COL_A_MAPPER_04_028,
         COL_A_MAPPER_04_029,
         COL_A_MAPPER_04_030,
-        COL_A_MAPPER_04_031,
         P1_2_99,
+        COL_A_MAPPER_04_032,
         COL_A_MAPPER_04_033,
         COL_A_MAPPER_04_034,
         COL_A_MAPPER_04_035,
@@ -14404,14 +14404,14 @@ BEGIN
         COL_A_MAPPER_04_045,
         COL_A_MAPPER_04_046,
         COL_A_MAPPER_04_047,
-        COL_A_MAPPER_04_048,
-        COL_A_MAPPER_04_049,
         P1_22_8,
         P1_22_9,
-        COL_A_MAPPER_04_052,
-        COL_A_MAPPER_04_053,
+        COL_A_MAPPER_04_050,
+        COL_A_MAPPER_04_051,
         P1_22_44,
         P1_22_45,
+        COL_A_MAPPER_04_054,
+        COL_A_MAPPER_04_055,
         COL_A_MAPPER_04_056,
         COL_A_MAPPER_04_057,
         COL_A_MAPPER_04_058,
@@ -14439,21 +14439,17 @@ BEGIN
         COL_A_MAPPER_04_080,
         COL_A_MAPPER_04_081,
         COL_A_MAPPER_04_082,
-        COL_A_MAPPER_04_083,
-        COL_A_MAPPER_04_084,
-        COL_A_MAPPER_04_085,
-        COL_A_MAPPER_04_086,
         P1_31_17,
         P1_31_18,
         P1_31_22,
+        COL_A_MAPPER_04_086,
+        COL_A_MAPPER_04_087,
+        P1_29_4,
+        COL_A_MAPPER_04_089,
         COL_A_MAPPER_04_090,
         COL_A_MAPPER_04_091,
-        P1_29_4,
+        COL_A_MAPPER_04_092,
         COL_A_MAPPER_04_093,
-        COL_A_MAPPER_04_094,
-        COL_A_MAPPER_04_095,
-        COL_A_MAPPER_04_096,
-        COL_A_MAPPER_04_097,
         P1_21_22,
         P1_21_23,
         P1_21_25,
@@ -14472,12 +14468,12 @@ BEGIN
     )
     SELECT
         'HORS_NAT02'                                               AS CD_PERIMETRE,
-        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_04_001,  -- L2894 [a mapper]
-        TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS COL_A_MAPPER_04_002,  -- L2895 [a mapper]
-        'C_DDR'                                                    AS COL_A_MAPPER_04_003,  -- L2896 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_04_004,  -- L2897 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_04_005,  -- L2898 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_04_006,  -- L2899 [a mapper]
+        C_ENR.DT_ARRETE                                            AS P1_H_0_1,  -- L2894 [en-tete conv.]
+        TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS P1_H_0_2,  -- L2895 [en-tete conv.]
+        'C_DDR'                                                    AS P1_H_0_3,  -- L2896 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L2897 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L2898 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L2899 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_04_007,  -- L2903 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_04_008,  -- L2905 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_04_009,  -- L2906 [a mapper]
@@ -14495,80 +14491,76 @@ BEGIN
         C_ENR.CD_DEVISE_ORIGINE                                    AS COL_A_MAPPER_04_021,  -- L2934 [a mapper]
         NVL(C_ENR.CD_ARR_PAIEMENT, 'N')                            AS P1_5_5,  -- L2938 [P1 5.5]
         NVL(C_ENR.TOP_ENG_DOUTEUX, 'N')                            AS P1_5_2,  -- L2941 [P1 5.2]
-        ABS(TRUNC(C_ENR.MNT_SOLDE))                                AS COL_A_MAPPER_04_024,  -- L2948 [a mapper]
-        */ NVL((C_ENR.MNT_SOLDE), 0)                               AS P1_4_2,  -- L2950 [P1 4.2]
-        C_ENR.CD_DEVISE_SOLDE                                      AS COL_A_MAPPER_04_026,  -- L2951 [a mapper]
-        C_ENR.CD_DEVISE_MNT_DECOUVERT                              AS COL_A_MAPPER_04_027,  -- L2955 [a mapper]
-        C_ENR.MNT_LOYER                                            AS COL_A_MAPPER_04_028,  -- L2960 [a mapper]
-        C_ENR.CD_DEVISE_CRD                                        AS COL_A_MAPPER_04_029,  -- L2965 [a mapper]
-        C_ENR.PCCO_MNT_SOLDE                                       AS COL_A_MAPPER_04_030,  -- L2970 [a mapper]
-        C_ENR.cla_comp_ref_act_s                                   AS COL_A_MAPPER_04_031,  -- L3007 [a mapper]
+        NVL((C_ENR.MNT_SOLDE), 0)                                  AS P1_4_2,  -- L2943 [P1 4.2]
+        C_ENR.CD_DEVISE_SOLDE                                      AS COL_A_MAPPER_04_025,  -- L2951 [a mapper]
+        C_ENR.CD_DEVISE_MNT_DECOUVERT                              AS COL_A_MAPPER_04_026,  -- L2955 [a mapper]
+        C_ENR.MNT_LOYER                                            AS COL_A_MAPPER_04_027,  -- L2960 [a mapper]
+        C_ENR.CD_DEVISE_CRD                                        AS COL_A_MAPPER_04_028,  -- L2965 [a mapper]
+        C_ENR.PCCO_MNT_SOLDE                                       AS COL_A_MAPPER_04_029,  -- L2970 [a mapper]
+        C_ENR.cla_comp_ref_act_s                                   AS COL_A_MAPPER_04_030,  -- L3007 [a mapper]
         C_ENR.CD_METH_IFRS9_PD_ORIG                                AS P1_2_99,  -- L3043 [P1 2.99]
-        ABS(TRUNC(C_ENR.MATURITE_EFF))                             AS COL_A_MAPPER_04_033,  -- L3118 [a mapper]
-        ABS(MOD(C_ENR.MATURITE_EFF *10000,10000))                  AS COL_A_MAPPER_04_034,  -- L3119 [a mapper]
-        C_ENR.TOP_ENG                                              AS COL_A_MAPPER_04_035,  -- L3120 [a mapper]
-        C_ENR.CD_TYPE_PROD_BANCAIRE                                AS COL_A_MAPPER_04_036,  -- L3123 [a mapper]
-        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_04_037,  -- L3124 [a mapper]
-        /* 4.3c- DONNEES CONCERNANT LES DERIVES (y.c. REPOS) NULL  AS COL_A_MAPPER_04_038,  -- L3155 [a mapper]
-        C_ENR.IND_PROD_ECH                                         AS COL_A_MAPPER_04_039,  -- L3199 [a mapper]
-        C_ENR.IND_OBJ_MET_PAL                                      AS COL_A_MAPPER_04_040,  -- L3201 [a mapper]
-        C_ENR.REF_UNIQ_CONT                                        AS COL_A_MAPPER_04_041,  -- L3202 [a mapper]
-        C_ENR.REF_UNIQ_ELEM_CONT                                   AS COL_A_MAPPER_04_042,  -- L3203 [a mapper]
-        NVL(C_ENR.NOTE_FIN_RET_ORI, 'ND')                          AS COL_A_MAPPER_04_043,  -- L3205 [a mapper]
-        C_ENR.NOTE_EXT_ORI                                         AS COL_A_MAPPER_04_044,  -- L3206 [a mapper]
-        C_ENR.ORGA_NOTATION_ORIG                                   AS COL_A_MAPPER_04_045,  -- L3207 [a mapper]
-        C_ENR.SEG_NOT_ORI                                          AS COL_A_MAPPER_04_046,  -- L3209 [a mapper]
-        CASE WHEN C_ENR.GRI_MOD_NOT_ORI IS NULL THEN NULL ELSE C_ENR.GRI_MOD_NOT_ORI||'FR' END AS COL_A_MAPPER_04_047,  -- L3210 [a mapper]
-        upper(C_ENR.METH_NOT_ORI)                                  AS COL_A_MAPPER_04_048,  -- L3213 [a mapper]
-        '97'                                                       AS COL_A_MAPPER_04_049,  -- L3214 [a mapper]
+        ABS(TRUNC(C_ENR.MATURITE_EFF))                             AS COL_A_MAPPER_04_032,  -- L3118 [a mapper]
+        ABS(MOD(C_ENR.MATURITE_EFF *10000,10000))                  AS COL_A_MAPPER_04_033,  -- L3119 [a mapper]
+        C_ENR.TOP_ENG                                              AS COL_A_MAPPER_04_034,  -- L3120 [a mapper]
+        C_ENR.CD_TYPE_PROD_BANCAIRE                                AS COL_A_MAPPER_04_035,  -- L3123 [a mapper]
+        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_04_036,  -- L3124 [a mapper]
+        C_ENR.IND_PROD_ECH                                         AS COL_A_MAPPER_04_037,  -- L3199 [a mapper]
+        C_ENR.IND_OBJ_MET_PAL                                      AS COL_A_MAPPER_04_038,  -- L3201 [a mapper]
+        C_ENR.REF_UNIQ_CONT                                        AS COL_A_MAPPER_04_039,  -- L3202 [a mapper]
+        C_ENR.REF_UNIQ_ELEM_CONT                                   AS COL_A_MAPPER_04_040,  -- L3203 [a mapper]
+        NVL(C_ENR.NOTE_FIN_RET_ORI, 'ND')                          AS COL_A_MAPPER_04_041,  -- L3205 [a mapper]
+        C_ENR.NOTE_EXT_ORI                                         AS COL_A_MAPPER_04_042,  -- L3206 [a mapper]
+        C_ENR.ORGA_NOTATION_ORIG                                   AS COL_A_MAPPER_04_043,  -- L3207 [a mapper]
+        C_ENR.SEG_NOT_ORI                                          AS COL_A_MAPPER_04_044,  -- L3209 [a mapper]
+        CASE WHEN C_ENR.GRI_MOD_NOT_ORI IS NULL THEN NULL ELSE C_ENR.GRI_MOD_NOT_ORI||'FR' END AS COL_A_MAPPER_04_045,  -- L3210 [a mapper]
+        upper(C_ENR.METH_NOT_ORI)                                  AS COL_A_MAPPER_04_046,  -- L3213 [a mapper]
+        '97'                                                       AS COL_A_MAPPER_04_047,  -- L3214 [a mapper]
         C_ENR.MNT_CONTRAT_ORIGINE                                  AS P1_22_8,  -- L3215 [P1 22.8]
         NVL(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR')                  AS P1_22_9,  -- L3222 [P1 22.9]
-        C_ENR.IND_ECH_FOUR                                         AS COL_A_MAPPER_04_052,  -- L3223 [a mapper]
-        C_ENR.IND_RMB_ANTICIPE                                     AS COL_A_MAPPER_04_053,  -- L3227 [a mapper]
+        C_ENR.IND_ECH_FOUR                                         AS COL_A_MAPPER_04_050,  -- L3223 [a mapper]
+        C_ENR.IND_RMB_ANTICIPE                                     AS COL_A_MAPPER_04_051,  -- L3227 [a mapper]
         NVL((C_ENR.MNT_ACQUISITION), 0)                            AS P1_22_44,  -- L3239 [P1 22.44]
         'EUR'                                                      AS P1_22_45,  -- L3240 [P1 22.45]
-        CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then NULL ELSE C_ENR.CD_MOTIF_SCO_LC0267 END AS COL_A_MAPPER_04_056,  -- L3253 [a mapper]
-        C_ENR.BUCKET_IFRS9                                         AS COL_A_MAPPER_04_057,  -- L3256 [a mapper]
-        /* 26/02/2018 CDS ATOS inihibition des ?critures de l'US33 NULL AS COL_A_MAPPER_04_058,  -- L3258 [a mapper]
-        C_ENR.CD_MOTIF_SCO_LC0267                                  AS COL_A_MAPPER_04_059,  -- L3261 [a mapper]
-        fin 26/02/2018 CDS ATOS inihibition des ?critures de l'US33 */ C_ENR.ELI_OUT_MUT_PROV_S AS COL_A_MAPPER_04_060,  -- L3263 [a mapper]
-        C_ENR.CENTRE_RES                                           AS COL_A_MAPPER_04_061,  -- L3268 [a mapper]
-        C_ENR.SYS_GEST_SRC                                         AS COL_A_MAPPER_04_062,  -- L3269 [a mapper]
-        C_ENR.CLA_COMP_ACT_IFRS9_S                                 AS COL_A_MAPPER_04_063,  -- L3270 [a mapper]
-        C_ENR.CLA_COMP_ACT_NATIONALE_S                             AS COL_A_MAPPER_04_064,  -- L3271 [a mapper]
-        C_ENR.IND_ACT_DEP_ORI                                      AS COL_A_MAPPER_04_065,  -- L3272 [a mapper]
-        C_ENR.ZONE_APP_COMP                                        AS COL_A_MAPPER_04_066,  -- L3273 [a mapper]
-        C_ENR.CD_METH_IFRS9_PD                                     AS COL_A_MAPPER_04_067,  -- L3275 [a mapper]
-        C_ENR.CD_METH_IFRS9_LGD                                    AS COL_A_MAPPER_04_068,  -- L3276 [a mapper]
-        C_ENR.CD_METH_IFRS9_CCF                                    AS COL_A_MAPPER_04_069,  -- L3277 [a mapper]
-        C_ENR.CD_METH_IFRS9_TX                                     AS COL_A_MAPPER_04_070,  -- L3278 [a mapper]
-        C_ENR.ELIGIB_PRUDENT_VAL                                   AS COL_A_MAPPER_04_071,  -- L3280 [a mapper]
-        C_ENR.IND_MOBIL_ACTIF                                      AS COL_A_MAPPER_04_072,  -- L3283 [a mapper]
-        C_ENR.ELIG_MOB_BANQUE_CENTRALE                             AS COL_A_MAPPER_04_073,  -- L3284 [a mapper]
-        C_ENR.REF_MOB_ACTIF                                        AS COL_A_MAPPER_04_074,  -- L3286 [a mapper]
-        C_ENR.CD_ORGA_MOBIL                                        AS COL_A_MAPPER_04_075,  -- L3287 [a mapper]
-        NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS COL_A_MAPPER_04_076,  -- L3291 [a mapper]
-        C_ENR.MOTIF_EXCLU_ANACREDIT                                AS COL_A_MAPPER_04_077,  -- L3293 [a mapper]
-        'N'                                                        AS COL_A_MAPPER_04_078,  -- L3306 [a mapper]
-        'N'                                                        AS COL_A_MAPPER_04_079,  -- L3311 [a mapper]
-        C_ENR.REF_UNIQ_CONT                                        AS COL_A_MAPPER_04_080,  -- L3315 [a mapper]
-        C_ENR.REF_UNIQ_ELEM_CONT                                   AS COL_A_MAPPER_04_081,  -- L3316 [a mapper]
-        C_ENR.MNT_ENG_DT_SIGN_CTRT                                 AS COL_A_MAPPER_04_082,  -- L3317 [a mapper]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS COL_A_MAPPER_04_083,  -- L3318 [a mapper]
-        NVL(C_ENR.IND_ISF, '2')                                    AS COL_A_MAPPER_04_084,  -- L3319 [a mapper]
-        C_ENR.CD_COMMUNE_BIEN_FINAN                                AS COL_A_MAPPER_04_085,  -- L3322 [a mapper]
-        C_ENR.CD_PAYS_BIEN_FINAN                                   AS COL_A_MAPPER_04_086,  -- L3323 [a mapper]
+        CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then NULL ELSE C_ENR.CD_MOTIF_SCO_LC0267 END AS COL_A_MAPPER_04_054,  -- L3253 [a mapper]
+        C_ENR.BUCKET_IFRS9                                         AS COL_A_MAPPER_04_055,  -- L3256 [a mapper]
+        C_ENR.ELI_OUT_MUT_PROV_S                                   AS COL_A_MAPPER_04_056,  -- L3258 [a mapper]
+        C_ENR.CENTRE_RES                                           AS COL_A_MAPPER_04_057,  -- L3268 [a mapper]
+        C_ENR.SYS_GEST_SRC                                         AS COL_A_MAPPER_04_058,  -- L3269 [a mapper]
+        C_ENR.CLA_COMP_ACT_IFRS9_S                                 AS COL_A_MAPPER_04_059,  -- L3270 [a mapper]
+        C_ENR.CLA_COMP_ACT_NATIONALE_S                             AS COL_A_MAPPER_04_060,  -- L3271 [a mapper]
+        C_ENR.IND_ACT_DEP_ORI                                      AS COL_A_MAPPER_04_061,  -- L3272 [a mapper]
+        C_ENR.ZONE_APP_COMP                                        AS COL_A_MAPPER_04_062,  -- L3273 [a mapper]
+        C_ENR.CD_METH_IFRS9_PD                                     AS COL_A_MAPPER_04_063,  -- L3275 [a mapper]
+        C_ENR.CD_METH_IFRS9_LGD                                    AS COL_A_MAPPER_04_064,  -- L3276 [a mapper]
+        C_ENR.CD_METH_IFRS9_CCF                                    AS COL_A_MAPPER_04_065,  -- L3277 [a mapper]
+        C_ENR.CD_METH_IFRS9_TX                                     AS COL_A_MAPPER_04_066,  -- L3278 [a mapper]
+        C_ENR.ELIGIB_PRUDENT_VAL                                   AS COL_A_MAPPER_04_067,  -- L3280 [a mapper]
+        C_ENR.IND_MOBIL_ACTIF                                      AS COL_A_MAPPER_04_068,  -- L3283 [a mapper]
+        C_ENR.ELIG_MOB_BANQUE_CENTRALE                             AS COL_A_MAPPER_04_069,  -- L3284 [a mapper]
+        C_ENR.REF_MOB_ACTIF                                        AS COL_A_MAPPER_04_070,  -- L3286 [a mapper]
+        C_ENR.CD_ORGA_MOBIL                                        AS COL_A_MAPPER_04_071,  -- L3287 [a mapper]
+        NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS COL_A_MAPPER_04_072,  -- L3291 [a mapper]
+        C_ENR.MOTIF_EXCLU_ANACREDIT                                AS COL_A_MAPPER_04_073,  -- L3293 [a mapper]
+        'N'                                                        AS COL_A_MAPPER_04_074,  -- L3306 [a mapper]
+        'N'                                                        AS COL_A_MAPPER_04_075,  -- L3311 [a mapper]
+        C_ENR.REF_UNIQ_CONT                                        AS COL_A_MAPPER_04_076,  -- L3315 [a mapper]
+        C_ENR.REF_UNIQ_ELEM_CONT                                   AS COL_A_MAPPER_04_077,  -- L3316 [a mapper]
+        C_ENR.MNT_ENG_DT_SIGN_CTRT                                 AS COL_A_MAPPER_04_078,  -- L3317 [a mapper]
+        C_ENR.IND_RESPO_SOLIDAIRE                                  AS COL_A_MAPPER_04_079,  -- L3318 [a mapper]
+        NVL(C_ENR.IND_ISF, '2')                                    AS COL_A_MAPPER_04_080,  -- L3319 [a mapper]
+        C_ENR.CD_COMMUNE_BIEN_FINAN                                AS COL_A_MAPPER_04_081,  -- L3322 [a mapper]
+        C_ENR.CD_PAYS_BIEN_FINAN                                   AS COL_A_MAPPER_04_082,  -- L3323 [a mapper]
         0                                                          AS P1_31_17,  -- L3327 [P1 31.17]
         0                                                          AS P1_31_18,  -- L3329 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L3334 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS COL_A_MAPPER_04_090,  -- L3341 [a mapper]
-        C_ENR.MNT_SUBV_HT                                          AS COL_A_MAPPER_04_091,  -- L3345 [a mapper]
+        C_ENR.IND_GAR_SANS_LIMITE                                  AS COL_A_MAPPER_04_086,  -- L3341 [a mapper]
+        C_ENR.MNT_SUBV_HT                                          AS COL_A_MAPPER_04_087,  -- L3345 [a mapper]
         'EUR'                                                      AS P1_29_4,  -- L3346 [P1 29.4]
-        'EUR'                                                      AS COL_A_MAPPER_04_093,  -- L3352 [a mapper]
-        C_ENR.PCEC_MNT_RISQUE                                      AS COL_A_MAPPER_04_094,  -- L3353 [a mapper]
-        C_ENR.MNT_RISQUE                                           AS COL_A_MAPPER_04_095,  -- L3354 [a mapper]
-        C_ENR.PCEC_ICNE                                            AS COL_A_MAPPER_04_096,  -- L3357 [a mapper]
-        C_ENR.MNT_ICNE                                             AS COL_A_MAPPER_04_097,  -- L3358 [a mapper]
+        'EUR'                                                      AS COL_A_MAPPER_04_089,  -- L3352 [a mapper]
+        C_ENR.PCEC_MNT_RISQUE                                      AS COL_A_MAPPER_04_090,  -- L3353 [a mapper]
+        C_ENR.MNT_RISQUE                                           AS COL_A_MAPPER_04_091,  -- L3354 [a mapper]
+        C_ENR.PCEC_ICNE                                            AS COL_A_MAPPER_04_092,  -- L3357 [a mapper]
+        C_ENR.MNT_ICNE                                             AS COL_A_MAPPER_04_093,  -- L3358 [a mapper]
         C_ENR.MOTIF_MRTR                                           AS P1_21_22,  -- L3365 [P1 21.22]
         C_ENR.DT_DEBUT_MRTR                                        AS P1_21_23,  -- L3366 [P1 21.23]
         C_ENR.STATUT_MRTR                                          AS P1_21_25,  -- L3368 [P1 21.25]
@@ -14598,12 +14590,12 @@ BEGIN
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_05_001,
-        COL_A_MAPPER_05_002,
-        COL_A_MAPPER_05_003,
-        COL_A_MAPPER_05_004,
-        COL_A_MAPPER_05_005,
-        COL_A_MAPPER_05_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_05_007,
         COL_A_MAPPER_05_008,
         COL_A_MAPPER_05_009,
@@ -14793,12 +14785,12 @@ BEGIN
     )
     SELECT
         'HORS_NAT02'                                               AS CD_PERIMETRE,
-        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_05_001,  -- L3462 [a mapper]
-        TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS COL_A_MAPPER_05_002,  -- L3464 [a mapper]
-        'C_DDR'                                                    AS COL_A_MAPPER_05_003,  -- L3465 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_05_004,  -- L3466 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_05_005,  -- L3467 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_05_006,  -- L3468 [a mapper]
+        C_ENR.DT_ARRETE                                            AS P1_H_0_1,  -- L3462 [en-tete conv.]
+        TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS P1_H_0_2,  -- L3464 [en-tete conv.]
+        'C_DDR'                                                    AS P1_H_0_3,  -- L3465 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L3466 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L3467 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L3468 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_05_007,  -- L3472 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_05_008,  -- L3476 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_05_009,  -- L3477 [a mapper]
@@ -14999,12 +14991,12 @@ BEGIN
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_06_001,
-        COL_A_MAPPER_06_002,
-        COL_A_MAPPER_06_003,
-        COL_A_MAPPER_06_004,
-        COL_A_MAPPER_06_005,
-        COL_A_MAPPER_06_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_06_007,
         COL_A_MAPPER_06_008,
         COL_A_MAPPER_06_009,
@@ -15115,12 +15107,12 @@ BEGIN
     )
     SELECT
         'HORS_NAT02'                                               AS CD_PERIMETRE,
-        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_06_001,  -- L4026 [a mapper]
-        TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS COL_A_MAPPER_06_002,  -- L4027 [a mapper]
-        'C_DDR'                                                    AS COL_A_MAPPER_06_003,  -- L4028 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_06_004,  -- L4029 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_06_005,  -- L4030 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_06_006,  -- L4031 [a mapper]
+        C_ENR.DT_ARRETE                                            AS P1_H_0_1,  -- L4026 [en-tete conv.]
+        TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS P1_H_0_2,  -- L4027 [en-tete conv.]
+        'C_DDR'                                                    AS P1_H_0_3,  -- L4028 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L4029 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L4030 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L4031 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_06_007,  -- L4035 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_06_008,  -- L4039 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_06_009,  -- L4040 [a mapper]
@@ -15237,17 +15229,17 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #7  (Hors-NAT SIG201/INR101 - spool L4606)
-    --   colonnes : 114 (dont 23 ancrees --P1) | 260 fillers -> NULL | 2 signes absorbes par le NUMBER
+    --   colonnes : 112 (dont 23 ancrees --P1) | 259 fillers -> NULL | 2 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_07_001,
-        COL_A_MAPPER_07_002,
-        COL_A_MAPPER_07_003,
-        COL_A_MAPPER_07_004,
-        COL_A_MAPPER_07_005,
-        COL_A_MAPPER_07_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_07_007,
         COL_A_MAPPER_07_008,
         COL_A_MAPPER_07_009,
@@ -15332,19 +15324,17 @@ BEGIN
         COL_A_MAPPER_07_088,
         COL_A_MAPPER_07_089,
         COL_A_MAPPER_07_090,
-        COL_A_MAPPER_07_091,
-        COL_A_MAPPER_07_092,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        COL_A_MAPPER_07_096,
-        COL_A_MAPPER_07_097,
+        COL_A_MAPPER_07_094,
+        COL_A_MAPPER_07_095,
         P1_29_4,
+        COL_A_MAPPER_07_097,
+        COL_A_MAPPER_07_098,
         COL_A_MAPPER_07_099,
         COL_A_MAPPER_07_100,
         COL_A_MAPPER_07_101,
-        COL_A_MAPPER_07_102,
-        COL_A_MAPPER_07_103,
         P1_21_46,
         P1_21_38,
         P1_21_39,
@@ -15359,12 +15349,12 @@ BEGIN
     )
     SELECT
         'HORS_NAT02'                                               AS CD_PERIMETRE,
-        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_07_001,  -- L4606 [a mapper]
-        C_ENR.CD_CONSO_CPT                                         AS COL_A_MAPPER_07_002,  -- L4607 [a mapper]
-        'C_DDR'                                                    AS COL_A_MAPPER_07_003,  -- L4608 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_07_004,  -- L4609 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_07_005,  -- L4610 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_07_006,  -- L4611 [a mapper]
+        C_ENR.DT_ARRETE                                            AS P1_H_0_1,  -- L4606 [en-tete conv.]
+        C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L4607 [en-tete conv.]
+        'C_DDR'                                                    AS P1_H_0_3,  -- L4608 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L4609 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L4610 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L4611 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_07_007,  -- L4615 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_07_008,  -- L4619 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_07_009,  -- L4620 [a mapper]
@@ -15422,46 +15412,44 @@ BEGIN
         TO_CHAR(C_ENR.NB_JOURS_RETARD)                             AS COL_A_MAPPER_07_061,  -- L4824 [a mapper]
         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then NULL ELSE C_ENR.CD_MOTIF_SCO_LC0267 END AS COL_A_MAPPER_07_062,  -- L4825 [a mapper]
         C_ENR.BUCKET_IFRS9                                         AS COL_A_MAPPER_07_063,  -- L4827 [a mapper]
-        /* 26/02/2018 CDS ATOS inihibition des ecritures de l'US33 NULL AS COL_A_MAPPER_07_064,  -- L4829 [a mapper]
-        C_ENR.CD_MOTIF_SCO_LC0267                                  AS COL_A_MAPPER_07_065,  -- L4832 [a mapper]
-        fin 26/02/2018 CDS ATOS inihibition des ecritures de l'US33 */ C_ENR.ELI_OUT_MUT_PROV AS COL_A_MAPPER_07_066,  -- L4834 [a mapper]
-        C_ENR.CENTRE_RES                                           AS COL_A_MAPPER_07_067,  -- L4839 [a mapper]
-        C_ENR.SYS_GEST_SRC                                         AS COL_A_MAPPER_07_068,  -- L4840 [a mapper]
-        C_ENR.CLA_COMP_ACT_IFRS9                                   AS COL_A_MAPPER_07_069,  -- L4841 [a mapper]
-        C_ENR.CLA_COMP_ACT_NATIONALE                               AS COL_A_MAPPER_07_070,  -- L4842 [a mapper]
-        C_ENR.IND_ACT_DEP_ORI                                      AS COL_A_MAPPER_07_071,  -- L4843 [a mapper]
-        C_ENR.ZONE_APP_COMP                                        AS COL_A_MAPPER_07_072,  -- L4844 [a mapper]
-        C_ENR.CD_METH_IFRS9_PD                                     AS COL_A_MAPPER_07_073,  -- L4846 [a mapper]
-        C_ENR.CD_METH_IFRS9_LGD                                    AS COL_A_MAPPER_07_074,  -- L4847 [a mapper]
-        C_ENR.CD_METH_IFRS9_CCF                                    AS COL_A_MAPPER_07_075,  -- L4848 [a mapper]
-        C_ENR.CD_METH_IFRS9_TX                                     AS COL_A_MAPPER_07_076,  -- L4849 [a mapper]
-        C_ENR.ELIGIB_PRUDENT_VAL                                   AS COL_A_MAPPER_07_077,  -- L4851 [a mapper]
-        C_ENR.IND_MOBIL_ACTIF                                      AS COL_A_MAPPER_07_078,  -- L4854 [a mapper]
-        C_ENR.ELIG_MOB_BANQUE_CENTRALE                             AS COL_A_MAPPER_07_079,  -- L4855 [a mapper]
-        C_ENR.REF_MOB_ACTIF                                        AS COL_A_MAPPER_07_080,  -- L4857 [a mapper]
-        C_ENR.CD_ORGA_MOBIL                                        AS COL_A_MAPPER_07_081,  -- L4858 [a mapper]
-        NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS COL_A_MAPPER_07_082,  -- L4862 [a mapper]
-        C_ENR.MOTIF_EXCLU_ANACREDIT                                AS COL_A_MAPPER_07_083,  -- L4864 [a mapper]
-        'N'                                                        AS COL_A_MAPPER_07_084,  -- L4877 [a mapper]
-        'N'                                                        AS COL_A_MAPPER_07_085,  -- L4882 [a mapper]
-        C_ENR.REF_UNIQ_CONT                                        AS COL_A_MAPPER_07_086,  -- L4886 [a mapper]
-        C_ENR.REF_UNIQ_ELEM_CONT                                   AS COL_A_MAPPER_07_087,  -- L4887 [a mapper]
-        C_ENR.MNT_ENG_DT_SIGN_CTRT                                 AS COL_A_MAPPER_07_088,  -- L4888 [a mapper]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS COL_A_MAPPER_07_089,  -- L4889 [a mapper]
-        NVL(C_ENR.IND_ISF, '2')                                    AS COL_A_MAPPER_07_090,  -- L4890 [a mapper]
-        C_ENR.CD_COMMUNE_BIEN_FINAN                                AS COL_A_MAPPER_07_091,  -- L4893 [a mapper]
-        C_ENR.CD_PAYS_BIEN_FINAN                                   AS COL_A_MAPPER_07_092,  -- L4894 [a mapper]
+        C_ENR.ELI_OUT_MUT_PROV                                     AS COL_A_MAPPER_07_064,  -- L4829 [a mapper]
+        C_ENR.CENTRE_RES                                           AS COL_A_MAPPER_07_065,  -- L4839 [a mapper]
+        C_ENR.SYS_GEST_SRC                                         AS COL_A_MAPPER_07_066,  -- L4840 [a mapper]
+        C_ENR.CLA_COMP_ACT_IFRS9                                   AS COL_A_MAPPER_07_067,  -- L4841 [a mapper]
+        C_ENR.CLA_COMP_ACT_NATIONALE                               AS COL_A_MAPPER_07_068,  -- L4842 [a mapper]
+        C_ENR.IND_ACT_DEP_ORI                                      AS COL_A_MAPPER_07_069,  -- L4843 [a mapper]
+        C_ENR.ZONE_APP_COMP                                        AS COL_A_MAPPER_07_070,  -- L4844 [a mapper]
+        C_ENR.CD_METH_IFRS9_PD                                     AS COL_A_MAPPER_07_071,  -- L4846 [a mapper]
+        C_ENR.CD_METH_IFRS9_LGD                                    AS COL_A_MAPPER_07_072,  -- L4847 [a mapper]
+        C_ENR.CD_METH_IFRS9_CCF                                    AS COL_A_MAPPER_07_073,  -- L4848 [a mapper]
+        C_ENR.CD_METH_IFRS9_TX                                     AS COL_A_MAPPER_07_074,  -- L4849 [a mapper]
+        C_ENR.ELIGIB_PRUDENT_VAL                                   AS COL_A_MAPPER_07_075,  -- L4851 [a mapper]
+        C_ENR.IND_MOBIL_ACTIF                                      AS COL_A_MAPPER_07_076,  -- L4854 [a mapper]
+        C_ENR.ELIG_MOB_BANQUE_CENTRALE                             AS COL_A_MAPPER_07_077,  -- L4855 [a mapper]
+        C_ENR.REF_MOB_ACTIF                                        AS COL_A_MAPPER_07_078,  -- L4857 [a mapper]
+        C_ENR.CD_ORGA_MOBIL                                        AS COL_A_MAPPER_07_079,  -- L4858 [a mapper]
+        NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS COL_A_MAPPER_07_080,  -- L4862 [a mapper]
+        C_ENR.MOTIF_EXCLU_ANACREDIT                                AS COL_A_MAPPER_07_081,  -- L4864 [a mapper]
+        'N'                                                        AS COL_A_MAPPER_07_082,  -- L4877 [a mapper]
+        'N'                                                        AS COL_A_MAPPER_07_083,  -- L4882 [a mapper]
+        C_ENR.REF_UNIQ_CONT                                        AS COL_A_MAPPER_07_084,  -- L4886 [a mapper]
+        C_ENR.REF_UNIQ_ELEM_CONT                                   AS COL_A_MAPPER_07_085,  -- L4887 [a mapper]
+        C_ENR.MNT_ENG_DT_SIGN_CTRT                                 AS COL_A_MAPPER_07_086,  -- L4888 [a mapper]
+        C_ENR.IND_RESPO_SOLIDAIRE                                  AS COL_A_MAPPER_07_087,  -- L4889 [a mapper]
+        NVL(C_ENR.IND_ISF, '2')                                    AS COL_A_MAPPER_07_088,  -- L4890 [a mapper]
+        C_ENR.CD_COMMUNE_BIEN_FINAN                                AS COL_A_MAPPER_07_089,  -- L4893 [a mapper]
+        C_ENR.CD_PAYS_BIEN_FINAN                                   AS COL_A_MAPPER_07_090,  -- L4894 [a mapper]
         0                                                          AS P1_31_17,  -- L4898 [P1 31.17]
         0                                                          AS P1_31_18,  -- L4900 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L4906 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS COL_A_MAPPER_07_096,  -- L4912 [a mapper]
-        C_ENR.MNT_SUBV_HT                                          AS COL_A_MAPPER_07_097,  -- L4916 [a mapper]
+        C_ENR.IND_GAR_SANS_LIMITE                                  AS COL_A_MAPPER_07_094,  -- L4912 [a mapper]
+        C_ENR.MNT_SUBV_HT                                          AS COL_A_MAPPER_07_095,  -- L4916 [a mapper]
         'EUR'                                                      AS P1_29_4,  -- L4917 [P1 29.4]
-        'EUR'                                                      AS COL_A_MAPPER_07_099,  -- L4952 [a mapper]
-        C_ENR.PCEC_MNT_RISQUE                                      AS COL_A_MAPPER_07_100,  -- L4953 [a mapper]
-        C_ENR.MNT_RISQUE                                           AS COL_A_MAPPER_07_101,  -- L4954 [a mapper]
-        C_ENR.PCEC_ICNE                                            AS COL_A_MAPPER_07_102,  -- L4957 [a mapper]
-        C_ENR.MNT_ICNE                                             AS COL_A_MAPPER_07_103,  -- L4958 [a mapper]
+        'EUR'                                                      AS COL_A_MAPPER_07_097,  -- L4952 [a mapper]
+        C_ENR.PCEC_MNT_RISQUE                                      AS COL_A_MAPPER_07_098,  -- L4953 [a mapper]
+        C_ENR.MNT_RISQUE                                           AS COL_A_MAPPER_07_099,  -- L4954 [a mapper]
+        C_ENR.PCEC_ICNE                                            AS COL_A_MAPPER_07_100,  -- L4957 [a mapper]
+        C_ENR.MNT_ICNE                                             AS COL_A_MAPPER_07_101,  -- L4958 [a mapper]
         C_ENR.IND_CONF_CRIT_OPE                                    AS P1_21_46,  -- L4995 [P1 21.46]
         C_ENR.IND_IPRE                                             AS P1_21_38,  -- L4996 [P1 21.38]
         C_ENR.IND_EXPO_ADC                                         AS P1_21_39,  -- L4997 [P1 21.39]
@@ -15487,12 +15475,12 @@ BEGIN
     INSERT INTO ENG_CORP_P1_BIS
     (
         CD_PERIMETRE,
-        COL_A_MAPPER_08_001,
-        COL_A_MAPPER_08_002,
-        COL_A_MAPPER_08_003,
-        COL_A_MAPPER_08_004,
-        COL_A_MAPPER_08_005,
-        COL_A_MAPPER_08_006,
+        P1_H_0_1,
+        P1_H_0_2,
+        P1_H_0_3,
+        P1_H_0_4,
+        P1_H_0_5,
+        P1_H_0_6,
         COL_A_MAPPER_08_007,
         COL_A_MAPPER_08_008,
         COL_A_MAPPER_08_009,
@@ -15651,12 +15639,12 @@ BEGIN
     )
     SELECT
         'HORS_NAT02'                                               AS CD_PERIMETRE,
-        C_ENR.DT_ARRETE                                            AS COL_A_MAPPER_08_001,  -- L5061 [a mapper]
-        C_ENR.CD_CONSO_CPT                                         AS COL_A_MAPPER_08_002,  -- L5062 [a mapper]
-        'C_DDR'                                                    AS COL_A_MAPPER_08_003,  -- L5063 [a mapper]
-        'M'                                                        AS COL_A_MAPPER_08_004,  -- L5064 [a mapper]
-        :MASYSDATE                                                 AS COL_A_MAPPER_08_005,  -- L5065 [a mapper]
-        'P1'                                                       AS COL_A_MAPPER_08_006,  -- L5066 [a mapper]
+        C_ENR.DT_ARRETE                                            AS P1_H_0_1,  -- L5061 [en-tete conv.]
+        C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L5062 [en-tete conv.]
+        'C_DDR'                                                    AS P1_H_0_3,  -- L5063 [en-tete conv.]
+        'M'                                                        AS P1_H_0_4,  -- L5064 [en-tete conv.]
+        p_masysdate                                                AS P1_H_0_5,  -- L5065 [en-tete conv.]
+        'P1'                                                       AS P1_H_0_6,  -- L5066 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS COL_A_MAPPER_08_007,  -- L5070 [a mapper]
         C_ENR.ID_AUTORISATION                                      AS COL_A_MAPPER_08_008,  -- L5074 [a mapper]
         C_ENR.ID_LIGNE_DET                                         AS COL_A_MAPPER_08_009,  -- L5075 [a mapper]
