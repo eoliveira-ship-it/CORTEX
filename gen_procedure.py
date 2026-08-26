@@ -466,3 +466,62 @@ if _susp:
         print('   %-12s %-13s %s' % (_c, _t, _v))
 else:
     print('coerencia de tipos: OK (nenhum literal texto em coluna NUMBER/DATE)')
+
+
+# ---------------------------------------------------------------------
+# Script de test : les requetes de controle reutilisent LES MEMES clauses
+# WHERE que les INSERT, elles ne peuvent donc pas diverger.
+# ---------------------------------------------------------------------
+NL = chr(10)
+_t = []
+_t.append('-- Test de P_ALIM_ENG_CORP_P1_BIS  (SIRL-1224)')
+_t.append('-- Prerequis : ENG_CORP_P1_BIS.sql execute + package compile.')
+_t.append('-- MASYSDATE = date extraction yyyymmddHHMI (cf. spool L66), 12 car.')
+_t.append('')
+_t.append('SET SERVEROUTPUT ON')
+_t.append('SET LINESIZE 200')
+_t.append('')
+_t.append('-- 1) Etat avant')
+_t.append('SELECT COUNT(*) AS avant FROM ENG_CORP_P1_BIS;')
+_t.append('')
+_t.append('-- 2) Execution')
+_t.append('DECLARE')
+_t.append("    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou un CD_CONSO_CPT precis")
+_t.append("    v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');")
+_t.append('    v_t0        TIMESTAMP := SYSTIMESTAMP;')
+_t.append('BEGIN')
+_t.append('    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate);')
+_t.append("    DBMS_OUTPUT.PUT_LINE('OK - duree : '||TO_CHAR(SYSTIMESTAMP - v_t0));")
+_t.append('END;')
+_t.append('/')
+_t.append('')
+_t.append('-- 3) Volumetrie par perimetre')
+_t.append('SELECT CD_PERIMETRE, COUNT(*) AS lignes')
+_t.append('  FROM ENG_CORP_P1_BIS GROUP BY CD_PERIMETRE ORDER BY 1;')
+_t.append('')
+_t.append('-- 4) CONTROLE : attendu (source) vs insere (table)')
+_t.append('--    Chaque ligne doit donner ecart = 0.')
+_t.append('WITH attendu AS (')
+for _i, (_n, _p, _a, _b, _d, _w) in enumerate(VAR):
+    _u = '' if _i == 0 else '    UNION ALL'
+    if _u:
+        _t.append(_u)
+    _t.append("    SELECT %d AS variante, '%s' AS perimetre, COUNT(*) AS nb" % (_n, _p))
+    _t.append('      FROM ENG_CORP_P1 C_ENR WHERE')
+    _t.append(_w.replace('p_entite', "'TOTAL'"))
+_t.append(')')
+_t.append('SELECT a.variante, a.perimetre, a.nb AS attendu FROM attendu a ORDER BY 1;')
+_t.append('')
+_t.append('-- Total attendu (somme) doit egaler :')
+_t.append('SELECT COUNT(*) AS insere FROM ENG_CORP_P1_BIS;')
+_t.append('')
+_t.append('-- 5) Taux de remplissage : colonnes alimentees vs restees NULL')
+_t.append('--    Les colonnes non mappees (docs/posicoes-a-mapear.md) sont NULL : normal.')
+_t.append('SELECT COUNT(*) AS lignes,')
+for _c in sorted(set(c for blk in blocks for c in re.findall(r'AS (P1_[A-Z0-9_]+)', blk)))[:8]:
+    _t.append('       COUNT(%s) AS %s,' % (_c, _c[:26]))
+_t.append('       COUNT(CD_PERIMETRE) AS CD_PERIMETRE')
+_t.append('  FROM ENG_CORP_P1_BIS;')
+_t.append('')
+open('test_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='utf-8').write(NL.join(_t) + NL)
+print('script de teste -> test_P_ALIM_ENG_CORP_P1_BIS.sql')

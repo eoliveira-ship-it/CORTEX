@@ -32,7 +32,8 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
 | `erro` | Log de compilação Oracle — erros já corrigidos |
 | `excel` | Fórmula Excel que gera o DDL a partir da notice |
-| `gen_procedure.py` / `conv_spool.py` | Geradores (regeneram a procedure a partir do spool) |
+| `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
+| `gen_procedure.py` / `conv_spool.py` | Geradores (regeneram a procedure e o teste a partir do spool) |
 
 ### Fonte (entrada)
 
