@@ -5,6 +5,20 @@
 SET SERVEROUTPUT ON
 SET LINESIZE 200
 
+-- 0) Diagnostic de la source : quel perimetre existe reellement ?
+--    FLAG_HN = 'N' -> NAT02 (INSERT #1-#3)  |  'O' -> HORS_NAT02 (#4-#8)
+--    Aucune ligne FLAG_HN='O' => seul NAT02 apparaitra : c'est normal,
+--    le perimetre Hors NAT 02 arrive apres reception des donnees comptables.
+SELECT NVL(FLAG_HN,'N') AS flag_hn, COUNT(*) AS lignes
+  FROM ENG_CORP_P1 WHERE A_EXTRAIRE = 'O'
+ GROUP BY NVL(FLAG_HN,'N') ORDER BY 1;
+
+-- 0b) Detail par type de risque : les INSERT #4-#8 ne retiennent que
+--     TRE100, TRE2/TRE4/TRE5, EQU101, SIG201/INR101 et %VAR1%.
+SELECT NVL(FLAG_HN,'N') AS flag_hn, CD_TYPE_RISQUE, COUNT(*) AS lignes
+  FROM ENG_CORP_P1 WHERE A_EXTRAIRE = 'O'
+ GROUP BY NVL(FLAG_HN,'N'), CD_TYPE_RISQUE ORDER BY 1, 2;
+
 -- 1) Etat avant
 SELECT COUNT(*) AS avant FROM ENG_CORP_P1_BIS;
 
