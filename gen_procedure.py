@@ -1,4 +1,4 @@
-﻿import re, sys
+import re, sys
 sys.path.insert(0, '.')
 from conv_spool import convert
 
@@ -119,6 +119,29 @@ def tokenize(a, b):
     for o in out:
         o.setdefault('ref', None)
     return out
+
+
+DDL_TYPES = dict(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s+([A-Z0-9_]+(?:\([0-9, ]+\))?)',
+                            open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read(),
+                            re.M))
+
+
+def fit_type(expr, col):
+    """Le spool formate les nombres en TEXTE (ex. '00000' = zero cadre a 5).
+    Une fois le formatage retire, ces litteraux doivent redevenir des nombres
+    quand la colonne cible est NUMBER, sinon ORA-00932.
+    On ne touche QUE les positions de valeur (THEN / ELSE / defaut de NVL /
+    expression entiere) : jamais les litteraux des conditions WHEN."""
+    typ = DDL_TYPES.get(col, '')
+    if not typ.startswith('NUMBER'):
+        return expr
+    e = expr
+    e = re.sub(r"(\bTHEN\s+)'([+-]?\d+)'", lambda m: m.group(1) + str(int(m.group(2))), e, flags=re.I)
+    e = re.sub(r"(\bELSE\s+)'([+-]?\d+)'", lambda m: m.group(1) + str(int(m.group(2))), e, flags=re.I)
+    e = re.sub(r"(,\s*)'([+-]?\d+)'(\s*\))", lambda m: m.group(1) + str(int(m.group(2))) + m.group(3), e)
+    if re.fullmatch(r"'([+-]?\d+)'", e.strip()):
+        e = str(int(e.strip().strip("'")))
+    return e
 
 
 DDL_COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s',
@@ -316,6 +339,7 @@ for num, perim, a, b, desc, where in VAR:
         if col is None:
             amapear.append((num, seq, t['line'], expr))
             continue
+        expr = fit_type(expr, col)
         items.append((col, expr, t['line'], ref))
     seen = set()
     ded = []
@@ -414,3 +438,31 @@ for n, t, c, anc, f, s in stats:
     print('   #%d   |  %4d  |  %4d   |   %4d    |  %4d   | %4d' % (n, t, c, anc, f, s))
 print('duplicados __D restantes:',
       sum(1 for b in blocks for _ in re.finditer(r'__D\d', b)))
+
+
+# ---------------------------------------------------------------------
+# Controle de coherence de types : le spool code les nombres en TEXTE.
+# Toute valeur litterale 'xxx' affectee a une colonne NUMBER/DATE est
+# signalee ici (sinon Oracle rend ORA-00932 a la compilation).
+# ---------------------------------------------------------------------
+_txt = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+_susp = []
+for _line in _txt.split(chr(10)):
+    _m = re.match(r"\s+(.*?)\s+AS (P1_[A-Z0-9_]+),?\s+--", _line)
+    if not _m:
+        continue
+    _e, _c = _m.group(1).strip(), _m.group(2)
+    _t = DDL_TYPES.get(_c, '?')
+    _v = (re.findall(r"THEN\s+('[^']*')", _e, re.I)
+          + re.findall(r"ELSE\s+('[^']*')", _e, re.I)
+          + re.findall(r",\s*('[^']*')\s*\)", _e))
+    if re.fullmatch(r"'[^']*'", _e):
+        _v.append(_e)
+    if _v and (_t.startswith('NUMBER') or _t == 'DATE'):
+        _susp.append((_c, _t, _v))
+if _susp:
+    print('AVISO - literais texto em colunas %s:' % 'NUMBER/DATE')
+    for _c, _t, _v in _susp[:20]:
+        print('   %-12s %-13s %s' % (_c, _t, _v))
+else:
+    print('coerencia de tipos: OK (nenhum literal texto em coluna NUMBER/DATE)')
