@@ -234,6 +234,52 @@ VAR = [
     (8, 'HORS_NAT02', 5060, 5628, 'Hors-NAT VAR1 - spool L5061', W8),
 ]
 
+HDR = """-- =====================================================================
+-- SIRL-1224 : alimentation de la table ENG_CORP_P1_BIS
+-- Package  : pack_alim_tab_envoi_crrv4
+-- Procedure: P_ALIM_ENG_CORP_P1_BIS
+--
+-- But : sortir les regles de gestion du pave P1 hors du spool
+--       030_spool_Extract_CRRCORP.sql et les porter dans cette procedure,
+--       qui remplit ENG_CORP_P1_BIS a partir de ENG_CORP_P1.
+--       Le spool vPACT ne fera plus qu'un SELECT unique sur la table.
+--
+-- Le pave P1 est aujourd'hui produit par 8 SELECT sur ENG_CORP_P1 C_ENR,
+-- qui partitionnent la population (perimetre NAT02 vs Hors-NAT, arriere de
+-- paiement, montant, type de risque). Chaque SELECT devient ici un INSERT
+-- qui garde SON filtre (clause WHERE) a l'identique.
+--
+--   #  ligne spool  FLAG_HN  filtre principal
+--   1     590         N       risque std,  (CRD-VR)>=1 ou VR>=1
+--   2    1089         N       arriere='Y', SOLD_K_A>=1, pas TRE2%
+--   3    1592         N       arriere='Y', (CRD-VR)>=1 ou VR>=1, pas TRE2%
+--   4    2894         O       CD_TYPE_RISQUE = 'TRE100'
+--   5    3462         O       CD_TYPE_RISQUE LIKE 'TRE2/TRE4/TRE5'
+--   6    4026         O       CD_TYPE_RISQUE = 'EQU101'
+--   7    4606         O       CD_TYPE_RISQUE IN ('SIG201','INR101')
+--   8    5061         O       CD_TYPE_RISQUE LIKE '%VAR1%'
+--
+-- ---------------------------------------------------------------------
+-- REGLES DE CONVERSION  format spool  ->  valeur typee dans la table
+-- ---------------------------------------------------------------------
+--   RPAD(NVL(C_ENR.X,' '),n)              ->  C_ENR.X              (VARCHAR)
+--   RPAD(C_ENR.X,n)                       ->  C_ENR.X
+--   RPAD(' ',n)  (champ vide dans le spool)->  NULL   (colonne non listee)
+--   to_char(C_ENR.DT,'YYYYMMDD')          ->  C_ENR.DT             (DATE, brute)
+--   RPAD(NVL(TO_CHAR(C_ENR.DT,'YYYYMMDD'),' '),8) -> C_ENR.DT
+--   'M' / 'P1' / 'Y' ... (litteral)       ->  litteral conserve
+--   pack_utilitaire.F_FORMAT_TAUX(C_ENR.X)         -> C_ENR.X       (NUMBER)
+--   pack_utilitaire.f_format_montant_bis2(<expr>)  -> <expr>        (NUMBER)
+--   CASE ... THEN '+' ELSE '-' END (signe)-> supprime (le signe est porte
+--                                            par le NUMBER)
+--   NVL/CASE metier (ex defaut 'STD', '99990630', EAD<0 -> 0)
+--                                         ->  CONSERVE (c'est une regle
+--                                            de gestion, pas du formatage)
+--
+-- FLAG_HN -> CD_PERIMETRE :  'N' => 'NAT02'   ,  'O' => 'HORS_NAT02'
+-- =====================================================================
+"""
+
 stats = []
 blocks = []
 amapear = []
@@ -298,7 +344,7 @@ for num, perim, a, b, desc, where in VAR:
         "    SELECT\n%s\n    FROM ENG_CORP_P1 C_ENR\n    WHERE\n%s;\n"
         % (num, desc, len(ded), nanch, nfill, nsign, cl, '\n'.join(sl), where))
 
-hdr = open('_hdr.txt', encoding='utf-8').read()
+hdr = HDR
 
 extra = """-- ---------------------------------------------------------------------
 -- IMPORTANT - ECART DE VERSION
