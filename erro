@@ -1,0 +1,20 @@
+deu erro no oracle
+
+Package PACK_ALIM_TAB_ENVOI_CRRV4_NEW compiled
+
+
+Package Body PACK_ALIM_TAB_ENVOI_CRRV4_NEW compiled
+
+LINE/COL  ERROR
+--------- -------------------------------------------------------------
+229/9     PLS-00049: bad bind variable 'MASYSDATE'
+648/9     PLS-00049: bad bind variable 'MASYSDATE'
+1067/9    PLS-00049: bad bind variable 'MASYSDATE'
+1282/5    PL/SQL: SQL Statement ignored
+1404/9    PLS-00049: bad bind variable 'MASYSDATE'
+1424/9    PL/SQL: ORA-00936: missing expression
+1725/9    PLS-00049: bad bind variable 'MASYSDATE'
+2047/9    PLS-00049: bad bind variable 'MASYSDATE'
+2291/9    PLS-00049: bad bind variable 'MASYSDATE'
+2583/9    PLS-00049: bad bind variable 'MASYSDATE'
+Errors: check compiler log
