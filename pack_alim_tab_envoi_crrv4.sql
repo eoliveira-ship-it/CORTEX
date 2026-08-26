@@ -49,7 +49,9 @@ create or replace PACKAGE pack_alim_tab_envoi_crrv4_new IS
 	   -- RSE_LOT3
 	   PROCEDURE P_ALIM_PERIM_ENVOI_CRR_P1;
 
-	   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2, p_masysdate IN VARCHAR2);
+	   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,
+	                                     p_masysdate IN VARCHAR2,
+	                                     p_perimetre IN VARCHAR2 DEFAULT 'TOTAL');
 
 	  END pack_alim_tab_envoi_crrv4_new;
 /
@@ -13075,13 +13077,32 @@ end P_CALCUL_AGREGAT_P5;
 	  		pack_utilitaire.DB_TRAITE_ERREUR( SQLERRM, 'proc P_ALIM_PERIM_ENVOI_CRR_P1', 50072 );
 	  END P_ALIM_PERIM_ENVOI_CRR_P1;
 
-PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite IN VARCHAR2, p_masysdate IN VARCHAR2)
+PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,
+                                       p_masysdate IN VARCHAR2,
+                                       p_perimetre IN VARCHAR2 DEFAULT 'TOTAL')
 IS
 BEGIN
     ------------------------------------------------------------------
-    -- Etape 1 : vider la table avant de la remplir (SFG SIRL-1224)
+    -- Etape 1 : vider UNIQUEMENT le perimetre traite.
+    --   Pas de TRUNCATE : c'est du DDL (commit implicite), les donnees
+    --   seraient perdues meme si un INSERT echouait ensuite. Le DELETE
+    --   reste dans la transaction et permet les DEUX alimentations
+    --   successives prevues par le ticket : NAT02 (M2 BTR) puis
+    --   HORS_NAT02 (apres reception des donnees comptables).
     ------------------------------------------------------------------
-    EXECUTE IMMEDIATE 'TRUNCATE TABLE ENG_CORP_P1_BIS';
+    IF p_perimetre NOT IN ('NAT02', 'HORS_NAT02', 'TOTAL') THEN
+        RAISE_APPLICATION_ERROR(-20001,
+            'p_perimetre invalide : '||p_perimetre||
+            ' (attendu NAT02, HORS_NAT02 ou TOTAL)');
+    END IF;
+
+    IF p_perimetre = 'TOTAL' THEN
+        DELETE FROM ENG_CORP_P1_BIS;
+    ELSE
+        DELETE FROM ENG_CORP_P1_BIS WHERE CD_PERIMETRE = p_perimetre;
+    END IF;
+
+    IF p_perimetre IN ('NAT02', 'TOTAL') THEN
 
     ------------------------------------------------------------------
     -- INSERT #1  (standard NAT02 - spool L590)
@@ -13473,6 +13494,10 @@ BEGIN
       AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )
       AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
             OR NVL(C_ENR.MNT_VR,0) >= 1 );
+
+    END IF;
+
+    IF p_perimetre IN ('HORS_NAT02', 'TOTAL') THEN
 
     ------------------------------------------------------------------
     -- INSERT #4  (Hors-NAT TRE100 - spool L2894)
@@ -13962,6 +13987,8 @@ BEGIN
       AND C_ENR.FLAG_HN = 'O'
       AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE LIKE '%VAR1%';
+
+    END IF;
 
     COMMIT;
 END P_ALIM_ENG_CORP_P1_BIS;

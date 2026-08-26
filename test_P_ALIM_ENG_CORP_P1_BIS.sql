@@ -28,7 +28,8 @@ DECLARE
     v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');
     v_t0        TIMESTAMP := SYSTIMESTAMP;
 BEGIN
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate);
+    -- p_perimetre : 'NAT02' (M2 BTR) | 'HORS_NAT02' (apres compta) | 'TOTAL'
+    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, 'TOTAL');
     DBMS_OUTPUT.PUT_LINE('OK - duree : '||TO_CHAR(SYSTIMESTAMP - v_t0));
 END;
 /
@@ -124,4 +125,9 @@ SELECT COUNT(*) AS lignes,
        COUNT(P1_21_3) AS P1_21_3,
        COUNT(CD_PERIMETRE) AS CD_PERIMETRE
   FROM ENG_CORP_P1_BIS;
+
+-- 6) Deux alimentations successives (comportement cible du ticket) :
+--    chaque appel ne vide QUE son perimetre, l autre est conserve.
+-- BEGIN pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, NAT02); END;
+-- BEGIN pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, HORS_NAT02); END;
 
