@@ -100,3 +100,26 @@ Com a regua validada, as **922 posicoes** deixam de precisar da notice V44.02:
 podem ser mapeadas pela posicao e **verificadas** contra o ficheiro real,
 campo a campo. As 4 zonas com desvio (offsets ~4204, ~4913, ~5024, ~5131)
 podem agora ser resolvidas empiricamente, olhando onde os valores mudam.
+
+## Mapeamento gerado
+
+Ferramenta: [`../gen_mapa.py`](../gen_mapa.py) -> [`mapa-posicoes.csv`](mapa-posicoes.csv)
+
+Percorre as 3439 posicoes dos 8 SELECT, atribui o campo da notice pela regua
+V44 e **verifica no ficheiro real** se os valores respeitam o FORMAT declarado.
+
+| Confianca | Posicoes | Criterio |
+|---|---|---|
+| ALTA | 210 | ancora `--P1` do spool E a posicao concordam |
+| MEDIA | 858 | sem ancora, um so campo na posicao, valores reais coerentes |
+| BAIXA | 251 | ancora e posicao discordam, ou varios campos, ou incoerente |
+| FILLER | 2120 | `RPAD(' ', n)` -> coluna fica a NULL |
+
+**1068 posicoes mapeaveis, 251 colunas distintas** (contra as 107 atuais).
+
+Dos 251 BAIXA, so **12** tem valores realmente incoerentes com o formato; os
+restantes sao casos de ancora ambigua ou posicao a cobrir varios campos.
+
+O CSV traz por linha: offset, largura, coluna proposta, ref e nome da notice,
+ancora do spool, confianca, resultado do oraculo, exemplos reais e a expressao
+do spool — pronto para revisao da DSID.
