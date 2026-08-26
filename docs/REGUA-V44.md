@@ -54,3 +54,49 @@ mapeadas automaticamente, com as 367 ancoras a servirem de prova.
 Gerar o mapeamento com os 77% validados, marcando cada linha com o nivel de
 confianca, para revisao da DSID. Nao e prova, mas transforma o trabalho de
 "descobrir 176 mapeamentos" em "confirmar uma proposta".
+
+## VALIDACAO EMPIRICA (ficheiro real)
+
+O `CRRCORP_P1.7z` (966 MB descomprimido, 120 789 registos, arrete 20250630)
+e o ficheiro **realmente gerado** pelo spool. Serve de oraculo: se as posicoes
+calculadas pela regua extrairem os valores certos, a regua esta correta.
+
+Ferramenta: [`../valida_posicoes.py`](../valida_posicoes.py)
+
+### Cabecalho — bate exatamente
+
+| Offset | Extraido | Campo |
+|---|---|---|
+| 0:8 | `20250630` | data de arrete |
+| 8:13 | `00370` | entidade porteuse |
+| 13:25 | `C_BTR       ` | aplicacao origem |
+| 25 | `M` | frequencia |
+| 26:38 | `202608241214` | MASYSDATE (confirma `yyyymmddHHMI`) |
+| 38:40 | `P1` | tipo de registo |
+
+### Corpo — as fronteiras caem no sitio certo
+
+| Campo | Offset (larg.) | Valor extraido do ficheiro |
+|---|---|---|
+| `MNT_CONTRAT_ORIGINE` | 2446 (19) | `+000000000000040419` |
+| `DEV_MNT_CONTRAT_ORIGINE` | 2465 (3) | `EUR` |
+| `MNT_ACQUISITION` | 2702 (19) | `+000000000021146523` |
+| `DATE_DEB_ENG_RENVL` | 2813 (8) | `20170131` |
+| `CD_METH_IFRS9_PD_ORIG` | 969 (20) | `LC_MIG_D+` |
+| `OBJ_FINANCIE` | 2444 (2) | `04`, `97` |
+
+Montantes com sinal e 18 digitos, datas validas, moedas ISO: nenhuma fronteira
+corta um valor ao meio. A regua esta validada contra dados reais.
+
+### Largura do registo
+
+Linhas de 8000 octetos (o `linesize` do spool, com enchimento). Dados ate a
+coluna **5606**; a regua calcula **5675** — os ultimos 69 octetos sao fillers
+em branco, o que e coerente.
+
+## Impacto
+
+Com a regua validada, as **922 posicoes** deixam de precisar da notice V44.02:
+podem ser mapeadas pela posicao e **verificadas** contra o ficheiro real,
+campo a campo. As 4 zonas com desvio (offsets ~4204, ~4913, ~5024, ~5131)
+podem agora ser resolvidas empiricamente, olhando onde os valores mudam.
