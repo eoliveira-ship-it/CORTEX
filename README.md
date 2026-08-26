@@ -14,6 +14,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 
 Detalhe do SIRL-1224: [docs/SIRL-1224.md](docs/SIRL-1224.md)
+Mapeamento posicional: [docs/REGUA-V44.md](docs/REGUA-V44.md)
 
 ## ⚠️ Achado importante — ecart de versão
 
@@ -33,6 +34,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | `erro` | Log de compilação Oracle — erros já corrigidos |
 | `excel` | Fórmula Excel que gera o DDL a partir da notice |
 | `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
+| `align_v44.py` | Reconstroi a regua V44 e mede o alinhamento posicional |
 | `gen_procedure.py` / `conv_spool.py` | Geradores (regeneram a procedure e o teste a partir do spool) |
 
 ### Fonte (entrada)
