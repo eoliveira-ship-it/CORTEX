@@ -1,19 +1,27 @@
 deu erro no oracle na hora que vou correr a procedure
 
-Error starting at line : 26 in command -
+
+Error starting at line : 3 in command -
 DECLARE
-    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou un CD_CONSO_CPT precis
+    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou um CD_CONSO_CPT preciso
     v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');
-    v_t0        TIMESTAMP := SYSTIMESTAMP;
+    v_t0        TIMESTAMP    := SYSTIMESTAMP;
 BEGIN
-    -- p_perimetre : 'NAT02' (M2 BTR) | 'HORS_NAT02' (apres compta) | 'TOTAL'
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, 'TOTAL');
-    DBMS_OUTPUT.PUT_LINE('OK - duree : '||TO_CHAR(SYSTIMESTAMP - v_t0));
+    -- p_perimetre :
+    --   'TOTAL'       esvazia tudo e corre os 8 INSERT      (teste)
+    --   'NAT02'       so o perimetro NAT02, INSERT #1-#3    (M2 BTR)
+    --   'HORS_NAT02'  so o Hors NAT02, INSERT #4-#8         (apos dados contabilisticos)
+    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(
+        p_entite    => v_entite,
+        p_masysdate => v_masysdate,
+        p_perimetre => 'TOTAL');
+
+    DBMS_OUTPUT.PUT_LINE('OK - duracao : '||TO_CHAR(SYSTIMESTAMP - v_t0));
 END;
 Error report -
 ORA-01438: value larger than specified precision allowed for this column
 ORA-06512: at "DDREX.PACK_ALIM_TAB_ENVOI_CRRV4_NEW", line 13053
-ORA-06512: at line 7
+ORA-06512: at line 10
 01438. 00000 -  "value larger than specified precision allowed for this column"
 *Cause:    When inserting or updating records, a numeric value was entered
            that exceeded the precision defined for the column.
