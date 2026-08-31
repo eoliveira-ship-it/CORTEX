@@ -126,27 +126,113 @@ DDL_TYPES = dict(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s+([A-Z0-9_]+(?:\([0-9, ]+\))?
                             re.M))
 
 
+def _split_args(t):
+    d, out, cur = 0, [], ''
+    for ch in t:
+        if ch == '(':
+            d += 1
+        elif ch == ')':
+            d -= 1
+        if ch == ',' and d == 0:
+            out.append(cur)
+            cur = ''
+            continue
+        cur += ch
+    out.append(cur)
+    return out
+
+
+def _fix_nvl(e, conv_lit):
+    """Reescreve APENAS o 2o argumento dos NVL (o valor por defeito).
+    Nunca toca nos literais das condicoes: um NOT IN ('1','2') tem de
+    ficar intacto, senao a regra de negocio muda."""
+    out, i = '', 0
+    pat = re.compile(r'\bNVL\s*\(', re.I)
+    while i < len(e):
+        m = pat.match(e, i)
+        if m:
+            op = m.end() - 1
+            d, j = 0, op
+            while j < len(e):
+                if e[j] == '(':
+                    d += 1
+                elif e[j] == ')':
+                    d -= 1
+                    if d == 0:
+                        break
+                j += 1
+            args = _split_args(e[op + 1:j])
+            if len(args) == 2:
+                out += ('NVL(' + _fix_nvl(args[0], conv_lit)
+                        + ', ' + conv_lit(args[1].strip()) + ')')
+            else:
+                out += e[i:j + 1]
+            i = j + 1
+            continue
+        out += e[i]
+        i += 1
+    return out
+
+
 def fit_type(expr, col):
-    """Le spool formate les nombres en TEXTE (ex. '00000' = zero cadre a 5).
-    Une fois le formatage retire, ces litteraux doivent redevenir des nombres
-    quand la colonne cible est NUMBER, sinon ORA-00932.
-    On ne touche QUE les positions de valeur (THEN / ELSE / defaut de NVL /
-    expression entiere) : jamais les litteraux des conditions WHEN."""
+    """O spool escreve numeros e datas como TEXTO formatado. Retirado o
+    formato, esses literais tem de voltar ao tipo da coluna, senao
+    ORA-00932. So se tocam posicoes de VALOR (THEN / ELSE / defeito de
+    NVL / expressao inteira)."""
     typ = DDL_TYPES.get(col, '')
-    if not typ.startswith('NUMBER'):
+    if typ.startswith('NUMBER'):
+        def cl(v):
+            return str(int(v.strip("'"))) if re.fullmatch(r"'[+-]?\d+'", v) else v
+    elif typ == 'DATE':
+        def cl(v):
+            if re.fullmatch(r"'\d{8}'", v):
+                return "TO_DATE(%s,'YYYYMMDD')" % v
+            return v
+    else:
         return expr
-    e = expr
-    e = re.sub(r"(\bTHEN\s+)'([+-]?\d+)'", lambda m: m.group(1) + str(int(m.group(2))), e, flags=re.I)
-    e = re.sub(r"(\bELSE\s+)'([+-]?\d+)'", lambda m: m.group(1) + str(int(m.group(2))), e, flags=re.I)
-    e = re.sub(r"(,\s*)'([+-]?\d+)'(\s*\))", lambda m: m.group(1) + str(int(m.group(2))) + m.group(3), e)
-    if re.fullmatch(r"'([+-]?\d+)'", e.strip()):
-        e = str(int(e.strip().strip("'")))
+    e = _fix_nvl(expr, cl)
+    e = re.sub(r"(\bTHEN\s+)('[^']*')", lambda m: m.group(1) + cl(m.group(2)), e, flags=re.I)
+    e = re.sub(r"(\bELSE\s+)('[^']*')", lambda m: m.group(1) + cl(m.group(2)), e, flags=re.I)
+    if re.fullmatch(r"'[^']*'", e.strip()):
+        e = cl(e.strip())
     return e
 
 
 DDL_COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s',
                           open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read(),
                           re.M))
+
+
+import io as _io
+import sys as _sys
+
+_src = open('align_v44.py', encoding='utf-8').read()
+_src = _src.split('# ------------------------------------------------------- alinhamento')[0]
+_ns = {}
+_buf = _io.StringIO()
+_o = _sys.stdout
+_sys.stdout = _buf
+exec(_src, _ns)
+_sys.stdout = _o
+V44 = _ns['v44']
+WIDTH = _ns['width']
+
+
+def col_notice(ref):
+    """'P1 21.28' -> P1_21_28 ; '1.11 (P1)' -> P1_H_1_11"""
+    if '(P1)' in ref:
+        return 'P1_H_' + ref.replace('(P1)', '').strip().replace('.', '_')
+    return 'P1_' + ref.split()[1].replace('.', '_')
+
+
+def col_por_posicao(pos, w):
+    """Coluna deduzida da regua V44: so aceita quando a posicao cai num
+    UNICO campo da notice e esse campo existe na tabela."""
+    campos = [f for f in V44 if f['start'] < pos + w and f['start'] + f['len'] > pos]
+    if len(campos) != 1:
+        return None
+    c = col_notice(campos[0]['ref'])
+    return c if c in DDL_COLS else None
 
 
 def col_of(ref):
@@ -315,7 +401,15 @@ for num, perim, a, b, desc, where in VAR:
     nanch = 0
     nsign = 0
     nhdr = 0
+    npos = 0
+    pos = 0
     for t in toks:
+        w = WIDTH(t['raw'])
+        if w is None:
+            nf = next((f for f in V44 if f['start'] == pos), None)
+            w = nf['len'] if nf else 0
+        off = pos
+        pos += w
         expr = convert(t['raw']).replace(':MASYSDATE', 'p_masysdate')
         if expr.strip().upper() == 'NULL':
             nfill += 1
@@ -335,7 +429,10 @@ for num, perim, a, b, desc, where in VAR:
                 ref = 'en-tete conv.'
                 nhdr += 1
             else:
-                col = None
+                col = col_por_posicao(off, w)
+                if col:
+                    ref = 'position V44'
+                    npos += 1
         if col is None:
             amapear.append((num, seq, t['line'], expr))
             continue
@@ -349,7 +446,7 @@ for num, perim, a, b, desc, where in VAR:
             continue
         seen.add(col)
         ded.append((col, expr, ln, ref))
-    stats.append((num, len(toks), len(ded), nanch + nhdr, nfill, nsign))
+    stats.append((num, len(toks), len(ded), nanch + nhdr, nfill, nsign, npos))
 
     cl = '\n'.join('        %s%s' % (c, ',' if i < len(ded) - 1 else '')
                    for i, (c, _, _, _) in enumerate(ded))
@@ -465,9 +562,9 @@ if dupes:
     print('colunas duplicadas descartadas (2a ocorrencia):', len(dupes))
     for n, c, ln, e in dupes[:10]:
         print('   #%d %s (L%s)' % (n, c, ln))
-print('INSERT | tokens | colunas | ancoradas | fillers | sinais')
-for n, t, c, anc, f, s in stats:
-    print('   #%d   |  %4d  |  %4d   |   %4d    |  %4d   | %4d' % (n, t, c, anc, f, s))
+print('INSERT | tokens | colunas | ancoradas | fillers | sinais | por posicao')
+for n, t, c, anc, f, sg, pp in stats:
+    print('   #%d   |  %4d  |  %4d   |   %4d    |  %4d   | %4d | %4d' % (n, t, c, anc, f, sg, pp))
 print('duplicados __D restantes:',
       sum(1 for b in blocks for _ in re.finditer(r'__D\d', b)))
 
@@ -485,9 +582,9 @@ for _line in _txt.split(chr(10)):
         continue
     _e, _c = _m.group(1).strip(), _m.group(2)
     _t = DDL_TYPES.get(_c, '?')
-    _v = (re.findall(r"THEN\s+('[^']*')", _e, re.I)
-          + re.findall(r"ELSE\s+('[^']*')", _e, re.I)
-          + re.findall(r",\s*('[^']*')\s*\)", _e))
+    _v = (re.findall(r"\bTHEN\s+('[^']*')", _e, re.I)
+          + re.findall(r"\bELSE\s+('[^']*')", _e, re.I)
+          + re.findall(r"\bNVL\s*\([^()]*,\s*('[^']*')\s*\)", _e, re.I))
     if re.fullmatch(r"'[^']*'", _e):
         _v.append(_e)
     if _v and (_t.startswith('NUMBER') or _t == 'DATE'):

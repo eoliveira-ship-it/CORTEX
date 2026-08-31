@@ -5,3 +5,12 @@
 -- Tipos: ALPHA->VARCHAR2(len) | DATE->DATE | NUM->NUMBER(len-signe-separateur, decimais)
 
 =LET(r,ROW(),ref,TRIM(INDEX($E:$E,r)),fmt,UPPER(TRIM(INDEX($T:$T,r))),lng,INDEX($W:$W,r),rule,INDEX($U:$U,r),nm,INDEX($F:$F,r),oc,INDEX($A:$A,r),num,SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(ref,"(P1)",""),"P1","")," ",""),isH,ISNUMBER(SEARCH("(P1)",ref)),col,IF(isH,"P1_H_","P1_")&SUBSTITUTE(num,".","_"),cut,IFERROR(LEFT(rule,SEARCH("cimale",rule)-1),""),cut2,IFERROR(TRIM(LEFT(TRIM(cut),LEN(TRIM(cut))-2)),""),dec,IFERROR(VALUE(TRIM(RIGHT(SUBSTITUTE(cut2," ",REPT(" ",50)),50))),0),sgn,IF(ISNUMBER(SEARCH("signe",rule)),1,0),sep,IF(ISNUMBER(SEARCH("parateur",rule)),1,0),typ,IF(fmt="DATE","DATE",IF(fmt="ALPHA","VARCHAR2("&lng&")",IF(fmt="NUM","NUMBER("&(lng-sgn-sep)&IF(dec>0,","&dec,"")&")","VARCHAR2("&lng&")"))),IF(oc<>"P1","","    "&col&"  "&typ&" ,  -- "&ref&" "&nm))
+
+-- ---------------------------------------------------------------------
+-- Formula 2: origem do campo (V44 vs V45)
+-- Marca quais campos o spool ATUAL consegue alimentar. Os criados na V45
+-- ficam sempre a NULL na tabela ate o spool evoluir (SIRL-1222/1223).
+-- Coluna usada: Y = VERSION DE CREATION.  Esta na notice, coluna BI (61).
+-- ---------------------------------------------------------------------
+
+=LET(r,ROW(),oc,INDEX($A:$A,r),cv,TRIM(INDEX($Y:$Y,r)&""),IF(oc<>"P1","",IF(cv="45","V45 - novo, nao alimentado pelo spool atual","V44 - alimentado pelo spool atual")))

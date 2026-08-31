@@ -29,10 +29,10 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | Ficheiro | Conteúdo |
 |---|---|
 | `ENG_CORP_P1_BIS.sql` | DDL da tabela: 662 colunas P1 + 4 técnicas |
-| `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `TRUNCATE` + 8 `INSERT` |
+| `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` por perímetro + 8 `INSERT` |
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
 | `erro` | Log de compilação Oracle — erros já corrigidos |
-| `excel` | Fórmula Excel que gera o DDL a partir da notice |
+| `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
 | `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
 | `align_v44.py` | Reconstroi a regua V44 e mede o alinhamento posicional |
