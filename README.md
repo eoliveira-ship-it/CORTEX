@@ -33,6 +33,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
 | `erro` | Log de compilação Oracle — erros já corrigidos |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
+| `diag_precisao.sql` | Diagnostico ORA-01438: colunas NUMBER pequenas demais |
 | `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
 | `align_v44.py` | Reconstroi a regua V44 e mede o alinhamento posicional |
