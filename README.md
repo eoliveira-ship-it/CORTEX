@@ -22,6 +22,18 @@ O `spool.sql` implementa a notice **V44.02**; a notice deste repo é **V45.00**.
 Diferença medida: **519 bytes**. Isto invalida o mapeamento automático por posição
 e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 
+## Ordem de execução no Oracle
+
+```
+1. ENG_CORP_P1_BIS.sql           cria a tabela (666 colunas)
+2. verifica_tabela.sql           confirma que ficou certa
+3. pack_alim_tab_envoi_crrv4.sql compila o package
+4. run_procedure.sql             executa a alimentação
+5. test_P_ALIM_ENG_CORP_P1_BIS.sql   volumetria e controlo esperado/inserido
+```
+
+No SQL Developer usar **F5** (Run Script), não F9.
+
 ## Ficheiros
 
 ### Entregáveis (produzidos)
@@ -34,6 +46,8 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | `erro` | Log de compilação/execução Oracle — erros já corrigidos |
 | `tipos` | Tipos reais das colunas de `ENG_CORP_P1` (saída do `diag_tipos.sql`) |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
+| `run_procedure.sql` | Executa a procedure (a chamada pronta a correr) |
+| `verifica_tabela.sql` | Confirma que a tabela criada bate com o DDL |
 | `diag_tipos.sql` | Tipos reais das colunas de origem (dicionario) |
 | `diag_precisao.sql` | Diagnostico ORA-01438: colunas NUMBER pequenas demais |
 | `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
