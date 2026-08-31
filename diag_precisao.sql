@@ -53,22 +53,14 @@ COLUMN colunas_que_estouram FORMAT A150
               THEN 'P1_22_60(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.MNT_IDEMNITE_RES,0)))))) > 16
               THEN 'P1_29_1(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end,0)))))) > 5
               THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 16
-              THEN 'P1_21_30(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 5
-              THEN 'P1_21_43(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.LATITUDE,0)))))) > 2
-              THEN 'P1_21_77(9,7) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.LONGITUDE,0)))))) > 3
-              THEN 'P1_21_78(10,7) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 19
+              THEN 'P1_21_30(21,2) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 15
+              THEN 'P1_21_43(24,9) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR,0)))))) > 4
               THEN 'P1_21_81(9,5) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR_PREC,0)))))) > 4
@@ -134,18 +126,14 @@ UNION ALL
               THEN 'P1_22_60(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.MNT_IDEMNITE_RES,0)))))) > 16
               THEN 'P1_29_1(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end,0)))))) > 5
               THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 16
-              THEN 'P1_21_30(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 5
-              THEN 'P1_21_43(14,9) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 19
+              THEN 'P1_21_30(21,2) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 15
+              THEN 'P1_21_43(24,9) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR,0)))))) > 4
               THEN 'P1_21_81(9,5) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR_PREC,0)))))) > 4
@@ -209,22 +197,14 @@ UNION ALL
               THEN 'P1_22_60(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.MNT_IDEMNITE_RES,0)))))) > 16
               THEN 'P1_29_1(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end,0)))))) > 5
               THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 16
-              THEN 'P1_21_30(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 5
-              THEN 'P1_21_43(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.LATITUDE,0)))))) > 2
-              THEN 'P1_21_77(9,7) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.LONGITUDE,0)))))) > 3
-              THEN 'P1_21_78(10,7) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 19
+              THEN 'P1_21_30(21,2) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 15
+              THEN 'P1_21_43(24,9) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR,0)))))) > 4
               THEN 'P1_21_81(9,5) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR_PREC,0)))))) > 4
@@ -251,16 +231,12 @@ UNION ALL
               THEN 'P1_22_8(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(NVL((C_ENR.MNT_ACQUISITION), 0),0)))))) > 16
               THEN 'P1_22_44(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
               THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 16
-              THEN 'P1_21_30(18,2) ' END
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 19
+              THEN 'P1_21_30(21,2) ' END
            AS colunas_que_estouram
     FROM ENG_CORP_P1 C_ENR
    WHERE A_EXTRAIRE = 'O'
@@ -309,22 +285,14 @@ UNION ALL
               THEN 'P1_22_44(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.MNT_ECH_EN_COURS,0)))))) > 16
               THEN 'P1_22_60(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0),0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0),0)))))) > 5
               THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 16
-              THEN 'P1_21_30(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 5
-              THEN 'P1_21_43(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.LATITUDE,0)))))) > 2
-              THEN 'P1_21_77(9,7) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.LONGITUDE,0)))))) > 3
-              THEN 'P1_21_78(10,7) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(case when C_ENR.MNT_MRTR is not null then C_ENR.MNT_MRTR else NULL end,0)))))) > 19
+              THEN 'P1_21_30(21,2) ' END ||
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ETV_RATIO,0)))))) > 15
+              THEN 'P1_21_43(24,9) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR,0)))))) > 4
               THEN 'P1_21_81(9,5) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_DSCR_PREC,0)))))) > 4
@@ -351,16 +319,12 @@ UNION ALL
               THEN 'P1_22_8(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.NB_TITRES,0)))))) > 10
               THEN 'P1_24_6(12,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
               THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_HIST_POND_PARTICIPATION,0)))))) > 5
-              THEN 'P1_21_60(14,9) ' END
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TX_HIST_POND_PARTICIPATION,0)))))) > 15
+              THEN 'P1_21_60(24,9) ' END
            AS colunas_que_estouram
     FROM ENG_CORP_P1 C_ENR
    WHERE A_EXTRAIRE = 'O'
@@ -379,14 +343,10 @@ UNION ALL
               THEN 'P1_3_20(6,4) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.MNT_CONTRAT_ORIGINE,0)))))) > 16
               THEN 'P1_22_8(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_RESPO_SOLIDAIRE,0)))))) > 16
-              THEN 'P1_31_4(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
-              THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 5
-              THEN 'P1_31_29(14,9) ' END
+              THEN 'P1_31_18(5,0) ' END
            AS colunas_que_estouram
     FROM ENG_CORP_P1 C_ENR
    WHERE A_EXTRAIRE = 'O'
@@ -399,8 +359,6 @@ UNION ALL
               THEN 'P1_4_14(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(NVL((C_ENR.MNT_NOMINAL), 0),0)))))) > 16
               THEN 'P1_3_8(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.SENS_TRANSACTION,0)))))) > 1
-              THEN 'P1_3_7(1,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(NVL((C_ENR.MNT_MTM), 0),0)))))) > 16
               THEN 'P1_3_80(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(NVL((C_ENR.MT_ASSIETE_INTERNE), 0),0)))))) > 16
@@ -413,36 +371,12 @@ UNION ALL
               THEN 'P1_3_86(18,2) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(ABS(TRUNC(NVL(C_ENR.MT_SPREAD, 0))),0)))))) > 16
               THEN 'P1_3_10(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.DEV_NOTIONNEL_ACH,0)))))) > 16
-              THEN 'P1_3_12(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.UNITE_QUANTITE_RECUE,0)))))) > 16
-              THEN 'P1_20_3(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.UNITE_QUANTITE_LIVREE,0)))))) > 16
-              THEN 'P1_10_4(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(upper(C_ENR.METH_NOT_ORI),0)))))) > 16
+         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(97,0)))))) > 16
               THEN 'P1_22_8(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_ECH_FOUR,0)))))) > 4
-              THEN 'P1_22_13(9,5) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then NULL ELSE C_ENR.CD_MOTIF_SCO_LC0267 END,0)))))) > 4
-              THEN 'P1_22_73(9,5) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.ELIGIB_PRUDENT_VAL,0)))))) > 10
-              THEN 'P1_24_6(12,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.TYPE_CTT_CADDRE,0)))))) > 16
-              THEN 'P1_30_4(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.CD_DEV_MNT_CCNE_JB_VENDUE,0)))))) > 16
-              THEN 'P1_30_14(18,2) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.CD_DEV_MNT_CCNE_JB_ACHETEE,0)))))) > 4
-              THEN 'P1_30_17(9,5) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.CD_BASE_CALCUL_INT_RECU,0)))))) > 4
-              THEN 'P1_30_20(9,5) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.CD_PAYS_BIEN_FINAN,0)))))) > 5
-              THEN 'P1_31_14(14,9) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
               THEN 'P1_31_17(5,0) ' END ||
          CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(0,0)))))) > 5
-              THEN 'P1_31_18(5,0) ' END ||
-         CASE WHEN MAX(LENGTH(TO_CHAR(TRUNC(ABS(NVL(C_ENR.IND_GAR_SANS_LIMITE,0)))))) > 16
-              THEN 'P1_29_3(18,2) ' END
+              THEN 'P1_31_18(5,0) ' END
            AS colunas_que_estouram
     FROM ENG_CORP_P1 C_ENR
    WHERE A_EXTRAIRE = 'O'
