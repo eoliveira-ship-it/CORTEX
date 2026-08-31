@@ -63,7 +63,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_3_16    VARCHAR2(1)    , -- P1 3.16     ALPHA/1  Indicateur accord de netting prudentiel
     P1_3_17    VARCHAR2(25)   , -- P1 3.17     ALPHA/25  Référence du contrat de netting prudentiel
     P1_3_19    VARCHAR2(3)    , -- P1 3.19     ALPHA/3  Devise de règlement de l'accord de netting prudentiel
-    P1_3_20    NUMBER(6,4)    , -- P1 3.20     NUM/6 6 dont 4 décimales  Maturité résiduelle
+    P1_3_20    NUMBER(12,4)    , -- P1 3.20     NUM/6 6 dont 4 décimales  Maturité résiduelle
     P1_3_31    VARCHAR2(12)   , -- P1 3.31     ALPHA/12  Zone libre (Ex PCCO – Nominal)
     P1_3_32    VARCHAR2(2)    , -- P1 3.32     ALPHA/2  Rôle du Tiers dans l'opération d'affacturage
     P1_3_33    VARCHAR2(2)    , -- P1 3.33     ALPHA/2  Nature d'OPCVM Garanti

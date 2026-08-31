@@ -251,6 +251,26 @@ def tipo_compativel(expr, col):
     return True
 
 
+INT_DEC = re.compile(r'^ABS\s*\(\s*TRUNC\s*\((.*)\)\s*\)$', re.I | re.S)
+DEC_PART = re.compile(r'^ABS\s*\(\s*MOD\s*\((.*?)\s*\*\s*10000\s*,\s*10000\s*\)\s*\)$',
+                      re.I | re.S)
+
+
+def par_int_dec(expr, prox):
+    """O spool escreve alguns campos em DOIS pedacos: a parte inteira
+    LPAD(ABS(TRUNC(x)),2,'0') seguida da decimal
+    LPAD(ABS(MOD(x*10000,10000)),4,'0'). Sao um so campo, e o valor e x.
+    Devolve x quando reconhece o par, senao None."""
+    m1 = INT_DEC.match(expr.strip())
+    if not m1 or prox is None:
+        return None
+    m2 = DEC_PART.match(prox.strip())
+    if not m2:
+        return None
+    a, b = m1.group(1).strip(), m2.group(1).strip()
+    return a if a == b else None
+
+
 def col_notice(ref):
     """'P1 21.28' -> P1_21_28 ; '1.11 (P1)' -> P1_H_1_11"""
     if '(P1)' in ref:
@@ -436,15 +456,25 @@ for num, perim, a, b, desc, where in VAR:
     nsign = 0
     nhdr = 0
     npos = 0
+    npar = 0
     pos = 0
-    for t in toks:
+    convertidos = [convert(x['raw']).replace(':MASYSDATE', 'p_masysdate') for x in toks]
+    saltar = set()
+    for k in range(len(toks) - 1):
+        if par_int_dec(convertidos[k], convertidos[k + 1]):
+            convertidos[k] = par_int_dec(convertidos[k], convertidos[k + 1])
+            saltar.add(k + 1)
+            npar += 1
+    for k, t in enumerate(toks):
         w = WIDTH(t['raw'])
         if w is None:
             nf = next((f for f in V44 if f['start'] == pos), None)
             w = nf['len'] if nf else 0
         off = pos
         pos += w
-        expr = convert(t['raw']).replace(':MASYSDATE', 'p_masysdate')
+        expr = convertidos[k]
+        if k in saltar:
+            continue
         if expr.strip().upper() == 'NULL':
             nfill += 1
             continue
@@ -484,6 +514,8 @@ for num, perim, a, b, desc, where in VAR:
         seen.add(col)
         ded.append((col, expr, ln, ref))
     stats.append((num, len(toks), len(ded), nanch + nhdr, nfill, nsign, npos))
+    if npar:
+        print('   #%d: %d campos reunidos (parte inteira + decimal)' % (num, npar))
 
     cl = '\n'.join('        %s%s' % (c, ',' if i < len(ded) - 1 else '')
                    for i, (c, _, _, _) in enumerate(ded))

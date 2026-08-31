@@ -9,7 +9,7 @@ def split_args(s):
         cur+=ch
     out.append(cur); return out
 
-FN=re.compile(r'\b(pack_utilitaire\.[A-Za-z0-9_]+|RPAD|LPAD|TO_CHAR|NVL|F_FORMAT_[A-Za-z0-9_]+)\s*\(', re.I)
+FN=re.compile(r'\b(pack_utilitaire\.[A-Za-z0-9_]+|RPAD|LPAD|TO_CHAR|NVL|SUBSTR|F_FORMAT_[A-Za-z0-9_]+)\s*\(', re.I)
 BLANK=re.compile(r"^'\s*'$")
 ZERO =re.compile(r"^'[+-]?0+([.,]0+)?'$")
 
@@ -33,6 +33,16 @@ def conv(t):
 def handle(fname,args):
     f=fname.upper().replace('PACK_UTILITAIRE.','')
     a=[x.strip() for x in args]
+    if f == 'SUBSTR':
+        # SUBSTR sobre uma funcao de formato faz parte da FORMATACAO: o spool
+        # corta a string ja formatada para caber no campo (ex.
+        # Substr(F_FORMAT_TAUX(x),4,6) = 2 inteiros + 4 decimais). Retirar so
+        # a funcao interna deixava um SUBSTR a fatiar digitos de um numero,
+        # o que nao tem sentido: retiram-se os dois.
+        if a and re.match(r'^(pack_utilitaire\.)?F_FORMAT_[A-Za-z0-9_]*\s*\(', a[0], re.I):
+            interno = a[0][a[0].index('(') + 1:a[0].rindex(')')]
+            return conv(interno)
+        return 'SUBSTR(' + ', '.join(conv(x) for x in a) + ')'
     if f in ('RPAD','LPAD'):
         if not a: return 'NULL'
         if BLANK.match(a[0]): return 'NULL'
