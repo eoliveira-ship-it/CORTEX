@@ -1,16 +1,22 @@
-deu erro no oracle
+deu erro no oracle na hora que vou correr a procedure
 
-Package PACK_ALIM_TAB_ENVOI_CRRV4_NEW compiled
-
-
-Package Body PACK_ALIM_TAB_ENVOI_CRRV4_NEW compiled
-
-LINE/COL  ERROR
---------- -------------------------------------------------------------
-13034/5   PL/SQL: SQL Statement ignored
-13129/127 PL/SQL: ORA-00932: inconsistent datatypes: expected NUMBER got CHAR
-13180/5   PL/SQL: SQL Statement ignored
-13251/127 PL/SQL: ORA-00932: inconsistent datatypes: expected NUMBER got CHAR
-13292/5   PL/SQL: SQL Statement ignored
-13373/127 PL/SQL: ORA-00932: inconsistent datatypes: expected NUMBER got CHAR
-Errors: check compiler log
+Error starting at line : 26 in command -
+DECLARE
+    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou un CD_CONSO_CPT precis
+    v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');
+    v_t0        TIMESTAMP := SYSTIMESTAMP;
+BEGIN
+    -- p_perimetre : 'NAT02' (M2 BTR) | 'HORS_NAT02' (apres compta) | 'TOTAL'
+    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, 'TOTAL');
+    DBMS_OUTPUT.PUT_LINE('OK - duree : '||TO_CHAR(SYSTIMESTAMP - v_t0));
+END;
+Error report -
+ORA-01438: value larger than specified precision allowed for this column
+ORA-06512: at "DDREX.PACK_ALIM_TAB_ENVOI_CRRV4_NEW", line 13053
+ORA-06512: at line 7
+01438. 00000 -  "value larger than specified precision allowed for this column"
+*Cause:    When inserting or updating records, a numeric value was entered
+           that exceeded the precision defined for the column.
+*Action:   Enter a value that complies with the numeric column's precision,
+           or use the MODIFY option with the ALTER TABLE command to expand
+           the precision.
