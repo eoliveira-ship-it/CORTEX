@@ -218,6 +218,39 @@ V44 = _ns['v44']
 WIDTH = _ns['width']
 
 
+ORIG_TIPOS = {}
+try:
+    for _l in open('tipos', encoding='utf-8', errors='replace'):
+        _p = _l.rstrip(chr(10)).split(chr(9))
+        if len(_p) >= 2 and _p[0].strip():
+            ORIG_TIPOS[_p[0].strip().upper()] = _p[1].strip()
+except IOError:
+    pass
+
+
+def fontes_valor(expr):
+    """Colunas de origem em posicao de VALOR (as condicoes WHEN..THEN
+    nao contam: um CASE pode testar uma coluna de texto e devolver um
+    numero)."""
+    e = re.sub(r'\bWHEN\b.*?\bTHEN\b', ' THEN ', expr, flags=re.I | re.S)
+    return set(x.upper() for x in re.findall(r'C_ENR\.([A-Za-z0-9_]+)', e))
+
+
+def tipo_compativel(expr, col):
+    """Recusa alimentar uma coluna NUMBER/DATE a partir de uma origem de
+    texto: daria ORA-01722 em execucao. Sem o ficheiro 'tipos' nao se
+    valida nada (devolve True)."""
+    if not ORIG_TIPOS:
+        return True
+    dest = DDL_TYPES.get(col, '')
+    if not (dest.startswith('NUMBER') or dest == 'DATE'):
+        return True
+    for f in fontes_valor(expr):
+        if ORIG_TIPOS.get(f) in ('VARCHAR2', 'CHAR', 'NVARCHAR2'):
+            return False
+    return True
+
+
 def col_notice(ref):
     """'P1 21.28' -> P1_21_28 ; '1.11 (P1)' -> P1_H_1_11"""
     if '(P1)' in ref:
@@ -393,6 +426,7 @@ stats = []
 blocks = []
 amapear = []
 dupes = []
+incompativeis = []
 for num, perim, a, b, desc, where in VAR:
     toks = tokenize(a, b)
     items = []
@@ -433,6 +467,9 @@ for num, perim, a, b, desc, where in VAR:
                 if col:
                     ref = 'position V44'
                     npos += 1
+        if col is not None and not tipo_compativel(expr, col):
+            incompativeis.append((num, col, DDL_TYPES.get(col, ''), t['line'], expr))
+            col = None
         if col is None:
             amapear.append((num, seq, t['line'], expr))
             continue
@@ -558,6 +595,14 @@ for n, sq, ln, e in amapear:
     inv.append('| #%d | %d | L%s | `%s` |' % (n, sq, ln, e.replace('|', chr(92)+'|')))
 open('docs/posicoes-a-mapear.md', 'w', encoding='utf-8').write(chr(10).join(inv) + chr(10))
 print('posicoes por mapear:', len(amapear), '-> docs/posicoes-a-mapear.md')
+if incompativeis:
+    _u = {}
+    for _n, _c, _t, _l, _e in incompativeis:
+        _u.setdefault(_c, (_t, _l, _e))
+    print('recusadas por tipo (origem texto -> coluna %s): %d posicoes, %d colunas'
+          % ('NUMBER/DATE', len(incompativeis), len(_u)))
+    for _c, (_t, _l, _e) in sorted(_u.items()):
+        print('   %-12s %-13s L%-6s %s' % (_c, _t, _l, _e[:44]))
 if dupes:
     print('colunas duplicadas descartadas (2a ocorrencia):', len(dupes))
     for n, c, ln, e in dupes[:10]:

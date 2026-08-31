@@ -116,13 +116,13 @@ SELECT COUNT(*) AS insere FROM ENG_CORP_P1_BIS;
 --    Les colonnes non mappees (docs/posicoes-a-mapear.md) sont NULL : normal.
 SELECT COUNT(*) AS lignes,
        COUNT(P1_10_2) AS P1_10_2,
-       COUNT(P1_10_4) AS P1_10_4,
        COUNT(P1_11_1) AS P1_11_1,
        COUNT(P1_12_1) AS P1_12_1,
        COUNT(P1_13_10) AS P1_13_10,
        COUNT(P1_15_1) AS P1_15_1,
        COUNT(P1_15_2) AS P1_15_2,
        COUNT(P1_18_1) AS P1_18_1,
+       COUNT(P1_18_10) AS P1_18_10,
        COUNT(CD_PERIMETRE) AS CD_PERIMETRE
   FROM ENG_CORP_P1_BIS;
 

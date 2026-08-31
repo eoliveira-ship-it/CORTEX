@@ -8,6 +8,8 @@
 --           p = long - signe - separateur ; s = nb decimales (col 21)
 --           Champ vide dans le spool => NULL
 -- Sans cle : pas de PRIMARY KEY (table de travail / historisation)
+-- 3 colonnes ELARGIES par rapport a la notice : la precision de la notice
+-- borne le FICHIER, pas la valeur stockee. Voir docs/SIRL-1224.md.
 -- Champs   : 662 P1 (642 corps + 20 en-tete) + 4 techniques
 -- =====================================================================
 
@@ -315,7 +317,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_21_27   VARCHAR2(1)    , -- P1 21.27    ALPHA/1  Indicateur de moratoire contractuel
     P1_21_28   VARCHAR2(2)    , -- P1 21.28    ALPHA/2  Champ d'application du moratoire
     P1_21_29   NUMBER(5)      , -- P1 21.29    NUM/6 6 dont signe  Durée du moratoire
-    P1_21_30   NUMBER(18,2)   , -- P1 21.30    NUM/19 19 dont signe et 2 décimales  Montant des échéances reporté
+    P1_21_30   NUMBER(21,2)   , -- P1 21.30    NUM/19 19 dont signe et 2 décimales  Montant des échéances reporté
     P1_21_31   VARCHAR2(3)    , -- P1 21.31    ALPHA/3  Devise du montant des échéances reportées
     P1_21_32   VARCHAR2(15)   , -- P1 21.32    ALPHA/15  Méthode de convention des taux sans risque (RFR)
     P1_21_33   VARCHAR2(3)    , -- P1 21.33    ALPHA/3  Durée de convention des taux sans risque (RFR)
@@ -328,7 +330,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_21_40   VARCHAR2(1)    , -- P1 21.40    ALPHA/1  Réalisation des conditions de pondération préférentielle
     P1_21_41   VARCHAR2(1)    , -- P1 21.41    ALPHA/1  Indicateur de dépôt en espèces substantiel
     P1_21_42   VARCHAR2(1)    , -- P1 21.42    ALPHA/1  Indicateur d'apport en fonds propres substantiels
-    P1_21_43   NUMBER(14,9)   , -- P1 21.43    NUM/15 15 dont signe et 9 décimales  Ratio prudentiel d'Exposition
+    P1_21_43   NUMBER(24,9)   , -- P1 21.43    NUM/15 15 dont signe et 9 décimales  Ratio prudentiel d'Exposition
     P1_21_44   VARCHAR2(1)    , -- P1 21.44    ALPHA/1  Indicateur d'exposition de qualité élevée
     P1_21_45   VARCHAR2(1)    , -- P1 21.45    ALPHA/1  Indicateur de la phase opérationnelle du projet financé
     P1_21_46   VARCHAR2(1)    , -- P1 21.46    ALPHA/1  Indicateur de conformité des critères opérationnels du pr
@@ -345,7 +347,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_21_57   VARCHAR2(1)    , -- P1 21.57    ALPHA/1  Indicateur d'investissement en Capital Risque
     P1_21_58   VARCHAR2(1)    , -- P1 21.58    ALPHA/1  Indicateur d'investissement dans un programme législatif
     P1_21_59   VARCHAR2(1)    , -- P1 21.59    ALPHA/1  Indicateur de participation stratégique depuis plus de 6 
-    P1_21_60   NUMBER(14,9)   , -- P1 21.60    NUM/15 15 dont signe et 9 décimales  Taux historique de pondératio
+    P1_21_60   NUMBER(24,9)   , -- P1 21.60    NUM/15 15 dont signe et 9 décimales  Taux historique de pondératio
     P1_21_61   NUMBER(9,5)    , -- P1 21.61    NUM/10 10 dont signe et 5 décimales  Perte en cas de défaut (LGD) 
     P1_21_62   NUMBER(9,5)    , -- P1 21.62    NUM/10 10 dont signe et 5 décimales  Perte en cas de défaut (LGD) 
     P1_21_63   NUMBER(18,2)   , -- P1 21.63    NUM/19 19 dont signe et 2 décimales  Montant d'encours pour la par

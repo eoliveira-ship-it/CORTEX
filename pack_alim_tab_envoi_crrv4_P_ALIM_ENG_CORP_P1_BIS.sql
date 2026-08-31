@@ -109,7 +109,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #1  (standard NAT02 - spool L590)
-    --   colonnes : 190 (dont 57 ancrees --P1) | 178 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 186 (dont 57 ancrees --P1) | 178 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -263,12 +263,10 @@ BEGIN
         P1_29_2,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_22,
         P1_21_23,
@@ -296,8 +294,6 @@ BEGIN
         P1_21_74,
         P1_21_75,
         P1_21_76,
-        P1_21_77,
-        P1_21_78,
         P1_21_80,
         P1_21_81,
         P1_21_82,
@@ -456,12 +452,10 @@ BEGIN
         C_ENR.CD_DEV_MNT_INDEMNITE                                 AS P1_29_2,  -- L870 [position V44]
         'N'                                                        AS P1_30_22,  -- L878 [position V44]
         'N'                                                        AS P1_30_24,  -- L883 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L890 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L891 [position V44]
         case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end AS P1_31_17,  -- L904 [P1 31.17]
         case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end AS P1_31_18,  -- L909 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L917 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L931 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L935 [P1 29.4]
         C_ENR.MOTIF_MRTR                                           AS P1_21_22,  -- L984 [P1 21.22]
         C_ENR.DT_DEBUT_MRTR                                        AS P1_21_23,  -- L985 [P1 21.23]
@@ -489,8 +483,6 @@ BEGIN
         C_ENR.TYPE_VOIE                                            AS P1_21_74,  -- L1042 [P1 21.74]
         C_ENR.LIB_VOIE                                             AS P1_21_75,  -- L1043 [P1 21.75]
         C_ENR.LIEU_DIT                                             AS P1_21_76,  -- L1044 [P1 21.76]
-        C_ENR.LATITUDE                                             AS P1_21_77,  -- L1045 [P1 21.77]
-        C_ENR.LONGITUDE                                            AS P1_21_78,  -- L1046 [P1 21.78]
         C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE                        AS P1_21_80,  -- L1050 [P1 21.80]
         C_ENR.TX_DSCR                                              AS P1_21_81,  -- L1051 [P1 21.81]
         C_ENR.TX_DSCR_PREC                                         AS P1_21_82,  -- L1052 [P1 21.82]
@@ -509,7 +501,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #2  (NAT02 arriere='Y' solde - spool L1089)
-    --   colonnes : 182 (dont 40 ancrees --P1) | 188 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 180 (dont 40 ancrees --P1) | 188 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -665,12 +657,10 @@ BEGIN
         P1_29_2,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_22,
         P1_21_23,
@@ -850,12 +840,10 @@ BEGIN
         C_ENR.CD_DEV_MNT_INDEMNITE                                 AS P1_29_2,  -- L1376 [position V44]
         'N'                                                        AS P1_30_22,  -- L1385 [position V44]
         'N'                                                        AS P1_30_24,  -- L1390 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L1397 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L1398 [position V44]
         case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end AS P1_31_17,  -- L1411 [P1 31.17]
         case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end AS P1_31_18,  -- L1416 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L1424 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L1438 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L1442 [P1 29.4]
         C_ENR.MOTIF_MRTR                                           AS P1_21_22,  -- L1491 [P1 21.22]
         C_ENR.DT_DEBUT_MRTR                                        AS P1_21_23,  -- L1492 [P1 21.23]
@@ -893,7 +881,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #3  (NAT02 arriere='Y' CRD/VR - spool L1592)
-    --   colonnes : 191 (dont 50 ancrees --P1) | 179 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 187 (dont 50 ancrees --P1) | 179 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -1048,12 +1036,10 @@ BEGIN
         P1_29_2,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_22,
         P1_21_23,
@@ -1081,8 +1067,6 @@ BEGIN
         P1_21_74,
         P1_21_75,
         P1_21_76,
-        P1_21_77,
-        P1_21_78,
         P1_21_80,
         P1_21_81,
         P1_21_82,
@@ -1242,12 +1226,10 @@ BEGIN
         C_ENR.CD_DEV_MNT_INDEMNITE                                 AS P1_29_2,  -- L1870 [position V44]
         'N'                                                        AS P1_30_22,  -- L1879 [position V44]
         'N'                                                        AS P1_30_24,  -- L1884 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L1891 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L1892 [position V44]
         case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end AS P1_31_17,  -- L1905 [P1 31.17]
         case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) else 0 end AS P1_31_18,  -- L1910 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L1918 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L1932 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L1936 [P1 29.4]
         C_ENR.MOTIF_MRTR                                           AS P1_21_22,  -- L1985 [P1 21.22]
         C_ENR.DT_DEBUT_MRTR                                        AS P1_21_23,  -- L1986 [P1 21.23]
@@ -1275,8 +1257,6 @@ BEGIN
         C_ENR.TYPE_VOIE                                            AS P1_21_74,  -- L2043 [P1 21.74]
         C_ENR.LIB_VOIE                                             AS P1_21_75,  -- L2044 [P1 21.75]
         C_ENR.LIEU_DIT                                             AS P1_21_76,  -- L2045 [P1 21.76]
-        C_ENR.LATITUDE                                             AS P1_21_77,  -- L2046 [P1 21.77]
-        C_ENR.LONGITUDE                                            AS P1_21_78,  -- L2047 [P1 21.78]
         C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE                        AS P1_21_80,  -- L2051 [P1 21.80]
         C_ENR.TX_DSCR                                              AS P1_21_81,  -- L2052 [P1 21.81]
         C_ENR.TX_DSCR_PREC                                         AS P1_21_82,  -- L2053 [P1 21.82]
@@ -1300,7 +1280,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #4  (Hors-NAT TRE100 - spool L2894)
-    --   colonnes : 96 (dont 27 ancrees --P1) | 382 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 94 (dont 27 ancrees --P1) | 382 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -1379,12 +1359,10 @@ BEGIN
         P1_27_4,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_22,
         P1_21_23,
@@ -1478,12 +1456,10 @@ BEGIN
         C_ENR.MOTIF_EXCLU_ANACREDIT                                AS P1_27_4,  -- L3293 [position V44]
         'N'                                                        AS P1_30_22,  -- L3306 [position V44]
         'N'                                                        AS P1_30_24,  -- L3311 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L3318 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L3319 [position V44]
         0                                                          AS P1_31_17,  -- L3327 [P1 31.17]
         0                                                          AS P1_31_18,  -- L3329 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L3334 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L3341 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L3346 [P1 29.4]
         C_ENR.MOTIF_MRTR                                           AS P1_21_22,  -- L3365 [P1 21.22]
         C_ENR.DT_DEBUT_MRTR                                        AS P1_21_23,  -- L3366 [P1 21.23]
@@ -1509,7 +1485,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #5  (Hors-NAT TRE2/TRE4/TRE5 - spool L3462)
-    --   colonnes : 179 (dont 59 ancrees --P1) | 219 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 175 (dont 59 ancrees --P1) | 219 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -1652,12 +1628,10 @@ BEGIN
         P1_28_2,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_22,
         P1_21_23,
@@ -1686,8 +1660,6 @@ BEGIN
         P1_21_74,
         P1_21_75,
         P1_21_76,
-        P1_21_77,
-        P1_21_78,
         P1_21_81,
         P1_21_82,
         P1_21_86,
@@ -1834,12 +1806,10 @@ BEGIN
         C_ENR.IND_SPONSOR_FIN                                      AS P1_28_2,  -- L3808 [position V44]
         'N'                                                        AS P1_30_22,  -- L3820 [position V44]
         'N'                                                        AS P1_30_24,  -- L3825 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L3832 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L3833 [position V44]
         NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) AS P1_31_17,  -- L3846 [P1 31.17]
         NVL(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30), 0) AS P1_31_18,  -- L3848 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L3853 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L3867 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L3871 [P1 29.4]
         C_ENR.MOTIF_MRTR                                           AS P1_21_22,  -- L3926 [P1 21.22]
         C_ENR.DT_DEBUT_MRTR                                        AS P1_21_23,  -- L3927 [P1 21.23]
@@ -1868,8 +1838,6 @@ BEGIN
         C_ENR.TYPE_VOIE                                            AS P1_21_74,  -- L3984 [P1 21.74]
         C_ENR.LIB_VOIE                                             AS P1_21_75,  -- L3985 [P1 21.75]
         C_ENR.LIEU_DIT                                             AS P1_21_76,  -- L3986 [P1 21.76]
-        C_ENR.LATITUDE                                             AS P1_21_77,  -- L3987 [P1 21.77]
-        C_ENR.LONGITUDE                                            AS P1_21_78,  -- L3988 [P1 21.78]
         C_ENR.TX_DSCR                                              AS P1_21_81,  -- L3993 [P1 21.81]
         C_ENR.TX_DSCR_PREC                                         AS P1_21_82,  -- L3994 [P1 21.82]
         C_ENR.CD_TYPE_BIEN_COMM                                    AS P1_21_86,  -- L3998 [P1 21.86]
@@ -1884,7 +1852,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #6  (Hors-NAT EQU101 - spool L4026)
-    --   colonnes : 101 (dont 28 ancrees --P1) | 405 fillers -> NULL | 2 signes absorbes par le NUMBER
+    --   colonnes : 99 (dont 28 ancrees --P1) | 405 fillers -> NULL | 2 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -1970,12 +1938,10 @@ BEGIN
         P1_27_4,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_46,
         P1_21_57,
@@ -2074,12 +2040,10 @@ BEGIN
         C_ENR.MOTIF_EXCLU_ANACREDIT                                AS P1_27_4,  -- L4422 [P1 27.4]
         'N'                                                        AS P1_30_22,  -- L4433 [position V44]
         'N'                                                        AS P1_30_24,  -- L4438 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L4445 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L4446 [position V44]
         0                                                          AS P1_31_17,  -- L4454 [P1 31.17]
         0                                                          AS P1_31_18,  -- L4456 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L4461 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L4468 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L4473 [P1 29.4]
         C_ENR.IND_CONF_CRIT_OPE                                    AS P1_21_46,  -- L4539 [P1 21.46]
         C_ENR.IND_INVEST_CAPITAL_RISQ                              AS P1_21_57,  -- L4547 [P1 21.57]
@@ -2103,7 +2067,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #7  (Hors-NAT SIG201/INR101 - spool L4606)
-    --   colonnes : 100 (dont 23 ancrees --P1) | 259 fillers -> NULL | 2 signes absorbes par le NUMBER
+    --   colonnes : 98 (dont 23 ancrees --P1) | 259 fillers -> NULL | 2 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -2190,12 +2154,10 @@ BEGIN
         P1_27_4,
         P1_30_22,
         P1_30_24,
-        P1_31_4,
         P1_31_5,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_31_29,
         P1_29_4,
         P1_21_46,
         P1_21_38,
@@ -2293,12 +2255,10 @@ BEGIN
         C_ENR.MOTIF_EXCLU_ANACREDIT                                AS P1_27_4,  -- L4864 [position V44]
         'N'                                                        AS P1_30_22,  -- L4877 [position V44]
         'N'                                                        AS P1_30_24,  -- L4882 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_4,  -- L4889 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_5,  -- L4890 [position V44]
         0                                                          AS P1_31_17,  -- L4898 [P1 31.17]
         0                                                          AS P1_31_18,  -- L4900 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L4906 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_29,  -- L4912 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L4917 [P1 29.4]
         C_ENR.IND_CONF_CRIT_OPE                                    AS P1_21_46,  -- L4995 [P1 21.46]
         C_ENR.IND_IPRE                                             AS P1_21_38,  -- L4996 [P1 21.38]
@@ -2320,7 +2280,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #8  (Hors-NAT VAR1 - spool L5061)
-    --   colonnes : 116 (dont 35 ancrees --P1) | 318 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 102 (dont 35 ancrees --P1) | 318 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -2356,7 +2316,6 @@ BEGIN
         P1_3_9,
         P1_3_31,
         P1_12_1,
-        P1_3_7,
         P1_2_99,
         P1_3_80,
         P1_3_81,
@@ -2386,50 +2345,37 @@ BEGIN
         P1_3_76,
         P1_3_77,
         P1_3_10,
-        P1_3_12,
         P1_8_2,
         P1_10_2,
         P1_8_1,
         P1_8_11,
         P1_8_12,
-        P1_20_3,
-        P1_10_4,
         P1_22_56,
         P1_22_57,
         P1_22_52,
         P1_22_54,
         P1_22_8,
         P1_22_9,
-        P1_22_13,
         P1_22_16,
-        P1_22_38,
         P1_22_66,
-        P1_22_73,
         P1_22_72,
         P1_23_3,
         P1_23_7,
-        P1_24_6,
         P1_24_3,
         P1_24_20,
         P1_24_23,
         P1_24_24,
         P1_26_99,
         P1_27_99,
-        P1_30_4,
-        P1_30_14,
-        P1_30_17,
-        P1_30_20,
         P1_30_22,
         P1_30_23,
         P1_30_26,
         P1_31_2,
         P1_31_8,
         P1_31_9,
-        P1_31_14,
         P1_31_17,
         P1_31_18,
         P1_31_22,
-        P1_29_3,
         P1_29_4,
         P1_50_2,
         P1_21_46,
@@ -2475,7 +2421,6 @@ BEGIN
         C_ENR.CD_DEVISE_NOMINAL                                    AS P1_3_9,  -- L5213 [position V44]
         C_ENR.PCCO_NOMINAL                                         AS P1_3_31,  -- L5214 [position V44]
         C_ENR.NATURE_PROD_SS_JACENT                                AS P1_12_1,  -- L5215 [position V44]
-        C_ENR.SENS_TRANSACTION                                     AS P1_3_7,  -- L5216 [position V44]
         C_ENR.CD_METH_IFRS9_PD_ORIG                                AS P1_2_99,  -- L5222 [P1 2.99]
         NVL((C_ENR.MNT_MTM), 0)                                    AS P1_3_80,  -- L5223 [position V44]
         C_ENR.CD_DEVISE_MTM                                        AS P1_3_81,  -- L5225 [position V44]
@@ -2505,50 +2450,37 @@ BEGIN
         C_ENR.IND_DENOUEMENT_CDS                                   AS P1_3_76,  -- L5348 [position V44]
         C_ENR.IND_ELLIGIBILITE_CVA                                 AS P1_3_77,  -- L5349 [position V44]
         ABS(TRUNC(NVL(C_ENR.MT_SPREAD, 0)))                        AS P1_3_10,  -- L5357 [position V44]
-        C_ENR.DEV_NOTIONNEL_ACH                                    AS P1_3_12,  -- L5360 [position V44]
         C_ENR.TYPE_SWAP                                            AS P1_8_2,  -- L5363 [position V44]
         C_ENR.IND_CALL_PUT                                         AS P1_10_2,  -- L5365 [P1 10.2]
         C_ENR.TYPE_TAUX_PAYE                                       AS P1_8_1,  -- L5366 [P1 8.1]
         C_ENR.TYPE_TAUX_RECU                                       AS P1_8_11,  -- L5368 [P1 8.11]
         C_ENR.REF_TAUX_RECU                                        AS P1_8_12,  -- L5369 [P1 8.12]
-        C_ENR.UNITE_QUANTITE_RECUE                                 AS P1_20_3,  -- L5371 [position V44]
-        C_ENR.UNITE_QUANTITE_LIVREE                                AS P1_10_4,  -- L5373 [position V44]
         C_ENR.IND_PROD_ECH                                         AS P1_22_56,  -- L5380 [P1 22.56]
         C_ENR.IND_OBJ_MET_PAL                                      AS P1_22_57,  -- L5382 [P1 22.57]
         'ND'                                                       AS P1_22_52,  -- L5386 [position V44]
         C_ENR.ORGA_NOTATION_ORIG                                   AS P1_22_54,  -- L5388 [position V44]
-        upper(C_ENR.METH_NOT_ORI)                                  AS P1_22_8,  -- L5394 [position V44]
+        97                                                         AS P1_22_8,  -- L5395 [position V44]
         NVL(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR')                  AS P1_22_9,  -- L5397 [P1 22.9]
-        C_ENR.IND_ECH_FOUR                                         AS P1_22_13,  -- L5398 [position V44]
         C_ENR.TYPE_AMOR_CAP                                        AS P1_22_16,  -- L5402 [P1 22.16]
-        C_ENR.IND_RMB_ANTICIPE                                     AS P1_22_38,  -- L5404 [position V44]
         C_ENR.CD_PAYS_JURIDICTION                                  AS P1_22_66,  -- L5411 [P1 22.66]
-        CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then NULL ELSE C_ENR.CD_MOTIF_SCO_LC0267 END AS P1_22_73,  -- L5414 [position V44]
         C_ENR.BUCKET_IFRS9                                         AS P1_22_72,  -- L5416 [P1 22.72]
         C_ENR.ELI_OUT_MUT_PROV                                     AS P1_23_3,  -- L5418 [position V44]
         C_ENR.CLA_COMP_ACT_IFRS9                                   AS P1_23_7,  -- L5424 [position V44]
-        C_ENR.ELIGIB_PRUDENT_VAL                                   AS P1_24_6,  -- L5434 [position V44]
         C_ENR.HIERARCHIE_JUSTE_VALEUR                              AS P1_24_3,  -- L5441 [P1 24.3]
         C_ENR.IND_BCK_TO_BCK                                       AS P1_24_20,  -- L5444 [P1 24.20]
         C_ENR.INTENTION_COUVERTURE                                 AS P1_24_23,  -- L5446 [P1 24.23]
         C_ENR.TYPE_REL_COUVERTURE                                  AS P1_24_24,  -- L5447 [P1 24.24]
         C_ENR.IND_MOBIL_ACTIF                                      AS P1_26_99,  -- L5450 [position V44]
         NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS P1_27_99,  -- L5459 [position V44]
-        C_ENR.TYPE_CTT_CADDRE                                      AS P1_30_4,  -- L5466 [position V44]
-        C_ENR.CD_DEV_MNT_CCNE_JB_VENDUE                            AS P1_30_14,  -- L5471 [position V44]
-        C_ENR.CD_DEV_MNT_CCNE_JB_ACHETEE                           AS P1_30_17,  -- L5473 [position V44]
-        C_ENR.CD_BASE_CALCUL_INT_RECU                              AS P1_30_20,  -- L5477 [position V44]
         C_ENR.CD_BASE_CALCUL_INT_PAYE                              AS P1_30_22,  -- L5481 [position V44]
         'N'                                                        AS P1_30_23,  -- L5486 [P1 30.23]
         'N'                                                        AS P1_30_26,  -- L5490 [position V44]
         C_ENR.FINALITE_OPERATION                                   AS P1_31_2,  -- L5492 [position V44]
         C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_8,  -- L5497 [position V44]
         NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_9,  -- L5498 [position V44]
-        C_ENR.CD_PAYS_BIEN_FINAN                                   AS P1_31_14,  -- L5502 [position V44]
         0                                                          AS P1_31_17,  -- L5506 [P1 31.17]
         0                                                          AS P1_31_18,  -- L5508 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L5514 [P1 31.22]
-        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_29_3,  -- L5520 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L5525 [P1 29.4]
         'EUR'                                                      AS P1_50_2,  -- L5531 [position V44]
         C_ENR.IND_CONF_CRIT_OPE                                    AS P1_21_46,  -- L5574 [P1 21.46]

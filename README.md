@@ -31,7 +31,8 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | `ENG_CORP_P1_BIS.sql` | DDL da tabela: 662 colunas P1 + 4 técnicas |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` por perímetro + 8 `INSERT` |
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
-| `erro` | Log de compilação Oracle — erros já corrigidos |
+| `erro` | Log de compilação/execução Oracle — erros já corrigidos |
+| `tipos` | Tipos reais das colunas de `ENG_CORP_P1` (saída do `diag_tipos.sql`) |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
 | `diag_tipos.sql` | Tipos reais das colunas de origem (dicionario) |
 | `diag_precisao.sql` | Diagnostico ORA-01438: colunas NUMBER pequenas demais |
