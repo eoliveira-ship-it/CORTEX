@@ -51,6 +51,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `verifica_tabela.sql` | Confirma que a tabela criada bate com o DDL |
 | `diag_tipos.sql` | Tipos reais das colunas de origem (dicionario) |
 | `diag_precisao.sql` | Diagnostico ORA-01438: colunas NUMBER pequenas demais |
+| `diag_perguntas.sql` | Escala das taxas, mapeamentos suspeitos, arrete da origem |
 | `diag_divergencias.sql` | Valor da tabela vs valor do ficheiro, lado a lado |
 | `testes` | Resultado da 1a execucao dos testes |
 | `teste_conteudo.sql` | Compara a tabela com o ficheiro CRRCORP_P1 real, campo a campo |
