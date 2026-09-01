@@ -8,10 +8,27 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 
 | Ticket | Assunto | Estado |
 |---|---|---|
-| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure de alimentação | 🟡 em curso |
+| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure de alimentação | 🟢 testes verdes; falta o spool vPACT |
 | **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | ⬜ não iniciado |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | ⬜ não iniciado |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
+
+### Resultado da última execução do `TESTES.sql` (2026-09-01)
+
+| Teste | Resultado |
+|---|---|
+| T1 Estrutura | 666 colunas, as 15 alargadas conformes — **OK** |
+| T2 Package | spec e body `VALID`, 3 parâmetros, `ALL_ERRORS` vazio — **OK** |
+| T3 Volumetria | `NAT02` 122138 esperado / 122138 inserido, **écart 0** |
+| T4 Round-trip | **174 colunas × 200 engajamentos, todas conformes** |
+
+Fora do T4: `P1_31_17` e `P1_31_18`, onde o spool parte o campo em sinal + valor
+e o valor vem de três colunas de origem — sem reconstrução textual segura. São
+também os campos onde o `LPAD(...,5,'0')` do spool trunca acima de 99999.
+
+O que **falta** para fechar o ticket é o `030_spool_Extract_CRRCORP_vPACT.sql`:
+o spool de SELECT único sobre a tabela, e o teste de não-regressão byte a byte
+sobre o `CRRCORP.dat`.
 
 Detalhe do SIRL-1224: [docs/SIRL-1224.md](docs/SIRL-1224.md)
 Mapeamento posicional: [docs/REGUA-V44.md](docs/REGUA-V44.md)
@@ -37,7 +54,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | T1 | Estrutura | a tabela na base é a que o DDL manda? (666 colunas + as 15 alargadas) |
 | T2 | Package | o código compilado é o do repositório? |
 | T3 | Volumetria | as linhas inseridas são as que os 8 `WHERE` do spool devolvem? (`ecart` = 0) |
-| T4 | Round-trip | o valor guardado reproduz o que o spool escreve hoje? (176 colunas × 200 engajamentos) |
+| T4 | Round-trip | o valor guardado reproduz o que o spool escreve hoje? (174 colunas × 200 engajamentos) |
 
 T4 é o teste central: para cada coluna corre a expressão do spool sobre
 `ENG_CORP_P1` e a mesma expressão sobre `ENG_CORP_P1_BIS`, na mesma linha e na
