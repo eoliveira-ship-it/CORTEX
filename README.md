@@ -105,6 +105,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
 | `tipos` | Tipos reais das colunas de `ENG_CORP_P1`, lidos do dicionario |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
+| `explicacao.md` | Como a tabela sai da Notice, e a fórmula de Excel explicada passo a passo |
 | `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat neutralizando o horodatage e a linha ENTETE |
