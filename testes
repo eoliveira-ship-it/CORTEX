@@ -13,7 +13,6 @@ SELECT CD_PERIMETRE, COUNT(*) AS lignes
 8	HORS_NAT02	0
 
 
-
 ---teste_conteudo.sql
 
 214530BN0_C	P1_H_0_1 P1_1_2 P1_4_9 P1_4_31(esperado NULL) P1_3_20 P1_3_3 P1_4_29(esperado NULL) P1_22_54 P1_22_23 P1_22_24 P1_22_28 P1_22_29 P1_22_34 P1_22_70 P1_30_22(esperado NULL) P1_30_24(esperado NULL) P1_31_5 P1_31_17 P1_31_18 P1_21_43 P1_21_55(esperado NULL) 
@@ -22,14 +21,13 @@ SELECT CD_PERIMETRE, COUNT(*) AS lignes
 311684FK0_C	P1_H_0_1 P1_1_2 P1_4_31(esperado NULL) P1_3_20 P1_3_3 P1_4_29(esperado NULL) P1_22_54 P1_22_23 P1_22_24 P1_22_28 P1_22_29 P1_22_60 P1_22_70 P1_30_22(esperado NULL) P1_30_24(esperado NULL) P1_31_5 P1_31_17 P1_31_18 P1_21_43 P1_21_55(esperado NULL) 
 331354BK0_C	P1_H_0_1 P1_1_2 P1_4_9 P1_4_31(esperado NULL) P1_3_20 P1_3_3 P1_4_29(esperado NULL) P1_22_54 P1_22_23 P1_22_24 P1_22_28 P1_22_29 P1_22_34 P1_22_70 P1_30_22(esperado NULL) P1_30_24(esperado NULL) P1_31_5 P1_31_17 P1_31_18 P1_21_43 P1_21_55(esperado NULL) 
 
-
 ---------------
 
 P1_H_0_1    	20250630	31-MAY-25	Date darrêté
 P1_1_2      	07	01	Traitement moteur bâlois
 P1_4_9      	+000000000001840388	18902.34	Montant du capital restant dû
 P1_4_31     	 	 	Indicateur Produit à sous-jacent
-P1_3_20     	029698	520547	Maturité résiduelle
+P1_3_20     	029698	3.0521	Maturité résiduelle
 P1_3_3      	20250630	31-MAY-25	Date de valeur de prise deffet du con
 P1_4_29     	 	 	Indicateur créance titrisée
 P1_22_54    	044102018101820230720FR		Grille Modèle de notation à lorigine
@@ -52,19 +50,4 @@ P1_26_3     	 		Référence de mobilisation de lactif
 P1_26_4     	 		Code organisme de mobilisation
 P1_22_60    	+000000000000000000	0	Montant de léchéance en cours
 
-
 -----
-1-
-MATURITE_EFF	0	29.271232876712328767123287671232876712	2.69
-TX_LGD_PREDICTIF_LOCAL	0	0	0
-TX_TRC	0	0	0
-
-2-
-N	N	2	NA021	
-N	N	2	NA021	
-N	N	2	NA021	
-N	N	2	NA021	
-N	N	2	NA021	
-
-3-
-20250531	118393
