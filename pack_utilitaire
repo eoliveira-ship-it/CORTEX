@@ -1,0 +1,954 @@
+create or replace PACKAGE pack_utilitaire AS
+/******************************************************************************
+   Nom:     pack_utilitaire
+   But:     package contenant des procedures ou des fonctions utilitaires
+
+   Date :   05/09/2008
+   Auteur : A. Guilmart
+   Modification :
+******************************************************************************/
+    -- constantes
+    NB_MOIS_PURGE CONSTANT INTEGER := 1; -- historique 1 mois
+   -- NB_MOIS_PURGE CONSTANT INTEGER := 2; -- pour test
+
+    -- fonctions et procedures
+    function f_calc_dt_arrete return date;
+    FUNCTION F_FORMAT_MONTANT (MNT  NUMBER)  RETURN VARCHAR2;
+    function FONC_VERIFIER_SIRET ( SIRET VARCHAR2 ) return VARCHAR2;
+    PROCEDURE DB_TRAITE_ERREUR (P_ORA_MSG   IN VARCHAR2,P_CONTEXTE  IN VARCHAR2,P_CODE IN NUMBER);
+    FUNCTION F_FORMAT_MNT_OBLIG (MNT  NUMBER)  RETURN VARCHAR2; -- AGU 02/04/2009
+    FUNCTION F_FORMAT_MONTANT_BIS (MNT_BIS  NUMBER)  RETURN VARCHAR2; -- AFR le 09/07/2012 Projet BTR 6.3 L01-C36-2 Passage IRBA provisions dans CRRV3
+    FUNCTION F_FORMAT_TAUX (TAUX  NUMBER)  RETURN VARCHAR2;  -- AFR le 09/07/2012 Projet BTR 6.3 L01-C36-2 Passage IRBA provisions dans CRRV3
+    FUNCTION F_FORMAT_MONTANT_BIS2 (MNT_BIS2  NUMBER)  RETURN VARCHAR2;
+	FUNCTION F_FORMAT_MONTANT_BIS3 (MNT_BIS3  NUMBER)  RETURN VARCHAR2; -- CDS ATOS (PSR) le 31/07/2018 Formatage Montant pour C3RD
+	FUNCTION F_FORMAT_MONTANT_BIS4 (MNT_BIS4  NUMBER)  RETURN VARCHAR2; --11/07/19 CDS ATOS (EMM) US 42 N3D
+    FUNCTION F_FORMAT_MONTANT_18 (MNT_BIS2  NUMBER)  RETURN VARCHAR2;
+	FUNCTION F_FORMAT_TAUX_15 (TAUX  NUMBER)  RETURN VARCHAR2;
+	PROCEDURE UPDATE_PARAM_TAB (CODE_TYPE IN VARCHAR2, COLUMN_UPDATE IN VARCHAR2, RESULTAT IN VARCHAR2, TABLE_DEST IN VARCHAR2 );
+    FUNCTION F_GET_CODE_NUTS (CD_POSTAL IN VARCHAR2, CD_PAYS IN VARCHAR2)  RETURN VARCHAR2;-- 01/03/2018 CDS ATOS (JMP) ANACREDIT Srint 5 US 44 creation de la fonction
+    FUNCTION F_CODE_EFFECTIF_NB_SALARIE (EFFECTIF IN NUMBER)  RETURN NUMBER ; -- 28/05/2018 CDS Atos (JMP) ANACREDIT  US346 Ajout de
+	-- la fonction de transcodage du code EFFECTIF vers le valeur basse du nombre de salari?s de la tranche.
+																							-- de transcodage des codes NUTS
+	FUNCTION F_DATE_ARRETE_TRIMESTRE_PREC(DT DATE) RETURN DATE; -- 10/07/2017 CDS Atos (JMP) ANACREDIT Sprint 12 US418
+	-- Fonction de calcul de la date d'arr?t? du trimestre pr?c?dant la date en argument
+  FUNCTION F_FORMAT_MONTANT_13_2 (MNT_13_2  NUMBER) RETURN VARCHAR2; -- BALE4
+  FUNCTION F_FORMAT_MONTANT_NEGATIF_19 (MNT_BIS2  NUMBER) RETURN VARCHAR2;-- BALE4 / M70811
+
+  FUNCTION F_FORMAT_MONTANT_DYNAMIC (MNT  NUMBER, N_CAR NUMBER, N_DEC NUMBER:=0, SIGNE CHAR:='1', SEPARATEUR VARCHAR2:='') RETURN VARCHAR2;-- RSE_LOT 3 -- SIRL-110
+
+END pack_utilitaire;
+
+/
+
+create or replace PACKAGE BODY pack_utilitaire AS
+/******************************************************************************
+   Nom:     pack_utilitaire (body)
+   But:     package contenant des procedures ou des fonctions utilitaires
+
+   Date :   05/09/2008
+   Auteur : A. Guilmart
+   Modification :
+******************************************************************************/
+
+--------------------------------------------------------------------------
+-- nom : fonction  f_calc_dt_arrete                                     --
+-- but : R?cup?re la date d'arr?t? en cours                             --
+-- auteur : A. Guilmart, le 10/09/2008                                  --
+-- entree : /                                                           --
+-- retour : la date d'arrete au format date                             --
+--------------------------------------------------------------------------
+FUNCTION f_calc_dt_arrete RETURN date
+IS
+    l_dt_arrete date;
+
+BEGIN
+
+    -- 1 seule date d'arret? dans la table et date d'arret? identique
+    -- dans toutes les tables si pas d'erreur
+    select max(dt_arrete) into l_dt_arrete from btr_tiers;
+
+  RETURN l_dt_arrete;
+
+END f_calc_dt_arrete;
+
+--------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT                                     --
+-- but : formater un montant au format attendu dans le CRRV3            --
+-- auteur : P. Bizot, le 05/09/2008                                     --
+-- entree : montant entier en format num?rique                          --
+-- retour : montant au format carat?re format? de la maniere suivante:  --
+--          '+0000000000123456  '  si montant > 0                       --
+--          '-0000000000123456  '  si montant < 0                       --
+--          '                   '  si montant null ou ?gal ? 0          --
+--------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT (MNT  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_FORMATE   VARCHAR2(19);
+
+BEGIN
+
+    select  case when mnt > 0 then '+'||LPAD(NVL(to_char(abs(mnt)), ' '), 16, 0)||'  '
+            when mnt < 0 then '-'||LPAD(NVL(to_char(abs(mnt)), ' '), 16, 0)||'  '
+            when mnt is null then LPAD(' ', 19, ' ')
+            when mnt = 0 then LPAD(' ', 19, ' ')
+            end into v_MNT_FORMATE
+    from dual;
+
+  RETURN v_MNT_FORMATE;
+
+END F_FORMAT_MONTANT;
+
+--------------------------------------------------------------------------
+-- nom : fonction  FONC_VERIFIER_SIRET                                  --
+-- but : Verifier la vraisemblance d'un siret passe en parametre        --
+-- auteur : L. Blanchard                                                --
+-- entree : siret ? verifier                                            --
+-- retour : O si siret semble correct, N sinon                          --
+--------------------------------------------------------------------------
+FUNCTION FONC_VERIFIER_SIRET ( SIRET VARCHAR2 )
+   RETURN VARCHAR2
+IS
+
+  VAR_SIRET   VARCHAR2(14);
+  POS         INTEGER;
+  VAL         INTEGER;
+  TOTAL       INTEGER := 0;
+
+  VRAISEMBLANCE VARCHAR2(1) := 'N';
+
+BEGIN
+
+    -- UNIQUEMENT 9 CHIFFRES SINON ERREUR -> EXCEPTION
+    VAL := TO_NUMBER (SUBSTR(SIRET, 1, 9));
+
+    FOR POS IN 1 .. 9
+    LOOP
+
+      VAL := SUBSTR(SIRET, POS, 1);
+
+      IF  MOD (POS, 2) = 0
+      THEN
+        VAL := VAL * 2 ;
+        IF VAL > 9
+        THEN
+          VAL := VAL - 9;
+        END IF;
+      END IF;
+
+      TOTAL := TOTAL + VAL;
+
+    END LOOP;
+
+    IF TOTAL > 0 AND MOD(TOTAL, 10) = 0
+    THEN
+      VRAISEMBLANCE := 'O';
+    END IF;
+
+  RETURN VRAISEMBLANCE;
+
+  EXCEPTION
+    WHEN OTHERS THEN
+      RETURN 'N';
+
+END FONC_VERIFIER_SIRET;
+
+--------------------------------------------------------------------------
+-- nom : procedure  DB_TRAITE_ERREUR                                    --
+-- but : traitement des erreurs                                         --
+-- auteur :                                                             --
+-- entree : P_ORA_MSG : message oracle de l'erreur                      --
+--          P_CONTEXTE : procedure ou endroit du code g?n?rant l'erreur --
+--          P_CODE : code de l'erreur                                   --
+-- retour : /                                                           --
+--------------------------------------------------------------------------
+PROCEDURE DB_TRAITE_ERREUR (P_ORA_MSG   IN VARCHAR2,
+                            P_CONTEXTE  IN VARCHAR2,
+                            P_CODE      IN NUMBER) IS
+BEGIN
+
+dbms_output.put_line(substr('ERR-'||P_CODE||' : '||P_CONTEXTE,100));
+
+IF P_ORA_MSG != 'O' THEN
+  rollback;
+  raise_application_error(-20001,P_ORA_MSG);
+END IF;
+
+END;
+
+--------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MNT_OBLIG                                   --
+-- but : formater un montant obligatoir au format attendu dans le CRRV3 --
+-- auteur : A. Guilmart, le 02/04/2009                                  --
+-- entree : montant entier en format num?rique                          --
+-- retour : montant au format carat?re format? de la maniere suivante:  --
+--          '+0000000000123456  '  si montant > 0                       --
+--          '+000000000000000000'  si montant < 0                       --
+--          '+000000000000000000'  si montant null ou ?gal ? 0          --
+--------------------------------------------------------------------------
+FUNCTION F_FORMAT_MNT_OBLIG (MNT  NUMBER)  RETURN VARCHAR2
+IS
+
+  l_mnt   VARCHAR2(19);
+
+BEGIN
+
+    select  case when mnt > 0 then '+'||LPAD(NVL(to_char(abs(mnt)), ' '), 16, 0)||'  '
+            else '+'||LPAD('0', 16, 0)||'  '
+            end into l_mnt
+    from dual;
+
+  RETURN l_mnt;
+
+END F_FORMAT_MNT_OBLIG;
+
+--------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_BIS                                 --
+-- but : formater un montant d?cimal au format attendu dans le CRRV3    --
+-- auteur : A. Francisco, le 09/07/2012                                 --
+-- entree : montant au format num?rique : 123456                        --
+-- retour : montant au format carat?re format? de la maniere suivante:  --
+--          '0000000000123456  '  si montant > 0  ou < 0                --
+--          '000000000012345615'  si montant < 0                        --
+--          '                  '  si montant null ou ?gal ? 0           --
+--------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_BIS (MNT_BIS  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_BIS_FORMATE   VARCHAR2(19); --AFR le 03/09/2012 Mantis n? 315
+
+BEGIN
+
+		select case when (mnt_bis > 0 or mnt_bis < 0) then ' '||LPAD(NVL(to_char(trunc(mnt_bis)), ' '), 16, 0)||'  '
+            		else ' '||LPAD(' ', 18, ' ')    --AFR le 03/09/2012 Mantis n? 315
+           end into v_MNT_BIS_FORMATE
+		from dual;
+
+  RETURN v_MNT_BIS_FORMATE;
+
+END F_FORMAT_MONTANT_BIS;
+
+--------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_TAUX                                        --
+-- but : formater un taux au format attendu dans le CRRV3               --
+-- auteur : A. Francisco, le 09/07/2012                                 --
+-- entree : taux            en format d?cimal : 12.15                   --
+-- retour : montant au format carat?re format? de la maniere suivante:  --
+--          '+001215000'  si montant > 0                       					--
+--          '-001215000'  si montant < 0                       					--
+--          '+000000000'  si montant null ou ?gal ? 0          				  --
+--------------------------------------------------------------------------
+FUNCTION F_FORMAT_TAUX (TAUX  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_TAUX_FORMATE   VARCHAR2(10);
+
+BEGIN
+    -- AFR le 07/11/2012 retour 1 homologation casa
+		select case when taux > 0 then      '+'||LPAD(NVL(to_char(trunc(taux)), 0), 4, 0)
+                                       		 ||RPAD(NVL(substr(To_char(taux - TRUNC(taux) ),2),0),5,0)
+            		when taux < 0 then      '-'||LPAD(NVL(to_char(trunc(taux*-1)), 0), 4, 0)
+                                       		 ||RPAD(NVL(substr(To_char(taux*-1 - TRUNC(taux*-1) ),2),0),5,0)
+            		--when taux is null then  LPAD(' ', 10, ' ') --AFR le 07/01/13 retour homolgation CASA du 04/01/13
+            		when taux = 0 or taux is null then '+'||LPAD(0,4, 0)||RPAD(0,5, 0) --AFR le 07/01/13 retour homolgation CASA du 04/01/13
+           end into v_TAUX_FORMATE
+		from dual;
+
+  RETURN v_TAUX_FORMATE;
+
+END F_FORMAT_TAUX;
+
+--------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_TAUX_15                                        --
+-- but : formater un taux au format attendu dans le CRRV3               --
+-- auteur : A. Francisco, le 09/07/2012                                 --
+-- entree : taux            en format d?cimal : 12.15                   --
+-- retour : montant au format carat?re format? de la maniere suivante:  --
+--          '+001215000'  si montant > 0                       					--
+--          '-001215000'  si montant < 0                       					--
+--          '+000000000'  si montant null ou ?gal ? 0          				  --
+--------------------------------------------------------------------------
+FUNCTION F_FORMAT_TAUX_15 (TAUX  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_TAUX_FORMATE   VARCHAR2(15);
+
+BEGIN
+    -- AFR le 07/11/2012 retour 1 homologation casa
+		select case when taux > 0 then      '+'||LPAD(NVL(to_char(trunc(taux)), 0), 5, 0)
+                                       		 ||RPAD(NVL(substr(To_char(taux - TRUNC(taux) ),2),0),9,0)
+            		when taux < 0 then      '-'||LPAD(NVL(to_char(trunc(taux*-1)), 0), 5, 0)
+                                       		 ||RPAD(NVL(substr(To_char(taux*-1 - TRUNC(taux*-1) ),2),0),9,0)
+            		--when taux is null then  LPAD(' ', 10, ' ') --AFR le 07/01/13 retour homolgation CASA du 04/01/13
+            		when taux = 0 or taux is null then '+'||LPAD(0,5, 0)||RPAD(0,9, 0) --AFR le 07/01/13 retour homolgation CASA du 04/01/13
+           end into v_TAUX_FORMATE
+		from dual;
+
+  RETURN v_TAUX_FORMATE;
+
+END F_FORMAT_TAUX_15;
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_BIS2                                   --
+-- but : formater un montant au format attendu dans le CRRV3               --
+-- auteur : A. FRANCISCO, le 07/11/2012                                    --
+-- entree : montant entier en format num?rique                             --
+-- retour : montant au format carat?re format? de la maniere suivante:     --
+--          '+0000000000123456  '  si montant > 0                          --
+--          '-0000000000123456  '  si montant < 0                          --
+--          '+0000000000000000  '  si montant null ou ?gal ? 0             --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_BIS2 (MNT_BIS2  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_BIS2_FORMATE   VARCHAR2(19);
+
+BEGIN
+
+	    select  case when mnt_bis2 > 0 then '+'||LPAD(NVL(to_char(abs(trunc(mnt_bis2))), 0), 16, 0)||RPAD(NVL(substr(To_char(mnt_bis2 - TRUNC(mnt_bis2) ),2),0),2,0)
+            when mnt_bis2 < 0 then '-'||LPAD(NVL(to_char(abs(trunc(mnt_bis2))), 0), 16, 0)||RPAD(NVL(substr(To_char(abs(mnt_bis2) - TRUNC(abs(mnt_bis2)) ),2),0),2,0)
+            when mnt_bis2 is null then '+'||LPAD(0, 16, 0)||'00'
+            when mnt_bis2 = 0 then '+'||LPAD(0, 16, 0)||'00'
+            end into v_MNT_BIS2_FORMATE
+    from dual;
+
+  RETURN v_MNT_BIS2_FORMATE;
+
+END F_FORMAT_MONTANT_BIS2;
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_BIS3                                   --
+-- but : formater un montant dans un certain format                       --
+-- auteur : CDS ATOS (PSR), le 31/07/2018                                    --
+-- entree : montant entier en format num?rique                             --
+-- retour : montant au format carat?re format? de la maniere suivante:     --
+--          '+0000000000123456  '  si montant > 0                          --
+--          '-0000000000123456  '  si montant < 0                          --
+--          '+0000000000000000  '  si montant = 0                          --
+--          '                   '  si montant nul                          --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_BIS3 (MNT_BIS3  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_BIS3_FORMATE   VARCHAR2(19);
+
+BEGIN
+
+	    select  case when mnt_bis3 > 0 then '+'||LPAD(NVL(to_char(abs(trunc(mnt_bis3))), 0), 16, 0)||RPAD(NVL(substr(To_char(mnt_bis3 - TRUNC(mnt_bis3) ),2),0),2,0)
+            when mnt_bis3 < 0 then '-'||LPAD(NVL(to_char(abs(trunc(mnt_bis3))), 0), 16, 0)||RPAD(NVL(substr(To_char(abs(mnt_bis3) - TRUNC(abs(mnt_bis3)) ),2),0),2,0)
+            when mnt_bis3 is null then ' '||LPAD(' ', 18, ' ')
+            when mnt_bis3 = 0 then '+'||LPAD(0, 16, 0)||'00'
+            end into v_MNT_BIS3_FORMATE
+    from dual;
+
+  RETURN v_MNT_BIS3_FORMATE;
+
+END F_FORMAT_MONTANT_BIS3;
+
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_BIS4                                   --
+-- but : formater un montant au format attendu dans le N3D       	        --
+-- auteur : E. Mipam le 11/07/19                             		      --
+-- entree : montant  format 123456.45 / -123456.55				                            --
+-- retour : montant formate de la maniere suivante:   					  --
+--          '+0000000000000000000000000000000123456  '  si montant > 0                          --
+--          '-0000000000000000000000000000000123457  '  si montant < 0                          --
+--          '+0000000000000000000000000000000000000  '  si montant null ou ?gal ? 0             --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_BIS4 (MNT_BIS4  NUMBER)  RETURN VARCHAR2
+IS
+--18/06/20 CDS ATOS (EMM) Projet N3D US 609
+  v_MNT_BIS4_FORMATE   VARCHAR2(40);
+
+BEGIN
+
+
+	select
+		case when MNT_BIS4 > 0 then '+'||LPAD(NVL(to_char(abs(round(MNT_BIS4))), 0), 37, 0)
+
+			when MNT_BIS4 < 0 then '-'||LPAD(NVL(to_char(abs(round(MNT_BIS4))), 0), 37, 0)
+
+			when MNT_BIS4 is null then '+'||LPAD(0, 37, 0)
+
+			when MNT_BIS4 = 0 then '+'||LPAD(0, 37, 0)
+            end into v_MNT_BIS4_FORMATE
+    from dual;
+--Fin EMM Projet N3D US 609
+  RETURN v_MNT_BIS4_FORMATE;
+
+END F_FORMAT_MONTANT_BIS4;
+
+
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_18                                   --
+-- but : formater un montant au format attendu dans le CRRV3               --
+-- auteur : A. FRANCISCO, le 07/11/2012                                    --
+-- entree : montant entier en format numirique                             --
+-- retour : montant au format carathre formati de la maniere suivante:     --
+--          '+000000000123456  '  si montant > 0                          --
+--          '-000000000123456  '  si montant < 0                          --
+--          '+000000000000000  '  si montant null ou igal ` 0             --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_18 (MNT_BIS2  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_BIS2_FORMATE   VARCHAR2(19);
+
+BEGIN
+
+            select  case when mnt_bis2 > 0 then '+'||LPAD(NVL(to_char(abs(trunc(mnt_bis2))), 0), 15, 0)||RPAD(NVL(substr(To_char(mnt_bis2 - TRUNC(mnt_bis2) ),2),0),2,0)
+            when mnt_bis2 < 0 then '-'||LPAD(NVL(to_char(abs(trunc(mnt_bis2))), 0), 15, 0)||RPAD(NVL(substr(To_char(abs(mnt_bis2) - TRUNC(abs(mnt_bis2)) ),2),0),2,0)
+            when mnt_bis2 is null then '+'||LPAD(0, 15, 0)||'00'
+            when mnt_bis2 = 0 then '+'||LPAD(0, 15, 0)||'00'
+            end into v_MNT_BIS2_FORMATE
+    from dual;
+
+  RETURN v_MNT_BIS2_FORMATE;
+
+END F_FORMAT_MONTANT_18;
+
+
+
+------------------------------------------------------------------------------------------
+-- nom : Procedure  UPDATE_PARAM_TAB                                                   --
+-- but : Automatiser la mise ? jour des tables selon la table param_multidim_generique  --
+-- auteur : A. BATTAH, le 27/04/2016                                                    --
+-- entree : code_type, TYPE_SGMT, column_update, RESULTAT, table_Dest                   --
+-------------------------------------------------------------------------------------------
+procedure UPDATE_PARAM_TAB ( CODE_TYPE in varchar2,
+                               COLUMN_UPDATE in varchar2,
+                               RESULTAT in varchar2,
+                               TABLE_DEST in VARCHAR2)
+
+IS
+
+I number(1);
+QUERY1 varchar2(5000);
+query2 varchar2(5000);
+QUERY3 varchar2(5000);
+QUERY4 varchar2(5000);
+QUERY5 varchar2(5000);
+QUERY6 varchar2(5000);
+QUERY7 varchar2(5000);
+QUERY8 varchar2(5000);
+QUERY9 varchar2(5000);
+CODE varchar2(10);
+V_param varchar2(40);
+V_WHERE1 varchar2(5000);
+V_WHERE2 varchar2(5000);
+v_where3 varchar2(5000);
+V_COUNT number(10);
+VAL_ID varchar2(50);
+V_CODE_RESULTAT varchar2(50);
+CUR varchar2(5000);
+L_PARAM number;
+VAL varchar(100);
+VAL2 varchar(100);
+V_code_SGMT varchar(10);
+TYPE CURTYPE IS REF CURSOR;
+l_cur CURTYPE;
+
+type MYRECORD is RECORD(
+CODE_PARAM_1 varchar(100),
+CODE_PARAM_2 varchar(100),
+CODE_PARAM_3 varchar(100),
+CODE_PARAM_4 varchar(100),
+CODE_PARAM_5 varchar(100),
+CODE_PARAM_6 varchar(100),
+CODE_PARAM_7 varchar(100),
+VAL_PARAM_1 varchar(100),
+VAL_PARAM_2 varchar(100),
+VAL_PARAM_3 varchar(100),
+VAL_PARAM_4 varchar(100),
+VAL_PARAM_5 varchar(100),
+VAL_PARAM_6 varchar(100),
+VAL_PARAM_7 varchar(100));
+
+c_enreg MYRECORD;
+
+TYPE param_valeur IS TABLE OF VARCHAR2(100);
+Val_param param_valeur;
+
+TYPE param_code IS TABLE OF VARCHAR2(100);
+code_param param_code;
+
+TYPE param_result IS TABLE OF VARCHAR2(100);
+Val_result param_result;
+
+BEGIN
+
+CUR := 'select distinct param.CODE_PARAM_1, param.CODE_PARAM_2, param.CODE_PARAM_3, param.CODE_PARAM_4, param.CODE_PARAM_5, param.CODE_PARAM_6, param.CODE_PARAM_7,
+param.VAL_PARAM_1, param.VAL_PARAM_2, param.VAL_PARAM_3,  param.VAL_PARAM_4, param.VAL_PARAM_5, param.VAL_PARAM_6,param.VAL_PARAM_7
+from param_multidim_generique param, (
+select distinct p1.cd_conso_cpt, CD_TYPE_SGMT
+from btr_surete_pers sur, '|| TABLE_DEST ||' p1, BTR_TIERS btr, BTR_OPERATION o, BTR_SURETE_REELLE R, rs_famille_actif F
+where p1.id_engagement = sur.id_operation(+)
+And  p1.id_engagement = o.id_operation(+)
+And o.ID_TIERS = btr.ID_TIERS
+AND p1.id_engagement=R.id_operation(+)
+AND R.CD_FAMILLE_ACTIF = F.CD_FAMILLE_ACT(+)
+) crr
+where param.code_type_utilisation='''||code_type||'''
+and PARAM.CODE_PARAM_1=''CD_CONSO_CPT''
+AND param.val_param_1=crr.cd_conso_cpt
+order by VAL_PARAM_1, VAL_PARAM_2, VAL_PARAM_3, VAL_PARAM_4, VAL_PARAM_5, VAL_PARAM_6, VAL_PARAM_7';
+
+VAL :='00000';
+VAL2 :='00000';
+
+ OPEN l_CUR for CUR;
+
+  LOOP
+  FETCH l_CUR into c_enreg;
+  IF l_CUR%FOUND THEN
+  Val_param:= param_valeur(c_enreg.val_param_1,
+                          c_enreg.val_param_2,
+                          c_enreg.val_param_3,
+                          c_enreg.val_param_4,
+                          c_enreg.VAL_PARAM_5,
+                          c_enreg.val_param_6,
+                          c_enreg.val_param_7);
+
+  Code_param:= param_code(c_enreg.code_param_1,
+                          c_enreg.code_param_2,
+                          c_enreg.code_param_3,
+                          c_enreg.code_param_4,
+                          c_enreg.code_param_5,
+                          c_enreg.code_param_6,
+                          c_enreg.code_param_7);
+
+
+  query1 := 'select count(*) from param_multidim_generique where CODE_type_utilisation='''||code_type||''' ';
+  query4 := 'where p1.id_engagement in (select p2.id_engagement
+             from '|| TABLE_DEST ||' p2, btr_surete_pers sur, BTR_TIERS btr, BTR_OPERATION o, BTR_SURETE_REELLE R, rs_famille_actif F
+             where p2.id_engagement = p1.id_engagement
+             AND p2.id_engagement = sur.id_operation(+)
+             And  p2.id_engagement =  o.id_operation(+)
+             And o.ID_TIERS = btr.ID_TIERS
+             AND p2.id_engagement = R.id_operation(+)
+             AND R.CD_FAMILLE_ACTIF = F.CD_FAMILLE_ACT(+) ';
+
+
+
+  v_where2 := ' ';
+  v_where3 := ' ';
+    for I in 1 .. 8 LOOP
+      execute immediate QUERY1 into V_COUNT;
+        query3 := query2;
+        If (i <> 8 AND (v_count > 1 OR v_count = 0)) THEN
+            IF (v_count = 0) THEN
+                query1 := REPLACE(query1, v_where1, '');
+                v_where2:= REPLACE(v_where2, v_where1, '');
+                query4 := REPLACE(query4, v_where3, '');
+            END IF;
+
+           IF (i = 1) THEN
+             IF ( VAL <> Val_param(1)) THEN
+                VAL := Val_param(1);
+                VAL2 := VAL2 || ', ' ||Val_param(1);
+             END IF;
+            END IF;
+
+            IF (TABLE_DEST = 'eng_corp_p1') THEN
+               V_code_SGMT :='CORP';
+            ELSIF (TABLE_DEST = 'eng_corp_p2') THEN
+               V_code_SGMT :='CORP';
+            ELSE
+                V_code_SGMT :='RETA';
+            END IF;
+
+
+      --      IF (i = 4 OR i = 7) THEN
+            v_where1 := ' AND CODE_PARAM_'||i||' = '''||Code_param(i)||'''
+                         '||(CASE WHEN (Val_param(i) IS NULL) THEN ' AND VAL_PARAM_'||i||' is NULL'
+                            ELSE ' AND VAL_PARAM_'||i||' = '''||Val_param(i)||''' '  END)|| ' ';
+        /*    ELSE
+
+            v_where1 := ' AND CODE_PARAM_'||i||' = '''||Code_param(i)||'''
+                        AND VAL_PARAM_'||i||' = '''||Val_param(i)||''' ';
+
+            END IF;*/
+
+            IF ( i = 3 ) THEN
+
+               IF(Code_param(i)='CD_PRODUIT')THEN
+               v_where3 := ' AND '||Code_param(i)||' = '''||Val_param(i)||''' ';
+              else
+                v_where3 := ' AND DECODE('||Code_param(i)||', ''CA'', ''CA'', ''LCL'', ''LCL'', ''X'') = DECODE('||(CASE WHEN (Val_param(i) IS NULL) THEN '''X''' ELSE ' '''||Val_param(i)||''' ' END)||', ''CA'', ''CA'', ''LCL'', ''LCL'', ''X'') '|| ' ';
+              end if;
+
+
+
+            ELSIF ( i = 4 ) THEN
+              v_where3 := ' AND '||Code_param(i)||' '||NVL(Val_param(i), ' = 0 ')||' ';
+            ELSIF ( i = 7 ) THEN
+
+              IF (TABLE_DEST = 'eng_corp_p1') THEN
+
+                v_where3 := ' AND (CASE when (P1.MNT_VTR_PDR = 0 OR P1.MNT_VTR_PDR is NULL OR (NVL(p1.mnt_crd, 0)+NVL(p1.mnt_solde, 0))/p1.MNT_VTR_PDR < 0) THEN
+                                 NULL ELSE ((NVL(p1.mnt_crd, 0)+NVL(p1.mnt_solde, 0))/p1.MNT_VTR_PDR) END) ' || NVL(Val_param(i), ' is NULL ') || ' ';
+
+              ELSIF (TABLE_DEST = 'eng_corp_p2') THEN
+
+                v_where3 := ' AND (CASE when (P1.MNT_VTR_PDR = 0 OR P1.MNT_VTR_PDR is NULL OR (NVL(p1.MNT_PNU, 0)+NVL(p1.mnt_iec, 0))/p1.MNT_VTR_PDR < 0) THEN
+                               NULL ELSE ((NVL(p1.MNT_PNU, 0)+NVL(p1.mnt_iec, 0))/p1.MNT_VTR_PDR) END) ' || NVL(Val_param(i), ' is NULL ') || ' ';
+
+              ELSE
+                v_where3 := ' AND (CASE when p1.mnt_ltv is NULL THEN NULL ELSE (p1.mnt_ltv*100) END) ' || NVL(Val_param(i), ' is NULL ') || ' ';
+
+               END IF;
+            ELSE
+               v_where3 := ' AND '||Code_param(i)||' = '''||Val_param(i)||''' ';
+            END IF;
+
+            query4 := query4 || v_where3;
+            query1 := query1 || v_where1;
+            v_where2:= v_where2||v_where1;
+
+        ELSIF (V_COUNT = 1) then
+            query2 := ' update '|| TABLE_DEST ||' p1
+              set '||column_update||' =(SELECT distinct '|| RESULTAT ||'
+                                    from param_multidim_generique
+                                    where CODE_type_utilisation='''||code_type||''' '||v_where2||' )'
+                    ||query4||') AND '||column_update||' is NULL ';
+
+               --      dbms_output.put_line('query2'+query2);
+
+
+            IF (query3 <> query2) THEN
+             execute immediate(query2);
+
+            END IF;
+
+      END IF;
+
+      END LOOP;
+
+  ELSE
+     query5 := ' update '|| TABLE_DEST ||' p1
+              set '||column_update||' =(SELECT distinct '|| RESULTAT ||'
+                                    from param_multidim_generique
+                                    where CODE_type_utilisation='''||code_type||'''
+                                    AND VAL_PARAM_1 in ('||VAL2||') AND VAL_PARAM_2= '''||V_code_SGMT||'''
+                                    and VAL_PARAM_3 is null and VAL_PARAM_4 is null and VAL_PARAM_5 is null and VAL_PARAM_6 is null
+                                    and VAL_PARAM_7 is null
+                                    )
+                                      where p1.id_engagement in (select distinct  p2.id_engagement
+                                     from '|| TABLE_DEST ||' p2, btr_surete_pers sur, BTR_TIERS btr, BTR_OPERATION o, BTR_SURETE_REELLE R, rs_famille_actif F
+                                     where p2.id_engagement = p1.id_engagement
+                                     AND p2.cd_conso_cpt = p1.cd_conso_cpt
+                                     AND p2.id_engagement = sur.id_operation(+)
+                                     And  p2.id_engagement =  o.id_operation(+)
+                                     And o.ID_TIERS = btr.ID_TIERS
+                                     AND p2.id_engagement = R.id_operation(+)
+                                     AND R.CD_FAMILLE_ACTIF = F.CD_FAMILLE_ACT(+)
+                                     AND R.CD_FAMILLE_ACTIF = F.CD_FAMILLE_ACT AND  p2.cd_conso_cpt in ('||Val2||')
+                                      AND  CD_TYPE_SGMT = '''||V_code_SGMT||''' ) and '||column_update||' is null ';
+
+       execute immediate(query5);
+
+       execute immediate ('truncate table T_TEMP');
+
+        query6 := 'insert into T_TEMP (
+                ID_ENGAGEMENT,
+                CD_CONSO_CPT,
+                CD_TYPE_SGMT,
+                CD_FAMILLE_ACT )
+                select distinct p1.id_engagement, cd_conso_cpt, CD_TYPE_SGMT, CD_FAMILLE_ACT
+                from btr_surete_pers sur,'|| TABLE_DEST ||' p1, BTR_TIERS btr, BTR_OPERATION o, BTR_SURETE_REELLE R, rs_famille_actif F
+                where p1.id_engagement = sur.id_operation(+)
+                And  p1.id_engagement = o.id_operation(+)
+                And o.ID_TIERS = btr.ID_TIERS
+                AND p1.id_engagement=R.id_operation(+)
+                AND R.CD_FAMILLE_ACTIF = F.CD_FAMILLE_ACT(+)
+                AND cd_conso_cpt
+                in (select VAL_PARAM_1 from param_multidim_generique where CODE_type_utilisation='''||code_type||''' group by VAL_PARAM_1 having count(*)>1) ';
+
+        execute immediate(query6);
+
+
+
+		 query7 := ' update '|| TABLE_DEST ||' p1
+                   set '||column_update||'=(SELECT distinct '|| RESULTAT ||'
+                                    from param_multidim_generique
+                                    where CODE_type_utilisation='''||code_type||'''
+                                    AND VAL_PARAM_1 in ('||VAL2||')
+                                    AND VAL_PARAM_1 = p1.cd_conso_cpt
+                                    AND VAL_PARAM_2 = '''||V_code_SGMT||'''
+                                    and VAL_PARAM_3 is null and VAL_PARAM_4 is null and VAL_PARAM_5 is null and VAL_PARAM_6 is null
+                                    and VAL_PARAM_7 is null
+                                    )
+                                      where p1.id_engagement in (select DISTINCT p2.id_engagement
+                                            from  T_TEMP p2
+                                            where p2.id_engagement = p1.id_engagement
+                                            AND p2.cd_conso_cpt = p1.cd_conso_cpt
+                                            AND cd_conso_cpt in ('||Val2||')
+                                            AND CD_TYPE_SGMT=  '''||V_code_SGMT||'''
+                                            group by  id_engagement, cd_conso_cpt, CD_TYPE_SGMT
+                                            having count(*)>1 )';
+                                     /* AND EXISTS (select DISTINCT 1
+                                            from  T_TEMP p2
+                                            where p2.id_engagement = p1.id_engagement
+                                            AND p2.cd_conso_cpt = p1.cd_conso_cpt
+                                            AND cd_conso_cpt in ('||Val2||')
+                                            AND CD_TYPE_SGMT=  '''||V_code_SGMT||'''
+                                            group by  id_engagement, cd_conso_cpt, CD_TYPE_SGMT
+                                            having count(*)>1 )      ';				*/
+
+         execute immediate(query7);
+       --   dbms_output.put_line ('truncate table T_TEMP');
+
+
+    dbms_output.put_line('Toutes les lignes sont trait?s avec succ?s');
+    EXIT;
+    END IF;
+  END LOOP;
+
+  close l_CUR;
+  commit;
+
+
+
+end UPDATE_PARAM_TAB;
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_GET_CODE_NUTS                                         --
+-- but : trancoder les couples codes postal/code pays en code NUTS         --
+-- auteur : J-M PERQUE CDS ATOS  01/03/2018                                --
+-- Specifications : Voir  US44 du  projet ANACREDIT Sprint 5 dans Taiga    --
+-- entrees : code  postal sur  5 caract?res                                --
+--           code pays sur  2 caract?res                                   --
+-- retour : Code NUTS sur 5 caracters                                      --
+-----------------------------------------------------------------------------
+    FUNCTION F_GET_CODE_NUTS (CD_POSTAL IN VARCHAR2, CD_PAYS IN VARCHAR2)  RETURN VARCHAR2
+
+	IS
+	V_CODE_NUTS varchar2(10); -- Code NUTS a renvoyer
+	V_CODE_DEP varchar2(3); -- Code du departement
+	V_NB_NUTS NUMBER; -- Nombre dde code NUTS du code postal en table
+	BEGIN
+
+
+	-- Si le code pays est 'FR'
+	IF ( CD_PAYS ='FR')  THEN
+
+	--Si le code postal est sup?rieur ? 97000 prendre pour code d?partement les 3 premiers caract?res du code postal (DOM-TOM),
+		IF (CD_POSTAL >= '97000') THEN
+			V_CODE_DEP := substr(CD_POSTAL, 1,3);
+
+	--Sinon prendre pour code d?partement '0' concat?n? aux 2 premiers caract?res du code postal (M?tropole et  Corse)
+		ELSE
+			V_CODE_DEP := '0'|| substr(CD_POSTAL, 1,2);
+		END IF;
+	--compter le nombre de code NUTS (CD_NUTS) de  pour  ce code d?partement (CD_DEPT_INSEE) dans la table RS_CORRES_DEPT_NUTS.
+
+		select count(1)
+			into V_NB_NUTS
+			from RS_CORRES_DEPT_NUTS
+			where  CD_DEPT_INSEE = V_CODE_DEP;
+	--S'il y  en a un pr?cis?ment le  retourner comme code NUTS
+		IF (V_NB_NUTS = 1)
+		THEN
+			select CD_NUTS
+				into V_CODE_NUTS
+				from RS_CORRES_DEPT_NUTS
+				where  CD_DEPT_INSEE = V_CODE_DEP;
+	--Sinon retourner comme code NUTS le code pays compl?t? avec 'ZZZ'
+		ELSE
+			V_CODE_NUTS := CD_PAYS||'ZZZ';
+		END  IF;
+	-- Sinon
+	ELSE
+
+    -- IF (CD_PAYS IS NOT NULL)
+	-- Si c'est  un pays de  l'Union Europ?enne
+	IF (CD_PAYS IN ('BE', 'BG', 'CZ', 'DK',
+	'DE', 'EE', 'IE', 'EL', 'ES', 'HR', 'IT', 'CY', 'LV',
+	'LT', 'LU', 'HU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO',
+	'SI', 'SK', 'FI', 'SE', 'UK') )
+    THEN
+    -- Retourner comme code NUTS le code  pays compl?t? avec 'ZZZ'
+      V_CODE_NUTS := CD_PAYS||'ZZZ';
+    -- Fin si le code pays est 'FR'
+    ELSE
+      V_CODE_NUTS := NULL;
+    END IF;
+	END IF;
+
+	RETURN V_CODE_NUTS;
+
+	END  F_GET_CODE_NUTS;
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_CODE_EFFECTIF_NB_SALARIE                                        --
+-- but : trancoder le code effectif en la valeur basse des effectifs de ce code         --
+-- auteur : J-M PERQUE CDS ATOS  28/05/2018                                --
+-- Specifications : Voir  US346 du  projet ANACREDIT     --
+-- entrees : EFFECTIF : Code Effectif en NUMBER
+-- retour : Nombre de salari?s pour la tranche basse                                     --
+-----------------------------------------------------------------------------
+    FUNCTION F_CODE_EFFECTIF_NB_SALARIE (EFFECTIF IN NUMBER)  RETURN NUMBER
+
+	IS
+
+	V_RET NUMBER; -- Nombre de salari?s renvoy? pour la tranche EFFECTIF
+	BEGIN
+
+    select DECODE (NVL(EFFECTIF, -999)
+	 ,-999, NULL -- Null -> Null
+	,0, 0 -- 0	0 salari?
+	,1, 1 -- 1	1 ou 2 salari?s
+	,2, 3 -- 2	3 ? 5 salari?s
+	,3, 6 -- 3	6 ? 9 salari?s
+	, 11, 10  -- 11	10 ? 19 salari?s
+	, 12, 20  -- 12	20 ? 49 salari?s
+	, 21, 50  -- 21	50 ? 99 salari?s
+	, 22, 100  -- 22	100 ? 199 salari?s
+	, 31, 200  -- 31	200 ? 249 salari?s
+	, 32, 250   -- 32	250 ? 499 salari?s
+	, 41, 500  -- 41	500 ? 999 salari?s
+	, 42, 1000 -- 42	1000 ? 1999 salari?s
+	, 51, 2000  -- 51	2000 ? 4999 salari?s
+	, 52, 5000  -- 52	5000 ? 9999 salari?s
+	, 53, 10000 -- 53	10 000 salari?s et plus
+	)
+	INTO V_RET
+	FROM Dual;
+
+	RETURN V_RET;
+
+	END  F_CODE_EFFECTIF_NB_SALARIE;
+
+	------------------------------------------------------------------------------------------
+-- nom : fonction  F_DATE_ARRETE_TRIMESTRE_PREC                                        		--
+-- but : calculer de la date d'arr?t? du trimestre pr?c?dant la date en argument       		--
+-- auteur : J-M PERQUE CDS ATOS  10/07/2018 			                               		--
+-- Specifications : Voir  US418 du  projet ANACREDIT  						   		   		--
+-- entrees : DT : Date dont la date d'arr?t? du trimestre pr?c?dent doit ?tre calcul?e DATE --
+-- retour : Date d'arr?t? du trimestre pr?c?dent                                      		--
+----------------------------------------------------------------------------------------------
+	FUNCTION F_DATE_ARRETE_TRIMESTRE_PREC(DT DATE) RETURN DATE
+    IS
+	V_RET DATE; -- Nombre de salari?s renvoy? pour la tranche EFFECTIF
+	ANNEE NUMBER; -- Ann?e  de DT
+	MOIS NUMBER; -- Mois de DT
+	BEGIN
+	IF  (DT  IS NULL) THEN
+		V_RET := NULL;
+	ELSE
+		SELECT EXTRACT (month FROM DT) INTO MOIS FROM DUAL;
+		SELECT EXTRACT (year FROM DT) INTO ANNEE FROM DUAL;
+		SELECT CASE  WHEN MOIS IN (1, 2, 3) THEN TO_DATE('31-12-'|| TO_CHAR(ANNEE -1),'DD-MM-YYYY')
+				WHEN MOIS IN (4, 5, 6) THEN TO_DATE('31-03-'|| TO_CHAR(ANNEE),'DD-MM-YYYY')
+				WHEN MOIS IN (7, 8, 9) THEN TO_DATE('30-06-'|| TO_CHAR(ANNEE),'DD-MM-YYYY')
+				WHEN MOIS IN (10, 11, 12) THEN TO_DATE('30-09-'|| TO_CHAR(ANNEE),'DD-MM-YYYY')
+				END
+        INTO V_RET
+		FROM DUAL;
+	END IF;
+	RETURN V_RET;
+
+	END F_DATE_ARRETE_TRIMESTRE_PREC;
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_13_2                                   --
+-- but : formater un montant au format attendu dans le CRR                 --
+-- auteur : H. GOMES                                                       --
+-- entree : montant entier en format numerique                             --
+-- retour : montant au format caraere formate de la maniere suivante:      --
+-- 13 dont signe et 2 décimales
+--    valeur 1    '+000000000100'  si montant > 0                          --
+--    valeur -1   '-000000000100'  si montant < 0                          --
+--    valeur null '+000000000000'  si montant null                         --
+--    valeur 0    '+000000000000'  si montant egal a 0                     --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_13_2 (MNT_13_2  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_13_2_FORMATE   VARCHAR2(13);
+
+BEGIN
+
+	    select  case when MNT_13_2 > 0 then '+'||LPAD(NVL(to_char(abs(trunc(MNT_13_2))), 0), 10, 0)||RPAD(NVL(substr(To_char(MNT_13_2 - TRUNC(MNT_13_2) ),2),0),2,0)
+            when MNT_13_2 < 0 then '-'||LPAD(NVL(to_char(abs(trunc(MNT_13_2))), 0), 10, 0)||RPAD(NVL(substr(To_char(abs(MNT_13_2) - TRUNC(abs(MNT_13_2)) ),2),0),2,0)
+            when MNT_13_2 is null then '+'||LPAD(0, 10, 0)||'00'
+            when MNT_13_2 = 0 then '+'||LPAD(0, 10, 0)||'00'
+            end into v_MNT_13_2_FORMATE
+    from dual;
+
+  RETURN v_MNT_13_2_FORMATE;
+
+END F_FORMAT_MONTANT_13_2;
+
+-----------------------------------------------------------------------------
+-- nom : fonction F_FORMAT_MONTANT_NEGATIF_19                             --
+-- but : envoyer uniquement des valeurs positives, 0 pour les autres cas   --
+-- auteur : H. GOMES                                                       --
+-- entree : montant entier en format numerique                             --
+-- retour : montant au format caratere formate de la maniere suivante:     --
+--          '+0000000000123456  '  si montant > 0                          --
+--          '+0000000000000000  '  si montant < 0, null ou egal a 0        --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_NEGATIF_19  (MNT_BIS2  NUMBER)  RETURN VARCHAR2
+IS
+
+  v_MNT_BIS2_FORMATE   VARCHAR2(19);
+
+BEGIN
+
+	    select  case when mnt_bis2 > 0 then '+'||LPAD(NVL(to_char(abs(trunc(mnt_bis2))), 0), 16, 0)||RPAD(NVL(substr(To_char(mnt_bis2 - TRUNC(mnt_bis2) ),2),0),2,0)
+            when mnt_bis2 < 0     then '+'||LPAD(0, 16, 0)||'00'
+            when mnt_bis2 is null then '+'||LPAD(0, 16, 0)||'00'
+            when mnt_bis2 = 0     then '+'||LPAD(0, 16, 0)||'00'
+            end into v_MNT_BIS2_FORMATE
+    from dual;
+
+  RETURN v_MNT_BIS2_FORMATE;
+
+END F_FORMAT_MONTANT_NEGATIF_19 ;
+
+-----------------------------------------------------------------------------
+-- nom : fonction  F_FORMAT_MONTANT_DYNAMIC                                        --
+-- but : formater un montant au format attendu dans le CRR                 --
+-- auteur : P. MESQUITA                                                       --
+-- entree :                                                                --
+--   - MNT  : montant entier en format numerique                           --
+--   - N_CAR: taille totalle                                               --
+--   - N_DEC: nombre de chiffres decimales                                 --
+--   - SIGNE: flag pour afficher (1) ou pas (0) le signal (+/-):           --
+--            avec signal par défaut                                       --
+--   - SEPARATEUR: separateur decimale:                                    --
+--                 sans separateur par défaut                              --
+-- retour : montant au format caraere formate de la maniere suivante:      --
+-- N_CAR = 13 dont signe = 1 et N_DEC = 2 décimales pour MNT = 1           --
+--    valeur 1    '+000000000100'  si montant > 0                          --
+--    valeur -1   '-000000000100'  si montant < 0                          --
+--    valeur null '+000000000000'  si montant null                         --
+--    valeur 0    '+000000000000'  si montant egal a 0                     --
+-----------------------------------------------------------------------------
+FUNCTION F_FORMAT_MONTANT_DYNAMIC (MNT  NUMBER, N_CAR NUMBER, N_DEC NUMBER:=0, SIGNE CHAR:='1', SEPARATEUR VARCHAR2:='' ) RETURN VARCHAR2
+IS
+
+  v_MNT    VARCHAR2(32767);
+  v_LENGTH NUMBER;
+
+BEGIN
+      v_LENGTH := N_CAR - CASE WHEN SIGNE='1' THEN 1 ELSE 0 END - NVL(LENGTH(SEPARATEUR), 0);
+
+	    select
+        case when MNT > 0          then case when SIGNE='1' then '+' else '' end || LPAD(NVL(to_char(abs(trunc(MNT))), 0), v_LENGTH - n_dec, 0)||SEPARATEUR||RPAD(NVL(substr(To_char(MNT - TRUNC(MNT) ),case when mnt <0 then 3 else 2 end),0),n_dec,0)
+             when MNT < 0          then case when SIGNE='1' then '-' else '' end || LPAD(NVL(to_char(abs(trunc(MNT))), 0), v_LENGTH - n_dec, 0)||SEPARATEUR||RPAD(NVL(substr(To_char(MNT - TRUNC(MNT) ),case when mnt <0 then 3 else 2 end),0),n_dec,0)
+             when NVL(MNT, 0 ) = 0 then case when SIGNE='1' then '+' else '' end || LPAD(0, v_LENGTH-n_dec, 0)||SEPARATEUR||RPAD(0,n_dec,0)
+            end into v_MNT
+    from dual;
+
+  RETURN v_MNT;
+
+END F_FORMAT_MONTANT_DYNAMIC;
+
+
+END pack_utilitaire;
+/
+
