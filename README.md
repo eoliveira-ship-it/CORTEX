@@ -8,7 +8,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 
 | Ticket | Assunto | Estado |
 |---|---|---|
-| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure de alimentação | 🟢 testes verdes; falta o spool vPACT |
+| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 gerado; falta correr a não-regressão |
 | **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | ⬜ não iniciado |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | ⬜ não iniciado |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
@@ -42,7 +42,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 ## Ordem de execução no Oracle
 
 ```
-1. ENG_CORP_P1_BIS.sql           cria a tabela (666 colunas)
+1. ENG_CORP_P1_BIS.sql           cria a tabela (667 colunas)
 2. pack_alim_tab_envoi_crrv4.sql compila o package
 3. TESTES.sql                    executa a procedure e corre os 4 testes
 ```
@@ -54,7 +54,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 | T1 | Estrutura | a tabela na base é a que o DDL manda? (666 colunas + as 15 alargadas) |
 | T2 | Package | o código compilado é o do repositório? |
 | T3 | Volumetria | as linhas inseridas são as que os 8 `WHERE` do spool devolvem? (`ecart` = 0) |
-| T4 | Round-trip | o valor guardado reproduz o que o spool escreve hoje? (174 colunas × 200 engajamentos) |
+| T4 | Round-trip | o valor guardado reproduz o que o spool escreve hoje? (196 colunas × 200 engajamentos) |
 
 T4 é o teste central: para cada coluna corre a expressão do spool sobre
 `ENG_CORP_P1` e a mesma expressão sobre `ENG_CORP_P1_BIS`, na mesma linha e na
@@ -76,6 +76,8 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
 | `tipos` | Tipos reais das colunas de `ENG_CORP_P1`, lidos do dicionario |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
+| `030_spool_Extract_CRRCORP_vPACT.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
+| `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
 | `TESTES.sql` | Ficheiro unico de testes: estrutura, package, volumetria, round-trip |
 | `testes` | Resultado da 1a execucao dos testes |

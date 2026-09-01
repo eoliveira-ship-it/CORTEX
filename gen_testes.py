@@ -15,6 +15,7 @@ Os diagnosticos pontuais (precisao, tipos, divergencias) serviram para
 resolver problemas ja fechados e nao entram aqui.
 """
 import io
+import json
 import re
 import sys
 
@@ -59,65 +60,25 @@ def col_de(ref):
 
 
 # --------------------------------------------------- T4 : pares round-trip
-porcol = {}
-com_dados = set()   # ancoras que TEM um token com dados de origem
-pos = 0
-for t in tokenize(589, 1068):
-    w = width(t['raw'])
-    if w is None:
-        nf = next((f for f in v44 if f['start'] == pos), None)
-        w = nf['len'] if nf else 0
-    ach = [f for f in v44 if f['start'] < pos + w and f['start'] + f['len'] > pos]
-    pos += w
-    col = None
-    if t.get('ref'):                       # ancora do spool: prevalece
-        num = t['ref'].split()[1].replace('.', '_')
-        for cand in ('P1_' + num, 'P1_H_' + num):
-            if cand in COLS:
-                col = cand
-                break
-    if col is None and len(ach) == 1:      # senao, a regua V44
-        col = col_de(ach[0]['ref'])
-    if col is None or col not in ALIMENTADAS or col not in COLS:
-        continue
-    if 'C_ENR.' in t['raw'].upper():
-        com_dados.add(col)
-    bruto = re.sub(r'\s+', ' ', t['raw']).strip().rstrip('|').strip()
-    if ':MASYSDATE' in bruto.upper():
-        continue                           # depende do momento da execucao
-    conv = re.sub(r'\s+', ' ', convert(t['raw'])).strip()
-    if conv and conv in bruto:
-        refeito = bruto.replace(conv, 'B.' + col)
-    else:
-        fontes = set(re.findall(r'C_ENR\.([A-Za-z0-9_]+)', bruto))
-        if len(fontes) != 1:
-            continue                       # varias origens: reconstrucao insegura
-        refeito = re.sub(r'C_ENR\.' + fontes.pop() + r'\b', 'B.' + col, bruto, flags=re.I)
-    if refeito == bruto:
-        continue
-    # Um campo pode estar partido em dois tokens que partilham a ancora: o
-    # sinal e o valor. Ex., em P1 31.17:
-    #     RPAD('+',1) || case when ... LPAD(CEIL(...),5,'0') ... end
-    # So o segundo transporta dados. Guardam-se os dois e escolhe-se depois,
-    # senao a ancora ficava presa ao literal '+' e a coluna comparava o sinal
-    # com o valor guardado -- falha em 100% das linhas.
-    porcol.setdefault(col, []).append((bruto, refeito))
+# A lista vem do gen_spool_vpact.py: sao exatamente os campos que o spool
+# vPACT emite, com a expressao ORIGINAL do spool ao lado da expressao nova.
+# O teste compara as duas na mesma linha -- se sao iguais, o ficheiro sai
+# igual. Nao se duplica aqui a logica de reconstrucao: usa-se a do gerador.
+PARES = json.load(open('pares_vpact.json', encoding='utf-8'))
 
-# por coluna: o token que referencia a origem ganha; se nenhum referencia, e
-# uma coluna de valor constante ('EUR', 'P1', ...) e fica o primeiro.
 pares = []
 EXCLUIDAS = []
-for col, lst in porcol.items():
-    escolha = next((x for x in lst if 'C_ENR.' in x[0].upper()), None)
-    if escolha is None:
-        # nenhum candidato utilizavel. Se a ancora TINHA um token com dados,
-        # esse token foi rejeitado (varias colunas de origem: reconstrucao
-        # insegura) e o que sobra e so o sinal -- comparar isso nao diz nada.
-        if col in com_dados:
-            EXCLUIDAS.append(col)
-            continue
-        escolha = lst[0]        # coluna de valor constante ('EUR', 'P1', ...)
-    pares.append((col, escolha[0], escolha[1]))
+for p in PARES:
+    if ':MASYSDATE' in p['orig'].upper():
+        continue                       # depende do momento da execucao
+    if p['col'] in ('composta', 'explicita'):
+        # o valor vem de varias colunas: a expressao vPACT nao referencia uma
+        # so coluna, mas compara-se na mesma -- e o que interessa e o resultado
+        pares.append((('pos %d' % p['off']), p['orig'],
+                      re.sub(r'\b(P1_[A-Z0-9_]+)\b', r'B.\1', p['vpact'])))
+        continue
+    pares.append((p['col'], p['orig'],
+                  re.sub(r'\b(P1_[A-Z0-9_]+)\b', r'B.\1', p['vpact'])))
 
 casos = NL.join(
     "         CASE WHEN NVL(%s,%s@%s) <> NVL(%s,%s@%s)" % (o, Q, Q, r, Q, Q)
@@ -125,36 +86,34 @@ casos = NL.join(
     for c, o, r in pares).rstrip('|').rstrip()
 
 # ------------------------------------------------------- T3 : volumetria
-BASE = ("      A_EXTRAIRE = 'O'" + NL
-        + "      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')" + NL)
-NOTIN = "      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')" + NL
-HN = "      AND C_ENR.FLAG_HN = 'O'" + NL
-VARIANTES = [
-    ("      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'N'" + NL
-     + "      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'" + NL
-     + "      AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1" + NL
-     + "            OR NVL(C_ENR.MNT_VR,0) >= 1 )" + NL + NOTIN),
-    ("      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'" + NL
-     + "      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'" + NL
-     + "      AND NVL(C_ENR.MNT_SOLD_K_A,0) >= 1" + NL + NOTIN
-     + "      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )" + NL),
-    ("      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'" + NL
-     + "      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'" + NL + NOTIN
-     + "      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )" + NL
-     + "      AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1" + NL
-     + "            OR NVL(C_ENR.MNT_VR,0) >= 1 )" + NL),
-    (HN + "      AND C_ENR.CD_TYPE_RISQUE IN ('TRE100')" + NL),
-    (HN + "      AND SUBSTR(C_ENR.CD_TYPE_RISQUE,1,4) IN ('TRE2','TRE4','TRE5')" + NL),
-    (HN + "      AND C_ENR.CD_TYPE_RISQUE IN ('EQU101')" + NL),
-    (HN + "      AND C_ENR.CD_TYPE_RISQUE IN ('SIG201','INR101')" + NL),
-    (HN + "      AND C_ENR.CD_TYPE_RISQUE LIKE '%VAR1%'" + NL),
-]
+# Os 8 WHERE sao lidos do SPOOL, nao copiados da procedure. E a diferenca que
+# torna o teste util: se a procedure perder uma condicao -- aconteceu, o
+# INSERT #1 ficou sem o "NOT LIKE 'TRE2%'" -- o ecart deixa de ser zero. Um
+# teste que reutilizasse as constantes do gerador nunca daria por isso.
+FIM_DOS_BLOCOS = [(1, 1068), (2, 1575), (3, 2069), (4, 3449),
+                  (5, 4010), (6, 4593), (7, 5049), (8, 5628)]
+LIN = open('spool.sql', encoding='latin-1').read().split(NL)
+
+
+def where_do_spool(fim):
+    txt, k = [], fim
+    while ';' not in LIN[k]:
+        txt.append(LIN[k])
+        k += 1
+    txt.append(LIN[k].split(';')[0])
+    b = NL.join(txt)
+    b = b[b.upper().index('WHERE') + 5:]
+    b = NL.join(l.split('--')[0].rstrip() for l in b.split(NL))
+    b = b.replace(':ENTITE', Q + 'TOTAL' + Q)
+    return NL.join('      ' + l.strip() for l in b.split(NL) if l.strip())
+
+
 uni = []
-for i, extra in enumerate(VARIANTES, 1):
-    per = 'NAT02' if i <= 3 else 'HORS_NAT02'
+for n, fim in FIM_DOS_BLOCOS:
+    per = 'NAT02' if n <= 3 else 'HORS_NAT02'
     uni.append("    SELECT %d AS variante, %s%s%s AS perimetre, COUNT(*) AS nb%s"
-               % (i, Q, per, Q, NL)
-               + "      FROM ENG_CORP_P1 C_ENR WHERE" + NL + BASE + extra.rstrip(NL))
+               % (n, Q, per, Q, NL)
+               + "      FROM ENG_CORP_P1 C_ENR WHERE" + NL + where_do_spool(fim))
 
 # ---------------------------------------------------------------- montagem
 S = []

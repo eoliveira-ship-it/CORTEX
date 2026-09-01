@@ -1,0 +1,1178 @@
+[
+ {
+  "off": 0,
+  "col": "P1_H_0_1",
+  "orig": "to_char(C_ENR.dt_arrete, 'YYYYMMDD')",
+  "vpact": "to_char(P1_H_0_1, 'YYYYMMDD')"
+ },
+ {
+  "off": 8,
+  "col": "P1_H_0_2",
+  "orig": "RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)",
+  "vpact": "RPAD(NVL(P1_H_0_2,' '), 5)"
+ },
+ {
+  "off": 13,
+  "col": "P1_H_0_3",
+  "orig": "RPAD(NVL(C_ENR.APPLI_SOURCE,'C_BTR'), 12)",
+  "vpact": "RPAD(NVL(P1_H_0_3,'C_BTR'), 12)"
+ },
+ {
+  "off": 50,
+  "col": "P1_H_1_1",
+  "orig": "RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)",
+  "vpact": "RPAD(NVL(P1_H_1_1, ' '), 20)"
+ },
+ {
+  "off": 80,
+  "col": "P1_H_1_4",
+  "orig": "RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)",
+  "vpact": "RPAD(NVL(P1_H_1_4, ' '), 30)"
+ },
+ {
+  "off": 110,
+  "col": "P1_H_1_6",
+  "orig": "RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)",
+  "vpact": "RPAD(NVL(P1_H_1_6, ' '), 30)"
+ },
+ {
+  "off": 180,
+  "col": "P1_H_1_11",
+  "orig": "RPAD(C_ENR.ID_ENGAGEMENT || '_C',40)",
+  "vpact": "RPAD(P1_H_1_11,40)"
+ },
+ {
+  "off": 280,
+  "col": "P1_1_1",
+  "orig": "RPAD(NVL(C_ENR.CD_METHODO_BALE2, 'STD'),7)",
+  "vpact": "RPAD(P1_1_1,7)"
+ },
+ {
+  "off": 287,
+  "col": "P1_1_2",
+  "orig": "RPAD(NVL(C_ENR.CODE_TRAIT_MOTEUR, '01'),2)",
+  "vpact": "RPAD(P1_1_2,2)"
+ },
+ {
+  "off": 290,
+  "col": "P1_2_0",
+  "orig": "RPAD(C_ENR.CD_TYPE_RISQUE,6)",
+  "vpact": "RPAD(P1_2_0,6)"
+ },
+ {
+  "off": 296,
+  "col": "P1_2_4",
+  "orig": "NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B')",
+  "vpact": "NVL(P1_2_4,'B')"
+ },
+ {
+  "off": 297,
+  "col": "P1_2_6",
+  "orig": "RPAD(C_ENR.CD_LIGNE_METIER,5)",
+  "vpact": "RPAD(P1_2_6,5)"
+ },
+ {
+  "off": 302,
+  "col": "P1_2_18",
+  "orig": "RPAD(C_ENR.CD_PORTEFEUILLE_BALE2,3)",
+  "vpact": "RPAD(P1_2_18,3)"
+ },
+ {
+  "off": 305,
+  "col": "P1_2_29",
+  "orig": "RPAD(nvl(C_ENR.CD_NATURE_OPE, 'NA020'),12)",
+  "vpact": "RPAD(nvl(P1_2_29, 'NA020'),12)"
+ },
+ {
+  "off": 317,
+  "col": "P1_3_2",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_ENG, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_3_2, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 325,
+  "col": "P1_3_4",
+  "orig": "NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630')",
+  "vpact": "NVL(TO_CHAR(P1_3_4, 'YYYYMMDD'),'99990630')"
+ },
+ {
+  "off": 343,
+  "col": "P1_18_1",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF_LOCAL)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_18_1)"
+ },
+ {
+  "off": 353,
+  "col": "P1_18_10",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_TRC)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_18_10)"
+ },
+ {
+  "off": 363,
+  "col": "P1_18_5",
+  "orig": "pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_EAD_TOT),0) <0 THEN 0 ELSE nvl((C_ENR.MNT_EAD_TOT),0)END )",
+  "vpact": "pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((P1_18_5),0) <0 THEN 0 ELSE nvl((P1_18_5),0)END )"
+ },
+ {
+  "off": 382,
+  "col": "P1_18_17",
+  "orig": "RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)",
+  "vpact": "RPAD(NVL(P1_18_17, ' '), 3)"
+ },
+ {
+  "off": 385,
+  "col": "P1_18_18",
+  "orig": "RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)",
+  "vpact": "RPAD(NVL(P1_18_18, ' '), 3)"
+ },
+ {
+  "off": 440,
+  "col": "P1_21_2",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_RESTRUCTURATION, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_2, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 448,
+  "col": "P1_5_5",
+  "orig": "NVL(C_ENR.CD_ARR_PAIEMENT, 'N')",
+  "vpact": "P1_5_5"
+ },
+ {
+  "off": 449,
+  "col": "P1_4_1",
+  "orig": "NVL(C_ENR.CD_IMP_PRUDENT, 'N')",
+  "vpact": "P1_4_1"
+ },
+ {
+  "off": 450,
+  "col": "P1_5_2",
+  "orig": "NVL(C_ENR.TOP_ENG_DOUTEUX, 'N')",
+  "vpact": "P1_5_2"
+ },
+ {
+  "off": 451,
+  "col": "explicita",
+  "orig": "Case When C_ENR.TOP_ENG_DOUTEUX = 'Y' then to_char(nvl(C_ENR.DT_ENG_DOUTEUX,C_ENR.dt_arrete), 'YYYYMMDD') else RPAD(' ', 8) END",
+  "vpact": "NVL(TO_CHAR(P1_5_3, 'YYYYMMDD'), RPAD(' ', 8))"
+ },
+ {
+  "off": 478,
+  "col": "P1_4_3",
+  "orig": "RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, 'EUR'), 3)",
+  "vpact": "RPAD(P1_4_3, 3)"
+ },
+ {
+  "off": 481,
+  "col": "composta",
+  "orig": "CASE WHEN C_ENR.CD_TYPE_RISQUE='TRE201' THEN '+0000000000000000'|| RPAD(NVL(C_ENR.CD_DEVISE_MNT_DECOUVERT, 'EUR'), 3) ELSE RPAD (' ', 22) END",
+  "vpact": "CASE WHEN P1_4_5 IS NULL THEN RPAD(' ', 22) ELSE pack_utilitaire.f_format_montant_bis2(P1_4_4)||RPAD(P1_4_5, 3) END"
+ },
+ {
+  "off": 503,
+  "col": "P1_4_9",
+  "orig": "pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_RISQUE),0))",
+  "vpact": "pack_utilitaire.f_format_montant_bis2(nvl((P1_4_9),0))"
+ },
+ {
+  "off": 522,
+  "col": "P1_4_13",
+  "orig": "RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)",
+  "vpact": "RPAD(NVL(P1_4_13, ' '), 3)"
+ },
+ {
+  "off": 525,
+  "col": "composta",
+  "orig": "CASE WHEN C_ENR.CD_TYPE_RISQUE='TRE401' THEN RPAD(' ',22) ELSE pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_LOYER,0)) || RPAD(NVL(C_ENR.CD_DEVISE_CRD, 'EUR'), 3) END",
+  "vpact": "CASE WHEN P1_4_15 IS NULL THEN RPAD(' ', 22) ELSE pack_utilitaire.f_format_montant_bis2(P1_4_14)||RPAD(P1_4_15, 3) END"
+ },
+ {
+  "off": 569,
+  "col": "P1_4_18",
+  "orig": "RPAD (nvl(C_ENR.PCCO_MNT_CRD,' '), 12)",
+  "vpact": "RPAD (nvl(P1_4_18,' '), 12)"
+ },
+ {
+  "off": 581,
+  "col": "explicita",
+  "orig": "Case when (C_ENR.CD_TYPE_RISQUE LIKE 'TRE5%' OR C_ENR.CD_TYPE_RISQUE LIKE 'TRE4%') THEN pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_SOLD_K_A),0) <0 THEN 0 ELSE nvl((C_ENR.MNT_SOLD_K_A),0)END ) ELSE RPAD (' ', 19) END",
+  "vpact": "CASE WHEN P1_4_6 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(P1_4_6) END"
+ },
+ {
+  "off": 600,
+  "col": "P1_4_7",
+  "orig": "RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)",
+  "vpact": "RPAD(NVL(P1_4_7, ' '), 3)"
+ },
+ {
+  "off": 603,
+  "col": "P1_4_19",
+  "orig": "RPAD(NVL(C_ENR.PCEC_ICNE, ' '), 12)",
+  "vpact": "RPAD(NVL(P1_4_19, ' '), 12)"
+ },
+ {
+  "off": 625,
+  "col": "P1_4_21",
+  "orig": "CASE WHEN C_ENR.MNT_VTR IS null THEN RPAD (' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VTR),0)) END",
+  "vpact": "CASE WHEN P1_4_21 IS null THEN RPAD (' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(nvl((P1_4_21),0)) END"
+ },
+ {
+  "off": 644,
+  "col": "P1_4_22",
+  "orig": "CASE WHEN C_ENR.MNT_VTR IS null THEN RPAD (' ', 3) ELSE 'EUR' END",
+  "vpact": "CASE WHEN P1_4_22 IS null THEN RPAD (' ', 3) ELSE 'EUR' END"
+ },
+ {
+  "off": 647,
+  "col": "P1_4_23",
+  "orig": "RPAD (nvl(C_ENR.CD_CIRCUIT_DISTRIB, 'CL'),2)",
+  "vpact": "RPAD (nvl(P1_4_23, 'CL'),2)"
+ },
+ {
+  "off": 710,
+  "col": "P1_3_46",
+  "orig": "NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')",
+  "vpact": "NVL(P1_3_46,' ')"
+ },
+ {
+  "off": 711,
+  "col": "P1_3_47",
+  "orig": "NVL(C_ENR.CD_RESPECT_COND, ' ')",
+  "vpact": "NVL(P1_3_47, ' ')"
+ },
+ {
+  "off": 712,
+  "col": "explicita",
+  "orig": "Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VTR),0)) else RPAD (' ', 19) END",
+  "vpact": "CASE WHEN P1_3_40 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(P1_3_40) END"
+ },
+ {
+  "off": 731,
+  "col": "explicita",
+  "orig": "Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then RPAD(C_ENR.CD_DEV_VTR,3) else RPAD (' ', 3) END",
+  "vpact": "RPAD(NVL(P1_3_41, ' '), 3)"
+ },
+ {
+  "off": 734,
+  "col": "explicita",
+  "orig": "Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_HYPOTHEQUE),0)) else RPAD (' ', 19) END",
+  "vpact": "CASE WHEN P1_3_42 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(P1_3_42) END"
+ },
+ {
+  "off": 753,
+  "col": "explicita",
+  "orig": "Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then RPAD(C_ENR.CD_DEV_HYPOTH,3) else RPAD (' ', 3) END",
+  "vpact": "RPAD(NVL(P1_3_43, ' '), 3)"
+ },
+ {
+  "off": 756,
+  "col": "P1_3_44",
+  "orig": "RPAD(nvl(C_ENR.CD_LOC_BIEN, ' '), 2,' ')",
+  "vpact": "RPAD(nvl(P1_3_44, ' '), 2,' ')"
+ },
+ {
+  "off": 758,
+  "col": "P1_3_45",
+  "orig": "C_ENR.CD_ACHAT_FIN_LOC",
+  "vpact": "P1_3_45"
+ },
+ {
+  "off": 759,
+  "col": "P1_5_19",
+  "orig": "Case when nvl(C_ENR.MNT_VR,0) >= 0 then pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VR),0)) else pack_utilitaire.f_format_montant_bis2(0) END",
+  "vpact": "Case when nvl(P1_5_19,0) >= 0 then pack_utilitaire.f_format_montant_bis2(nvl((P1_5_19),0)) else pack_utilitaire.f_format_montant_bis2(0) END"
+ },
+ {
+  "off": 778,
+  "col": "P1_5_20",
+  "orig": "RPAD(nvl(C_ENR.CD_DEVISE_VR,'EUR'),3)",
+  "vpact": "RPAD(nvl(P1_5_20,'EUR'),3)"
+ },
+ {
+  "off": 781,
+  "col": "P1_19_5",
+  "orig": "RPAD(nvl(C_ENR.cla_comp_ref_act,' '),3)",
+  "vpact": "RPAD(nvl(P1_19_5,' '),3)"
+ },
+ {
+  "off": 969,
+  "col": "P1_2_99",
+  "orig": "RPAD(NVL(C_ENR.CD_METH_IFRS9_PD_ORIG,' '), 20)",
+  "vpact": "RPAD(NVL(P1_2_99,' '), 20)"
+ },
+ {
+  "off": 1351,
+  "col": "P1_4_31",
+  "orig": "RPAD(C_ENR.IND_PROD_SS_JACENT, 1,' ')",
+  "vpact": "RPAD(P1_4_31, 1,' ')"
+ },
+ {
+  "off": 1419,
+  "col": "P1_3_20",
+  "orig": "Substr(pack_utilitaire.F_FORMAT_TAUX (nvl(C_ENR.MATURITE_EFF,0)) ,4,6)",
+  "vpact": "Substr(pack_utilitaire.F_FORMAT_TAUX (nvl(P1_3_20,0)) ,4,6)"
+ },
+ {
+  "off": 1425,
+  "col": "P1_4_8",
+  "orig": "NVL(C_ENR.TOP_ENG,'B')",
+  "vpact": "NVL(P1_4_8,'B')"
+ },
+ {
+  "off": 1431,
+  "col": "P1_4_42",
+  "orig": "RPAD(nvl(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')",
+  "vpact": "RPAD(nvl(P1_4_42,' '),6,' ')"
+ },
+ {
+  "off": 1437,
+  "col": "P1_3_3",
+  "orig": "RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)",
+  "vpact": "RPAD(nvl(TO_CHAR(P1_3_3, 'YYYYMMDD'),' '),8)"
+ },
+ {
+  "off": 1452,
+  "col": "P1_4_47",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_DISPO_FONDS, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_4_47, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 1595,
+  "col": "P1_4_29",
+  "orig": "Case when (C_ENR.CD_TYPE_RISQUE LIKE 'TRE2%' OR C_ENR.CD_TYPE_RISQUE LIKE 'TRE4%') THEN 'N' ELSE ' ' END",
+  "vpact": "P1_4_29"
+ },
+ {
+  "off": 2157,
+  "col": "P1_21_3",
+  "orig": "RPAD(nvl(C_ENR.EVENMT_CRDT,' '),1)",
+  "vpact": "RPAD(nvl(P1_21_3,' '),1)"
+ },
+ {
+  "off": 2158,
+  "col": "P1_21_4",
+  "orig": "RPAD(nvl(C_ENR.NAT_CONT_EVENMT_CRDT,' '),1)",
+  "vpact": "RPAD(nvl(P1_21_4,' '),1)"
+ },
+ {
+  "off": 2159,
+  "col": "P1_21_5",
+  "orig": "RPAD(nvl(C_ENR.STA_CRDT,' '),1)",
+  "vpact": "RPAD(nvl(P1_21_5,' '),1)"
+ },
+ {
+  "off": 2160,
+  "col": "P1_21_6",
+  "orig": "RPAD(nvl(C_ENR.IND_CRE_PERF,' '),2)",
+  "vpact": "RPAD(nvl(P1_21_6,' '),2)"
+ },
+ {
+  "off": 2162,
+  "col": "P1_21_7",
+  "orig": "RPAD (NVL(TO_CHAR(C_ENR.DATE_PREM_ACT_FORB, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD (NVL(TO_CHAR(P1_21_7, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2170,
+  "col": "P1_21_8",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_DER_REST_COMM, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_8, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2178,
+  "col": "P1_21_9",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_DER_REST_RSQ, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_9, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2186,
+  "col": "P1_21_10",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PURG, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_10, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2194,
+  "col": "P1_21_11",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PURG, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_11, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2202,
+  "col": "P1_21_12",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PROB, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_12, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2210,
+  "col": "P1_21_13",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PROB, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_13, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2218,
+  "col": "P1_21_14",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_THEO_FIN_FORB, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_14, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2226,
+  "col": "P1_21_15",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_EFF_FORB, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_15, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2234,
+  "col": "P1_21_16",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_PL_NPL, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_16, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2250,
+  "col": "P1_22_56",
+  "orig": "RPAD(nvl(C_ENR.IND_PROD_ECH,' '),3)",
+  "vpact": "RPAD(nvl(P1_22_56,' '),3)"
+ },
+ {
+  "off": 2253,
+  "col": "P1_22_57",
+  "orig": "RPAD(nvl(C_ENR.IND_OBJ_MET_PAL,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_57,' '),1)"
+ },
+ {
+  "off": 2254,
+  "col": "P1_22_1",
+  "orig": "RPAD(nvl(C_ENR.REF_UNIQ_ELEM_CONT,' '),40)",
+  "vpact": "RPAD(nvl(P1_22_1,' '),40)"
+ },
+ {
+  "off": 2294,
+  "col": "P1_22_51",
+  "orig": "RPAD(nvl(C_ENR.REF_UNIQ_ELEM_CONT,' '),40)",
+  "vpact": "RPAD(nvl(P1_22_51,' '),40)"
+ },
+ {
+  "off": 2379,
+  "col": "P1_22_5",
+  "orig": "RPAD(nvl(C_enr.NOTE_FIN_RET_ORI, 'ND'),2)",
+  "vpact": "RPAD(nvl(P1_22_5, 'ND'),2)"
+ },
+ {
+  "off": 2381,
+  "col": "P1_22_52",
+  "orig": "RPAD(nvl(C_ENR.NOTE_EXT_ORI,' '),10)",
+  "vpact": "RPAD(nvl(P1_22_52,' '),10)"
+ },
+ {
+  "off": 2391,
+  "col": "P1_22_6",
+  "orig": "RPAD(nvl(C_ENR.ORGA_NOTATION_ORIG,' '),2,' ')",
+  "vpact": "RPAD(nvl(P1_22_6,' '),2,' ')"
+ },
+ {
+  "off": 2393,
+  "col": "P1_22_53",
+  "orig": "RPAD(nvl(C_ENR.SEG_NOT_ORI,' '),2)",
+  "vpact": "RPAD(nvl(P1_22_53,' '),2)"
+ },
+ {
+  "off": 2395,
+  "col": "P1_22_54",
+  "orig": "CASE WHEN C_ENR.GRI_MOD_NOT_ORI IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(C_ENR.GRI_MOD_NOT_ORI,21)||'FR',' '),46) END",
+  "vpact": "CASE WHEN P1_22_54 IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(P1_22_54,21)||'FR',' '),46) END"
+ },
+ {
+  "off": 2441,
+  "col": "P1_22_55",
+  "orig": "CASE WHEN C_ENR.METH_NOT_ORI = 'C3' THEN '999' ELSE RPAD(upper(nvl(C_ENR.METH_NOT_ORI,' ')),3) END",
+  "vpact": "CASE WHEN P1_22_55 = 'C3' THEN '999' ELSE RPAD(upper(nvl(P1_22_55,' ')),3) END"
+ },
+ {
+  "off": 2444,
+  "col": "P1_22_7",
+  "orig": "RPAD(nvl(C_ENR.OBJ_FINANCIE,'97'),2)",
+  "vpact": "RPAD(nvl(P1_22_7,'97'),2)"
+ },
+ {
+  "off": 2446,
+  "col": "P1_22_8",
+  "orig": "pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_CONTRAT_ORIGINE)",
+  "vpact": "pack_utilitaire.F_FORMAT_MONTANT_BIS2(P1_22_8)"
+ },
+ {
+  "off": 2465,
+  "col": "P1_22_9",
+  "orig": "RPAD(nvl(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR'), 3)",
+  "vpact": "RPAD(nvl(P1_22_9, 'EUR'), 3)"
+ },
+ {
+  "off": 2468,
+  "col": "P1_22_12",
+  "orig": "RPAD(nvl(C_ENR.IND_ECH_FOUR,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_12,' '),1)"
+ },
+ {
+  "off": 2469,
+  "col": "P1_22_13",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_INT_EFF_ORI)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_13)"
+ },
+ {
+  "off": 2479,
+  "col": "P1_22_14",
+  "orig": "RPAD(nvl(C_ENR.TYPE_TAUX,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_14,' '),1)"
+ },
+ {
+  "off": 2480,
+  "col": "P1_22_15",
+  "orig": "RPAD(nvl(C_ENR.IND_REF,' '),12)",
+  "vpact": "RPAD(nvl(P1_22_15,' '),12)"
+ },
+ {
+  "off": 2492,
+  "col": "P1_22_16",
+  "orig": "RPAD(nvl(C_ENR.TYPE_AMOR_CAP,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_16,' '),1)"
+ },
+ {
+  "off": 2493,
+  "col": "P1_22_17",
+  "orig": "RPAD(nvl(C_ENR.PRD_AMOR_CAP,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_17,' '),1)"
+ },
+ {
+  "off": 2494,
+  "col": "P1_22_18",
+  "orig": "RPAD(nvl(C_ENR.PRD_PMT_INT,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_18,' '),1)"
+ },
+ {
+  "off": 2495,
+  "col": "P1_22_19",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLT_OCT)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_19)"
+ },
+ {
+  "off": 2505,
+  "col": "P1_22_20",
+  "orig": "RPAD(nvl(C_ENR.MOD_REMB_CRE,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_20,' '),1)"
+ },
+ {
+  "off": 2506,
+  "col": "P1_22_21",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_PREM_ECH, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_21, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2514,
+  "col": "P1_22_22",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_DIFF_AMOR, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_22, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2522,
+  "col": "P1_22_23",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAFOND)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_23)"
+ },
+ {
+  "off": 2532,
+  "col": "P1_22_24",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLANCHER)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_24)"
+ },
+ {
+  "off": 2542,
+  "col": "P1_22_25",
+  "orig": "RPAD(nvl(C_ENR.PRD_REV_TAUX_UNIT_TMP,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_25,' '),1)"
+ },
+ {
+  "off": 2543,
+  "col": "P1_22_26",
+  "orig": "LPAD(nvl((C_ENR.PRD_REV_TAUX_NBR),0),3,0)",
+  "vpact": "LPAD(nvl((P1_22_26),0),3,0)"
+ },
+ {
+  "off": 2546,
+  "col": "P1_22_27",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLT_PRD_EN_CRS)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_27)"
+ },
+ {
+  "off": 2556,
+  "col": "P1_22_28",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MRG_ADD)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_28)"
+ },
+ {
+  "off": 2566,
+  "col": "P1_22_29",
+  "orig": "pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MRG_MULT)",
+  "vpact": "pack_utilitaire.F_FORMAT_TAUX(P1_22_29)"
+ },
+ {
+  "off": 2576,
+  "col": "P1_22_30",
+  "orig": "RPAD(nvl(C_ENR.BASE_CAL_INT,' '),7)",
+  "vpact": "RPAD(nvl(P1_22_30,' '),7)"
+ },
+ {
+  "off": 2583,
+  "col": "P1_22_31",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_PREM_DBLQ_FONDS, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_31, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2591,
+  "col": "P1_22_32",
+  "orig": "case when C_ENR.MNT_PREM_DBLQ_FONDS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PREM_DBLQ_FONDS) end",
+  "vpact": "case when P1_22_32 is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(P1_22_32) end"
+ },
+ {
+  "off": 2610,
+  "col": "P1_22_33",
+  "orig": "RPAD(nvl(C_ENR.DEVISE_PREM_DBLQ_FONDS,'EUR'),3)",
+  "vpact": "RPAD(nvl(P1_22_33,'EUR'),3)"
+ },
+ {
+  "off": 2613,
+  "col": "P1_22_34",
+  "orig": "pack_utilitaire.F_FORMAT_MONTANT_BIS2( CASE WHEN C_ENR.CAP_THEO_REST<0 THEN 0 ELSE C_ENR.CAP_THEO_REST END)",
+  "vpact": "pack_utilitaire.F_FORMAT_MONTANT_BIS2( P1_22_34)"
+ },
+ {
+  "off": 2632,
+  "col": "P1_22_35",
+  "orig": "RPAD(nvl(C_ENR.DEVI_CAP_THEO_REST,' '),3)",
+  "vpact": "RPAD(nvl(P1_22_35,' '),3)"
+ },
+ {
+  "off": 2635,
+  "col": "P1_22_36",
+  "orig": "RPAD(NVL(C_ENR.IND_RMB_ANTICIPE,' '),1,' ')",
+  "vpact": "RPAD(NVL(P1_22_36,' '),1,' ')"
+ },
+ {
+  "off": 2636,
+  "col": "P1_22_37",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.dt_exigte_prem_impy, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_37, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2644,
+  "col": "P1_22_38",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_PASSAGE_DOUTEUX_COMPROMIS, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_38, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2702,
+  "col": "P1_22_44",
+  "orig": "pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_ACQUISITION),0))",
+  "vpact": "pack_utilitaire.f_format_montant_bis2(nvl((P1_22_44),0))"
+ },
+ {
+  "off": 2774,
+  "col": "P1_22_58",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_PALL, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_58, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2782,
+  "col": "P1_22_59",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_PALL, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_59, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2790,
+  "col": "P1_22_60",
+  "orig": "pack_utilitaire.F_FORMAT_MONTANT_NEGATIF_19(C_ENR.MNT_ECH_EN_COURS)",
+  "vpact": "pack_utilitaire.F_FORMAT_MONTANT_NEGATIF_19(P1_22_60)"
+ },
+ {
+  "off": 2809,
+  "col": "P1_22_61",
+  "orig": "RPAD(nvl(C_ENR.DEVI_MNT_ECH_EN_COURS,' '),3)",
+  "vpact": "RPAD(nvl(P1_22_61,' '),3)"
+ },
+ {
+  "off": 2812,
+  "col": "P1_22_62",
+  "orig": "RPAD(nvl(C_ENR.IND_PRE_POST_FIX,' '),1)",
+  "vpact": "RPAD(nvl(P1_22_62,' '),1)"
+ },
+ {
+  "off": 2813,
+  "col": "P1_22_63",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_ENG_RENVL,'YYYYMMDD'),' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_63,'YYYYMMDD'),' '), 8)"
+ },
+ {
+  "off": 2833,
+  "col": "P1_22_66",
+  "orig": "RPAD(nvl(C_ENR.CD_PAYS_JURIDICTION, ' '), 2)",
+  "vpact": "RPAD(nvl(P1_22_66, ' '), 2)"
+ },
+ {
+  "off": 2835,
+  "col": "P1_22_67",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_22_67, 'YYYYMMDD'), ' '), 8)"
+ },
+ {
+  "off": 2846,
+  "col": "P1_22_70",
+  "orig": "LPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), ' '),5,'0')",
+  "vpact": "LPAD(NVL(to_char(P1_22_70), ' '),5,'0')"
+ },
+ {
+  "off": 2851,
+  "col": "P1_22_71",
+  "orig": "CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END",
+  "vpact": "CASE WHEN P1_22_71 is NULL then RPAD(' ', 3) ELSE LPAD(P1_22_71,3,'0') END"
+ },
+ {
+  "off": 2854,
+  "col": "P1_22_72",
+  "orig": "RPAD(nvl(C_ENR.BUCKET_IFRS9,' '),2)",
+  "vpact": "RPAD(nvl(P1_22_72,' '),2)"
+ },
+ {
+  "off": 2876,
+  "col": "P1_23_1",
+  "orig": "RPAD(nvl(C_ENR.ELI_OUT_MUT_PROV,' '),1)",
+  "vpact": "RPAD(nvl(P1_23_1,' '),1)"
+ },
+ {
+  "off": 2877,
+  "col": "P1_23_2",
+  "orig": "RPAD(nvl(C_ENR.CENTRE_RES,' '),7)",
+  "vpact": "RPAD(nvl(P1_23_2,' '),7)"
+ },
+ {
+  "off": 2884,
+  "col": "P1_23_3",
+  "orig": "RPAD(nvl(C_ENR.SYS_GEST_SRC,' '),20)",
+  "vpact": "RPAD(nvl(P1_23_3,' '),20)"
+ },
+ {
+  "off": 2904,
+  "col": "P1_23_4",
+  "orig": "RPAD(nvl(C_ENR.CLA_COMP_ACT_IFRS9,' '),3)",
+  "vpact": "RPAD(nvl(P1_23_4,' '),3)"
+ },
+ {
+  "off": 2907,
+  "col": "P1_23_5",
+  "orig": "RPAD(nvl(C_ENR.CLA_COMP_ACT_NATIONALE,' '),3)",
+  "vpact": "RPAD(nvl(P1_23_5,' '),3)"
+ },
+ {
+  "off": 2910,
+  "col": "P1_23_6",
+  "orig": "RPAD(nvl(C_ENR.IND_ACT_DEP_ORI,' '),1)",
+  "vpact": "RPAD(nvl(P1_23_6,' '),1)"
+ },
+ {
+  "off": 2911,
+  "col": "explicita",
+  "orig": "RPAD(C_ENR.PCCO_MNT_CRD || nvl(C_ENR.ZONE_APP_COMP,' '),40)",
+  "vpact": "RPAD(NVL(P1_23_7, ' '), 40)"
+ },
+ {
+  "off": 2961,
+  "col": "P1_23_8",
+  "orig": "RPAD (nvl(C_ENR.CD_METH_IFRS9_PD,' '), 12)",
+  "vpact": "RPAD (nvl(P1_23_8,' '), 12)"
+ },
+ {
+  "off": 2973,
+  "col": "P1_23_9",
+  "orig": "RPAD (nvl(C_ENR.CD_METH_IFRS9_LGD,' '), 12)",
+  "vpact": "RPAD (nvl(P1_23_9,' '), 12)"
+ },
+ {
+  "off": 2985,
+  "col": "P1_23_10",
+  "orig": "RPAD (nvl(C_ENR.CD_METH_IFRS9_CCF,' '), 12)",
+  "vpact": "RPAD (nvl(P1_23_10,' '), 12)"
+ },
+ {
+  "off": 2997,
+  "col": "P1_23_11",
+  "orig": "RPAD (nvl(C_ENR.CD_METH_IFRS9_TX,' '), 12)",
+  "vpact": "RPAD (nvl(P1_23_11,' '), 12)"
+ },
+ {
+  "off": 3011,
+  "col": "P1_24_1",
+  "orig": "RPAD(NVL(C_ENR.ELIGIB_PRUDENT_VAL,' '),1,' ')",
+  "vpact": "RPAD(NVL(P1_24_1,' '),1,' ')"
+ },
+ {
+  "off": 3661,
+  "col": "P1_26_1",
+  "orig": "RPAD(NVL(C_ENR.IND_MOBIL_ACTIF,' '),1,' ')",
+  "vpact": "RPAD(NVL(P1_26_1,' '),1,' ')"
+ },
+ {
+  "off": 3662,
+  "col": "P1_22_11",
+  "orig": "RPAD(NVL(C_ENR.ELIG_MOB_BANQUE_CENTRALE, ' '), 1)",
+  "vpact": "RPAD(NVL(P1_22_11, ' '), 1)"
+ },
+ {
+  "off": 3663,
+  "col": "P1_26_3",
+  "orig": "RPAD(NVL(C_ENR.REF_MOB_ACTIF, ' '), 3)",
+  "vpact": "RPAD(NVL(P1_26_3, ' '), 3)"
+ },
+ {
+  "off": 3666,
+  "col": "P1_26_4",
+  "orig": "RPAD(NVL(C_ENR.CD_ORGA_MOBIL, ' '), 3)",
+  "vpact": "RPAD(NVL(P1_26_4, ' '), 3)"
+ },
+ {
+  "off": 3735,
+  "col": "P1_27_3",
+  "orig": "RPAD(NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2'), 1)",
+  "vpact": "RPAD(P1_27_3, 1)"
+ },
+ {
+  "off": 3736,
+  "col": "P1_27_4",
+  "orig": "RPAD(NVL(C_ENR.MOTIF_EXCLU_ANACREDIT, ' '), 2)",
+  "vpact": "RPAD(NVL(P1_27_4, ' '), 2)"
+ },
+ {
+  "off": 3761,
+  "col": "P1_28_1",
+  "orig": "RPAD (nvl(C_ENR.IND_OPE_EFFET_LEVIER,' '), 1)",
+  "vpact": "RPAD (nvl(P1_28_1,' '), 1)"
+ },
+ {
+  "off": 3763,
+  "col": "P1_29_1",
+  "orig": "pack_utilitaire.F_FORMAT_MONTANT_BIS3(C_ENR.MNT_IDEMNITE_RES)",
+  "vpact": "pack_utilitaire.F_FORMAT_MONTANT_BIS3(P1_29_1)"
+ },
+ {
+  "off": 3782,
+  "col": "P1_29_2",
+  "orig": "RPAD (nvl(C_ENR.CD_DEV_MNT_INDEMNITE,' '), 3)",
+  "vpact": "RPAD (nvl(P1_29_2,' '), 3)"
+ },
+ {
+  "off": 4039,
+  "col": "P1_31_2",
+  "orig": "RPAD(NVL(C_ENR.REF_UNIQ_CONT, ' '), 40)",
+  "vpact": "RPAD(NVL(P1_31_2, ' '), 40)"
+ },
+ {
+  "off": 4079,
+  "col": "P1_31_3",
+  "orig": "RPAD(NVL(C_ENR.REF_UNIQ_ELEM_CONT, ' '), 40)",
+  "vpact": "RPAD(NVL(P1_31_3, ' '), 40)"
+ },
+ {
+  "off": 4119,
+  "col": "P1_31_4",
+  "orig": "RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT),19)",
+  "vpact": "RPAD(pack_utilitaire.f_format_montant_bis2(P1_31_4),19)"
+ },
+ {
+  "off": 4138,
+  "col": "P1_31_5",
+  "orig": "RPAD(NVL(C_ENR.IND_RESPO_SOLIDAIRE, ' '), 1)",
+  "vpact": "RPAD(NVL(P1_31_5, ' '), 1)"
+ },
+ {
+  "off": 4139,
+  "col": "P1_31_6",
+  "orig": "RPAD (NVL(C_ENR.IND_ISF,'2'), 1)",
+  "vpact": "RPAD (NVL(P1_31_6,'2'), 1)"
+ },
+ {
+  "off": 4147,
+  "col": "P1_31_9",
+  "orig": "RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')",
+  "vpact": "RPAD(NVL(P1_31_9, ' '),15,' ')"
+ },
+ {
+  "off": 4162,
+  "col": "P1_31_10",
+  "orig": "RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')",
+  "vpact": "RPAD(NVL(P1_31_10, ' '),2,' ')"
+ },
+ {
+  "off": 4205,
+  "col": "explicita",
+  "orig": "case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') else RPAD('00000',5) end",
+  "vpact": "LPAD(P1_31_17, 5, '0')"
+ },
+ {
+  "off": 4211,
+  "col": "explicita",
+  "orig": "case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') else RPAD('00000',5) end",
+  "vpact": "LPAD(P1_31_18, 5, '0')"
+ },
+ {
+  "off": 4223,
+  "col": "P1_31_21",
+  "orig": "RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)",
+  "vpact": "RPAD(NVL(P1_31_21,' '), 2)"
+ },
+ {
+  "off": 4225,
+  "col": "P1_31_22",
+  "orig": "CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END",
+  "vpact": "P1_31_22"
+ },
+ {
+  "off": 4324,
+  "col": "P1_31_37",
+  "orig": "RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1)",
+  "vpact": "RPAD(NVL(P1_31_37,' '),1)"
+ },
+ {
+  "off": 4326,
+  "col": "P1_29_3",
+  "orig": "RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)",
+  "vpact": "RPAD(pack_utilitaire.f_format_montant_bis2(P1_29_3),19)"
+ },
+ {
+  "off": 4709,
+  "col": "P1_50_2",
+  "orig": "RPAD(NVL(C_ENR.PCEC_MNT_RISQUE, ' '), 12)",
+  "vpact": "RPAD(NVL(P1_50_2, ' '), 12)"
+ },
+ {
+  "off": 4721,
+  "col": "P1_50_3",
+  "orig": "RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_RISQUE),19)",
+  "vpact": "RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_3),19)"
+ },
+ {
+  "off": 4771,
+  "col": "P1_50_8",
+  "orig": "RPAD(NVL(C_ENR.PCEC_ICNE, ' '), 12)",
+  "vpact": "RPAD(NVL(P1_50_8, ' '), 12)"
+ },
+ {
+  "off": 4783,
+  "col": "P1_50_9",
+  "orig": "RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ICNE),19)",
+  "vpact": "RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)"
+ },
+ {
+  "off": 4895,
+  "col": "P1_21_22",
+  "orig": "RPAD(NVL(C_ENR.MOTIF_MRTR,' '),2)",
+  "vpact": "RPAD(NVL(P1_21_22,' '),2)"
+ },
+ {
+  "off": 4897,
+  "col": "P1_21_23",
+  "orig": "RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_MRTR, 'YYYYMMDD'), ' '),8)",
+  "vpact": "RPAD(NVL(TO_CHAR(P1_21_23, 'YYYYMMDD'), ' '),8)"
+ },
+ {
+  "off": 4905,
+  "col": "P1_21_29",
+  "orig": "case when C_ENR.DUREE_MRTR is not null then '+'||LPAD(C_ENR.DUREE_MRTR,5,'0') else RPAD(' ',6) end",
+  "vpact": "case when P1_21_29 is not null then '+'||LPAD(P1_21_29,5,'0') else RPAD(' ',6) end"
+ },
+ {
+  "off": 4911,
+  "col": "P1_21_25",
+  "orig": "RPAD(NVL(C_ENR.STATUT_MRTR,' '),2)",
+  "vpact": "RPAD(NVL(P1_21_25,' '),2)"
+ },
+ {
+  "off": 4913,
+  "col": "P1_21_26",
+  "orig": "RPAD(NVL(C_ENR.IND_MRTR_LEGISLATIF,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_26,' '),1)"
+ },
+ {
+  "off": 4914,
+  "col": "P1_21_27",
+  "orig": "RPAD(NVL(C_ENR.IND_MRTR_CONTRACTUEL,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_27,' '),1)"
+ },
+ {
+  "off": 4915,
+  "col": "P1_21_28",
+  "orig": "RPAD(NVL(C_ENR.CHAMP_APPL_MRTR,' '),2)",
+  "vpact": "RPAD(NVL(P1_21_28,' '),2)"
+ },
+ {
+  "off": 4917,
+  "col": "P1_21_30",
+  "orig": "case when C_ENR.MNT_MRTR is not null then RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_MRTR),19) else RPAD(' ',19) end",
+  "vpact": "case when P1_21_30 is not null then RPAD(pack_utilitaire.f_format_montant_bis2(P1_21_30),19) else RPAD(' ',19) end"
+ },
+ {
+  "off": 4936,
+  "col": "explicita",
+  "orig": "case when C_ENR.MNT_MRTR is not null then RPAD(NVL(C_ENR.DEV_MRTR,' '),3) else RPAD(' ',3) end",
+  "vpact": "RPAD(NVL(P1_21_31, ' '), 3)"
+ },
+ {
+  "off": 5131,
+  "col": "P1_21_44",
+  "orig": "RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_44,' '),1)"
+ },
+ {
+  "off": 5132,
+  "col": "P1_21_45",
+  "orig": "RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_45,' '),1)"
+ },
+ {
+  "off": 5133,
+  "col": "P1_21_46",
+  "orig": "RPAD(NVL(C_ENR.IND_CONF_CRIT_OPE,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_46,' '),1)"
+ },
+ {
+  "off": 5134,
+  "col": "P1_21_38",
+  "orig": "RPAD(NVL(C_ENR.IND_IPRE,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_38,' '),1)"
+ },
+ {
+  "off": 5135,
+  "col": "P1_21_39",
+  "orig": "RPAD(NVL(C_ENR.IND_EXPO_ADC,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_39,' '),1)"
+ },
+ {
+  "off": 5136,
+  "col": "P1_21_40",
+  "orig": "RPAD(NVL(C_ENR.IND_REAL_COND_PONDERATION_PREFE,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_40,' '),1)"
+ },
+ {
+  "off": 5139,
+  "col": "P1_21_43",
+  "orig": "RPAD(pack_utilitaire.F_FORMAT_TAUX_15(C_ENR.ETV_RATIO),15)",
+  "vpact": "RPAD(pack_utilitaire.F_FORMAT_TAUX_15(P1_21_43),15)"
+ },
+ {
+  "off": 5220,
+  "col": "P1_21_66",
+  "orig": "RPAD(NVL(C_ENR.IND_UCC,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_66,' '),1)"
+ },
+ {
+  "off": 5222,
+  "col": "P1_21_68",
+  "orig": "RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_68,' '),1)"
+ },
+ {
+  "off": 5223,
+  "col": "P1_21_55",
+  "orig": "RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)",
+  "vpact": "RPAD(NVL(P1_21_55,' '),12)"
+ },
+ {
+  "off": 5235,
+  "col": "P1_21_69",
+  "orig": "RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_69,' '),1)"
+ },
+ {
+  "off": 5266,
+  "col": "P1_8_13",
+  "orig": "RPAD(NVL(C_ENR.USAGE_BIEN_FINANCE,' '),1)",
+  "vpact": "RPAD(NVL(P1_8_13,' '),1)"
+ },
+ {
+  "off": 5267,
+  "col": "P1_21_71",
+  "orig": "RPAD(NVL(C_ENR.COMMUNE,' '),40)",
+  "vpact": "RPAD(NVL(P1_21_71,' '),40)"
+ },
+ {
+  "off": 5307,
+  "col": "P1_21_72",
+  "orig": "RPAD(NVL(C_ENR.NUM_VOIE,' '),40)",
+  "vpact": "RPAD(NVL(P1_21_72,' '),40)"
+ },
+ {
+  "off": 5347,
+  "col": "P1_21_73",
+  "orig": "RPAD(NVL(C_ENR.EXTENSION,' '),40)",
+  "vpact": "RPAD(NVL(P1_21_73,' '),40)"
+ },
+ {
+  "off": 5387,
+  "col": "P1_21_74",
+  "orig": "RPAD(NVL(C_ENR.TYPE_VOIE,' '),40)",
+  "vpact": "RPAD(NVL(P1_21_74,' '),40)"
+ },
+ {
+  "off": 5427,
+  "col": "P1_21_75",
+  "orig": "RPAD(NVL(C_ENR.LIB_VOIE,' '),40)",
+  "vpact": "RPAD(NVL(P1_21_75,' '),40)"
+ },
+ {
+  "off": 5467,
+  "col": "P1_21_76",
+  "orig": "RPAD(NVL(C_ENR.LIEU_DIT,' '),40)",
+  "vpact": "RPAD(NVL(P1_21_76,' '),40)"
+ },
+ {
+  "off": 5507,
+  "col": "P1_21_77",
+  "orig": "RPAD(NVL(C_ENR.LATITUDE,' '),11)",
+  "vpact": "RPAD(NVL(P1_21_77,' '),11)"
+ },
+ {
+  "off": 5518,
+  "col": "P1_21_78",
+  "orig": "RPAD(NVL(C_ENR.LONGITUDE,' '),12)",
+  "vpact": "RPAD(NVL(P1_21_78,' '),12)"
+ },
+ {
+  "off": 5534,
+  "col": "P1_21_80",
+  "orig": "RPAD(NVL(C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE,' '),3)",
+  "vpact": "RPAD(NVL(P1_21_80,' '),3)"
+ },
+ {
+  "off": 5537,
+  "col": "P1_21_81",
+  "orig": "RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10)",
+  "vpact": "RPAD(pack_utilitaire.F_FORMAT_TAUX(P1_21_81),10)"
+ },
+ {
+  "off": 5547,
+  "col": "P1_21_82",
+  "orig": "RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR_PREC),10)",
+  "vpact": "RPAD(pack_utilitaire.F_FORMAT_TAUX(P1_21_82),10)"
+ },
+ {
+  "off": 5602,
+  "col": "P1_21_86",
+  "orig": "RPAD(NVL(C_ENR.CD_TYPE_BIEN_COMM,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_86,' '),1)"
+ },
+ {
+  "off": 5603,
+  "col": "P1_21_87",
+  "orig": "RPAD(NVL(C_ENR.CD_EMPLACE_BIEN_COMM,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_87,' '),1)"
+ },
+ {
+  "off": 5604,
+  "col": "P1_21_88",
+  "orig": "RPAD(NVL(C_ENR.IND_OPE_AVEC_RECOURS,' '),1)",
+  "vpact": "RPAD(NVL(P1_21_88,' '),1)"
+ }
+]

@@ -58,11 +58,16 @@ def handle(fname,args):
         return conv(a[0]) if a else 'NULL'
     return fname+'('+', '.join(conv(x) for x in a)+')'
 
+SINAL=re.compile(r"'[+-]'\s*\|\|\s*")
+
 def convert(expr):
     e=re.sub(r'\s+',' ',expr).strip().rstrip('|').strip()
     if not e: return 'NULL'
     r=conv(e).strip()
     r=re.sub(r'\s+',' ',r)
+    # o sinal concatenado ('+'||valor) e formatacao, nao dado: quem o guarda
+    # e o proprio NUMBER. Sem isto o valor ia para a coluna como texto.
+    r=SINAL.sub('', r)
     if ZERO.match(r): return '0'
     # literal montante formatado dentro de CASE
     r=re.sub(r"'([+-]0{6,})'", '0', r)

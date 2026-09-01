@@ -23,9 +23,9 @@ COLUMN column_name FORMAT A14
 COLUMN esperado    FORMAT A14
 COLUMN instalado   FORMAT A14
 
--- T1.1  contagem : esperado 666 colunas
-SELECT 666 AS esperado_colunas, COUNT(*) AS instalado_colunas,
-       CASE WHEN COUNT(*) = 666 THEN 'OK' ELSE 'FALHA' END AS veredicto
+-- T1.1  contagem : esperado 667 colunas
+SELECT 667 AS esperado_colunas, COUNT(*) AS instalado_colunas,
+       CASE WHEN COUNT(*) = 667 THEN 'OK' ELSE 'FALHA' END AS veredicto
   FROM ALL_TAB_COLUMNS WHERE table_name = 'ENG_CORP_P1_BIS';
 
 -- T1.2  as colunas alargadas (as que causaram ORA-01438 ou perda de
@@ -114,68 +114,80 @@ WITH esperado AS (
     SELECT 1 AS variante, 'NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
       A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'N'
-      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
-      AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
-            OR NVL(C_ENR.MNT_VR,0) >= 1 )
-      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      and (C_ENR.cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND   NVL(CD_ARR_PAIEMENT, 'N')= 'N'
+      AND nvl(FLAG_HN , 'N')       = 'N'
+      AND
+      (NVL(MNT_CRD,0)-NVL(MNT_VR,0) >= 1
+      OR
+      NVL(MNT_VR,0)>=1)
+      AND CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      AND ( CD_TYPE_RISQUE NOT LIKE 'TRE2%'
+      )
     UNION ALL
     SELECT 2 AS variante, 'NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
       A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
-      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
-      AND NVL(C_ENR.MNT_SOLD_K_A,0) >= 1
-      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
-      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )
+      and (C_ENR.cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND   NVL(CD_ARR_PAIEMENT, 'N')= 'Y'
+      AND nvl(FLAG_HN , 'N')    = 'N'
+      AND nvl(MNT_SOLD_K_A,0)>=1
+      AND CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      AND ( CD_TYPE_RISQUE NOT LIKE 'TRE2%'
+      )
     UNION ALL
     SELECT 3 AS variante, 'NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
       A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
-      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
-      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
-      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )
-      AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
-            OR NVL(C_ENR.MNT_VR,0) >= 1 )
+      and (C_ENR.cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND   NVL(CD_ARR_PAIEMENT, 'N')= 'Y'
+      AND nvl(FLAG_HN , 'N')  = 'N'
+      AND CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      AND ( CD_TYPE_RISQUE NOT LIKE 'TRE2%')
+      AND
+      (NVL(MNT_CRD,0)-NVL(MNT_VR,0) >= 1
+      OR
+      NVL(MNT_VR,0)>=1)
     UNION ALL
     SELECT 4 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
-      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND C_ENR.FLAG_HN = 'O'
-      AND C_ENR.CD_TYPE_RISQUE IN ('TRE100')
+      1          =1
+      AND FLAG_HN      = 'O'
+      AND A_EXTRAIRE   ='O'
+      and (C_ENR.cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND CD_TYPE_RISQUE  IN ('TRE100')
     UNION ALL
     SELECT 5 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
-      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND C_ENR.FLAG_HN = 'O'
-      AND SUBSTR(C_ENR.CD_TYPE_RISQUE,1,4) IN ('TRE2','TRE4','TRE5')
+      1     =1
+      AND FLAG_HN = 'O'
+      AND A_EXTRAIRE      ='O'
+      and (C_ENR.cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND SUBSTR(CD_TYPE_RISQUE,1,4) in ('TRE2','TRE4','TRE5')
     UNION ALL
     SELECT 6 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
-      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND C_ENR.FLAG_HN = 'O'
-      AND C_ENR.CD_TYPE_RISQUE IN ('EQU101')
+      1     =1
+      AND FLAG_HN = 'O'
+      AND A_EXTRAIRE ='O'
+      and (cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND CD_TYPE_RISQUE IN ('EQU101')
     UNION ALL
     SELECT 7 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
-      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND C_ENR.FLAG_HN = 'O'
-      AND C_ENR.CD_TYPE_RISQUE IN ('SIG201','INR101')
+      1     =1
+      AND FLAG_HN = 'O'
+      AND A_EXTRAIRE ='O'
+      and (cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND CD_TYPE_RISQUE IN ('SIG201','INR101')
     UNION ALL
     SELECT 8 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
       FROM ENG_CORP_P1 C_ENR WHERE
-      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
-      AND C_ENR.FLAG_HN = 'O'
-      AND C_ENR.CD_TYPE_RISQUE LIKE '%VAR1%'
+      1     =1
+      AND FLAG_HN = 'O'
+      AND A_EXTRAIRE   ='O'
+      and (cd_conso_cpt = 'TOTAL' or 'TOTAL' = 'TOTAL' )
+      AND CD_TYPE_RISQUE LIKE '%VAR1%'
 )
 SELECT e.perimetre,
        SUM(e.nb) AS esperado,
@@ -197,14 +209,7 @@ SELECT e.perimetre,
 -- Se a conversao esta certa as duas strings sao iguais: o valor guardado,
 -- reformatado, reproduz o que o spool escreve hoje.
 --
--- Sao 174 colunas x 200 engajamentos.
---
--- Fora do teste: P1_31_17, P1_31_18.
--- Nestes o spool parte o campo em sinal + valor e o valor vem de
--- varias colunas de origem: nao ha reconstrucao textual segura.
--- Sao os campos onde o LPAD(...,5) do spool TRUNCA valores > 99999;
--- a tabela guarda o valor certo, o ficheiro e que perde. Ver
--- docs/SIRL-1224.md.
+-- Sao 196 colunas x 200 engajamentos.
 -- Coluna de resultado VAZIA = engajamento totalmente conforme.
 -- ---------------------------------------------------------------------
 COLUMN id_engagement FORMAT A26
@@ -217,10 +222,6 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_H_0_2 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.APPLI_SOURCE,'C_BTR'), 12),'@') <> NVL(RPAD(NVL(B.P1_H_0_3,'C_BTR'), 12),'@')
               THEN 'P1_H_0_3 ' END ||
-         CASE WHEN NVL('M','@') <> NVL(B.P1_H_0_4,'@')
-              THEN 'P1_H_0_4 ' END ||
-         CASE WHEN NVL('P1','@') <> NVL(B.P1_H_0_6,'@')
-              THEN 'P1_H_0_6 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20),'@') <> NVL(RPAD(NVL(B.P1_H_1_1, ' '), 20),'@')
               THEN 'P1_H_1_1 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30),'@') <> NVL(RPAD(NVL(B.P1_H_1_4, ' '), 30),'@')
@@ -233,8 +234,6 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_1_1 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.CODE_TRAIT_MOTEUR, '01'),2),'@') <> NVL(RPAD(B.P1_1_2,2),'@')
               THEN 'P1_1_2 ' END ||
-         CASE WHEN NVL('Y','@') <> NVL(B.P1_4_34,'@')
-              THEN 'P1_4_34 ' END ||
          CASE WHEN NVL(RPAD(C_ENR.CD_TYPE_RISQUE,6),'@') <> NVL(RPAD(B.P1_2_0,6),'@')
               THEN 'P1_2_0 ' END ||
          CASE WHEN NVL(NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B'),'@') <> NVL(NVL(B.P1_2_4,'B'),'@')
@@ -267,14 +266,22 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_4_1 ' END ||
          CASE WHEN NVL(NVL(C_ENR.TOP_ENG_DOUTEUX, 'N'),'@') <> NVL(B.P1_5_2,'@')
               THEN 'P1_5_2 ' END ||
+         CASE WHEN NVL(Case When C_ENR.TOP_ENG_DOUTEUX = 'Y' then to_char(nvl(C_ENR.DT_ENG_DOUTEUX,C_ENR.dt_arrete), 'YYYYMMDD') else RPAD(' ', 8) END,'@') <> NVL(NVL(TO_CHAR(B.P1_5_3, 'YYYYMMDD'), RPAD(' ', 8)),'@')
+              THEN 'pos 451 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, 'EUR'), 3),'@') <> NVL(RPAD(B.P1_4_3, 3),'@')
               THEN 'P1_4_3 ' END ||
+         CASE WHEN NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE='TRE201' THEN '+0000000000000000'|| RPAD(NVL(C_ENR.CD_DEVISE_MNT_DECOUVERT, 'EUR'), 3) ELSE RPAD (' ', 22) END,'@') <> NVL(CASE WHEN B.P1_4_5 IS NULL THEN RPAD(' ', 22) ELSE pack_utilitaire.f_format_montant_bis2(B.P1_4_4)||RPAD(B.P1_4_5, 3) END,'@')
+              THEN 'pos 481 ' END ||
          CASE WHEN NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_RISQUE),0)),'@') <> NVL(pack_utilitaire.f_format_montant_bis2(nvl((B.P1_4_9),0)),'@')
               THEN 'P1_4_9 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3),'@') <> NVL(RPAD(NVL(B.P1_4_13, ' '), 3),'@')
               THEN 'P1_4_13 ' END ||
+         CASE WHEN NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE='TRE401' THEN RPAD(' ',22) ELSE pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_LOYER,0)) || RPAD(NVL(C_ENR.CD_DEVISE_CRD, 'EUR'), 3) END,'@') <> NVL(CASE WHEN B.P1_4_15 IS NULL THEN RPAD(' ', 22) ELSE pack_utilitaire.f_format_montant_bis2(B.P1_4_14)||RPAD(B.P1_4_15, 3) END,'@')
+              THEN 'pos 525 ' END ||
          CASE WHEN NVL(RPAD (nvl(C_ENR.PCCO_MNT_CRD,' '), 12),'@') <> NVL(RPAD (nvl(B.P1_4_18,' '), 12),'@')
               THEN 'P1_4_18 ' END ||
+         CASE WHEN NVL(Case when (C_ENR.CD_TYPE_RISQUE LIKE 'TRE5%' OR C_ENR.CD_TYPE_RISQUE LIKE 'TRE4%') THEN pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_SOLD_K_A),0) <0 THEN 0 ELSE nvl((C_ENR.MNT_SOLD_K_A),0)END ) ELSE RPAD (' ', 19) END,'@') <> NVL(CASE WHEN B.P1_4_6 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(B.P1_4_6) END,'@')
+              THEN 'pos 581 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3),'@') <> NVL(RPAD(NVL(B.P1_4_7, ' '), 3),'@')
               THEN 'P1_4_7 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.PCEC_ICNE, ' '), 12),'@') <> NVL(RPAD(NVL(B.P1_4_19, ' '), 12),'@')
@@ -289,6 +296,14 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_3_46 ' END ||
          CASE WHEN NVL(NVL(C_ENR.CD_RESPECT_COND, ' '),'@') <> NVL(NVL(B.P1_3_47, ' '),'@')
               THEN 'P1_3_47 ' END ||
+         CASE WHEN NVL(Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VTR),0)) else RPAD (' ', 19) END,'@') <> NVL(CASE WHEN B.P1_3_40 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(B.P1_3_40) END,'@')
+              THEN 'pos 712 ' END ||
+         CASE WHEN NVL(Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then RPAD(C_ENR.CD_DEV_VTR,3) else RPAD (' ', 3) END,'@') <> NVL(RPAD(NVL(B.P1_3_41, ' '), 3),'@')
+              THEN 'pos 731 ' END ||
+         CASE WHEN NVL(Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_HYPOTHEQUE),0)) else RPAD (' ', 19) END,'@') <> NVL(CASE WHEN B.P1_3_42 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant_bis2(B.P1_3_42) END,'@')
+              THEN 'pos 734 ' END ||
+         CASE WHEN NVL(Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then RPAD(C_ENR.CD_DEV_HYPOTH,3) else RPAD (' ', 3) END,'@') <> NVL(RPAD(NVL(B.P1_3_43, ' '), 3),'@')
+              THEN 'pos 753 ' END ||
          CASE WHEN NVL(RPAD(nvl(C_ENR.CD_LOC_BIEN, ' '), 2,' '),'@') <> NVL(RPAD(nvl(B.P1_3_44, ' '), 2,' '),'@')
               THEN 'P1_3_44 ' END ||
          CASE WHEN NVL(C_ENR.CD_ACHAT_FIN_LOC,'@') <> NVL(B.P1_3_45,'@')
@@ -351,6 +366,8 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_22_1 ' END ||
          CASE WHEN NVL(RPAD(nvl(C_ENR.REF_UNIQ_ELEM_CONT,' '),40),'@') <> NVL(RPAD(nvl(B.P1_22_51,' '),40),'@')
               THEN 'P1_22_51 ' END ||
+         CASE WHEN NVL(RPAD(nvl(C_enr.NOTE_FIN_RET_ORI, 'ND'),2),'@') <> NVL(RPAD(nvl(B.P1_22_5, 'ND'),2),'@')
+              THEN 'P1_22_5 ' END ||
          CASE WHEN NVL(RPAD(nvl(C_ENR.NOTE_EXT_ORI,' '),10),'@') <> NVL(RPAD(nvl(B.P1_22_52,' '),10),'@')
               THEN 'P1_22_52 ' END ||
          CASE WHEN NVL(RPAD(nvl(C_ENR.ORGA_NOTATION_ORIG,' '),2,' '),'@') <> NVL(RPAD(nvl(B.P1_22_6,' '),2,' '),'@')
@@ -423,8 +440,6 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_22_38 ' END ||
          CASE WHEN NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_ACQUISITION),0)),'@') <> NVL(pack_utilitaire.f_format_montant_bis2(nvl((B.P1_22_44),0)),'@')
               THEN 'P1_22_44 ' END ||
-         CASE WHEN NVL(RPAD('EUR', 3),'@') <> NVL(RPAD(B.P1_22_45, 3),'@')
-              THEN 'P1_22_45 ' END ||
          CASE WHEN NVL(RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_PALL, 'YYYYMMDD'), ' '), 8),'@') <> NVL(RPAD(NVL(TO_CHAR(B.P1_22_58, 'YYYYMMDD'), ' '), 8),'@')
               THEN 'P1_22_58 ' END ||
          CASE WHEN NVL(RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_PALL, 'YYYYMMDD'), ' '), 8),'@') <> NVL(RPAD(NVL(TO_CHAR(B.P1_22_59, 'YYYYMMDD'), ' '), 8),'@')
@@ -459,6 +474,8 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_23_5 ' END ||
          CASE WHEN NVL(RPAD(nvl(C_ENR.IND_ACT_DEP_ORI,' '),1),'@') <> NVL(RPAD(nvl(B.P1_23_6,' '),1),'@')
               THEN 'P1_23_6 ' END ||
+         CASE WHEN NVL(RPAD(C_ENR.PCCO_MNT_CRD || nvl(C_ENR.ZONE_APP_COMP,' '),40),'@') <> NVL(RPAD(NVL(B.P1_23_7, ' '), 40),'@')
+              THEN 'pos 2911 ' END ||
          CASE WHEN NVL(RPAD (nvl(C_ENR.CD_METH_IFRS9_PD,' '), 12),'@') <> NVL(RPAD (nvl(B.P1_23_8,' '), 12),'@')
               THEN 'P1_23_8 ' END ||
          CASE WHEN NVL(RPAD (nvl(C_ENR.CD_METH_IFRS9_LGD,' '), 12),'@') <> NVL(RPAD (nvl(B.P1_23_9,' '), 12),'@')
@@ -487,20 +504,46 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_29_1 ' END ||
          CASE WHEN NVL(RPAD (nvl(C_ENR.CD_DEV_MNT_INDEMNITE,' '), 3),'@') <> NVL(RPAD (nvl(B.P1_29_2,' '), 3),'@')
               THEN 'P1_29_2 ' END ||
-         CASE WHEN NVL('N','@') <> NVL(B.P1_30_22,'@')
-              THEN 'P1_30_22 ' END ||
-         CASE WHEN NVL('N','@') <> NVL(B.P1_30_24,'@')
-              THEN 'P1_30_24 ' END ||
-         CASE WHEN NVL(RPAD (NVL(C_ENR.IND_ISF,'2'), 1),'@') <> NVL(RPAD (NVL(B.P1_31_5,'2'), 1),'@')
+         CASE WHEN NVL(RPAD(NVL(C_ENR.REF_UNIQ_CONT, ' '), 40),'@') <> NVL(RPAD(NVL(B.P1_31_2, ' '), 40),'@')
+              THEN 'P1_31_2 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.REF_UNIQ_ELEM_CONT, ' '), 40),'@') <> NVL(RPAD(NVL(B.P1_31_3, ' '), 40),'@')
+              THEN 'P1_31_3 ' END ||
+         CASE WHEN NVL(RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT),19),'@') <> NVL(RPAD(pack_utilitaire.f_format_montant_bis2(B.P1_31_4),19),'@')
+              THEN 'P1_31_4 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.IND_RESPO_SOLIDAIRE, ' '), 1),'@') <> NVL(RPAD(NVL(B.P1_31_5, ' '), 1),'@')
               THEN 'P1_31_5 ' END ||
+         CASE WHEN NVL(RPAD (NVL(C_ENR.IND_ISF,'2'), 1),'@') <> NVL(RPAD (NVL(B.P1_31_6,'2'), 1),'@')
+              THEN 'P1_31_6 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' '),'@') <> NVL(RPAD(NVL(B.P1_31_9, ' '),15,' '),'@')
+              THEN 'P1_31_9 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' '),'@') <> NVL(RPAD(NVL(B.P1_31_10, ' '),2,' '),'@')
+              THEN 'P1_31_10 ' END ||
+         CASE WHEN NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') else RPAD('00000',5) end,'@') <> NVL(LPAD(B.P1_31_17, 5, '0'),'@')
+              THEN 'pos 4205 ' END ||
+         CASE WHEN NVL(case when C_ENR.CD_TYPE_RISQUE like 'TRE%' then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') else RPAD('00000',5) end,'@') <> NVL(LPAD(B.P1_31_18, 5, '0'),'@')
+              THEN 'pos 4211 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2),'@') <> NVL(RPAD(NVL(B.P1_31_21,' '), 2),'@')
+              THEN 'P1_31_21 ' END ||
          CASE WHEN NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END,'@') <> NVL(B.P1_31_22,'@')
               THEN 'P1_31_22 ' END ||
-         CASE WHEN NVL(RPAD ('EUR', 3),'@') <> NVL(RPAD (B.P1_29_4, 3),'@')
-              THEN 'P1_29_4 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1),'@') <> NVL(RPAD(NVL(B.P1_31_37,' '),1),'@')
+              THEN 'P1_31_37 ' END ||
+         CASE WHEN NVL(RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19),'@') <> NVL(RPAD(pack_utilitaire.f_format_montant_bis2(B.P1_29_3),19),'@')
+              THEN 'P1_29_3 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.PCEC_MNT_RISQUE, ' '), 12),'@') <> NVL(RPAD(NVL(B.P1_50_2, ' '), 12),'@')
+              THEN 'P1_50_2 ' END ||
+         CASE WHEN NVL(RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_RISQUE),19),'@') <> NVL(RPAD(pack_utilitaire.f_format_montant_bis2(B.P1_50_3),19),'@')
+              THEN 'P1_50_3 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.PCEC_ICNE, ' '), 12),'@') <> NVL(RPAD(NVL(B.P1_50_8, ' '), 12),'@')
+              THEN 'P1_50_8 ' END ||
+         CASE WHEN NVL(RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ICNE),19),'@') <> NVL(RPAD(pack_utilitaire.f_format_montant_bis2(B.P1_50_9),19),'@')
+              THEN 'P1_50_9 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.MOTIF_MRTR,' '),2),'@') <> NVL(RPAD(NVL(B.P1_21_22,' '),2),'@')
               THEN 'P1_21_22 ' END ||
          CASE WHEN NVL(RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_MRTR, 'YYYYMMDD'), ' '),8),'@') <> NVL(RPAD(NVL(TO_CHAR(B.P1_21_23, 'YYYYMMDD'), ' '),8),'@')
               THEN 'P1_21_23 ' END ||
+         CASE WHEN NVL(case when C_ENR.DUREE_MRTR is not null then '+'||LPAD(C_ENR.DUREE_MRTR,5,'0') else RPAD(' ',6) end,'@') <> NVL(case when B.P1_21_29 is not null then '+'||LPAD(B.P1_21_29,5,'0') else RPAD(' ',6) end,'@')
+              THEN 'P1_21_29 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.STATUT_MRTR,' '),2),'@') <> NVL(RPAD(NVL(B.P1_21_25,' '),2),'@')
               THEN 'P1_21_25 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.IND_MRTR_LEGISLATIF,' '),1),'@') <> NVL(RPAD(NVL(B.P1_21_26,' '),1),'@')
@@ -511,6 +554,8 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_21_28 ' END ||
          CASE WHEN NVL(case when C_ENR.MNT_MRTR is not null then RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_MRTR),19) else RPAD(' ',19) end,'@') <> NVL(case when B.P1_21_30 is not null then RPAD(pack_utilitaire.f_format_montant_bis2(B.P1_21_30),19) else RPAD(' ',19) end,'@')
               THEN 'P1_21_30 ' END ||
+         CASE WHEN NVL(case when C_ENR.MNT_MRTR is not null then RPAD(NVL(C_ENR.DEV_MRTR,' '),3) else RPAD(' ',3) end,'@') <> NVL(RPAD(NVL(B.P1_21_31, ' '), 3),'@')
+              THEN 'pos 4936 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1),'@') <> NVL(RPAD(NVL(B.P1_21_44,' '),1),'@')
               THEN 'P1_21_44 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1),'@') <> NVL(RPAD(NVL(B.P1_21_45,' '),1),'@')
@@ -547,6 +592,10 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_21_75 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.LIEU_DIT,' '),40),'@') <> NVL(RPAD(NVL(B.P1_21_76,' '),40),'@')
               THEN 'P1_21_76 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.LATITUDE,' '),11),'@') <> NVL(RPAD(NVL(B.P1_21_77,' '),11),'@')
+              THEN 'P1_21_77 ' END ||
+         CASE WHEN NVL(RPAD(NVL(C_ENR.LONGITUDE,' '),12),'@') <> NVL(RPAD(NVL(B.P1_21_78,' '),12),'@')
+              THEN 'P1_21_78 ' END ||
          CASE WHEN NVL(RPAD(NVL(C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE,' '),3),'@') <> NVL(RPAD(NVL(B.P1_21_80,' '),3),'@')
               THEN 'P1_21_80 ' END ||
          CASE WHEN NVL(RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10),'@') <> NVL(RPAD(pack_utilitaire.F_FORMAT_TAUX(B.P1_21_81),10),'@')

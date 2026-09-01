@@ -278,10 +278,27 @@ def col_notice(ref):
     return 'P1_' + ref.split()[1].replace('.', '_')
 
 
+# A soma das larguras dos tokens fica 1 byte atras da posicao real a partir
+# do offset 4000. O byte em falta e o SEPARADOR: o spool parte a linha em
+# lignedetail1 (4000 caracteres) e lignedetail2, e o SQL*Plus escreve um
+# branco entre os dois. Esse branco conta no ficheiro e nao na soma dos
+# tokens. Confirmado nas duas pontas: no ficheiro real REF_UNIQ_CONT comeca
+# em 4040 (soma dos tokens: 4039), e onde o spool tem ancora explicita a
+# regua+1 devolve sempre a coluna que a ancora nomeia.
+DESVIO_A_PARTIR_DE = 4000
+
+
 def col_por_posicao(pos, w):
-    """Coluna deduzida da regua V44: so aceita quando a posicao cai num
-    UNICO campo da notice e esse campo existe na tabela."""
-    campos = [f for f in V44 if f['start'] < pos + w and f['start'] + f['len'] > pos]
+    """Coluna deduzida da regua V44. Aceita quando a posicao cai num UNICO
+    campo da notice, ou quando um so campo comeca exatamente ali com a mesma
+    largura -- este segundo caso resolve as fronteiras ambiguas."""
+    d = 1 if pos >= DESVIO_A_PARTIR_DE else 0
+    p = pos + d
+    exato = [f for f in V44 if f['start'] == p and f['len'] == w]
+    if len(exato) == 1:
+        campos = exato
+    else:
+        campos = [f for f in V44 if f['start'] < p + w and f['start'] + f['len'] > p]
     if len(campos) != 1:
         return None
     c = col_notice(campos[0]['ref'])
@@ -341,7 +358,8 @@ W1 = """      A_EXTRAIRE = 'O'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
             OR NVL(C_ENR.MNT_VR,0) >= 1 )
-      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')"""
+      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )"""
 
 W2 = """      A_EXTRAIRE = 'O'
       AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
@@ -442,6 +460,41 @@ HDR = """-- ====================================================================
 -- =====================================================================
 """
 
+# ---------------------------------------------------------------- compostos
+# Dois tokens do spool escrevem DOIS campos da notice numa so expressao: o
+# montante e a sua devise, dentro do mesmo CASE. Nao ha como os separar por
+# regra geral -- o CASE decide de uma vez se ambos sao preenchidos ou se os
+# 22 caracteres ficam a branco. Guardam-se as duas colunas com o mesmo CASE,
+# e o NULL de uma marca o branco das duas.
+#
+# Nota: no primeiro, o literal '+0000000000000000' tem 17 caracteres e o campo
+# P1 4.4 mede 19 (sinal + 16 inteiros + 2 decimais). O ramo THEN escreve 20
+# caracteres onde deviam ser 22: e um desalinhamento de 2 bytes no ficheiro
+# atual, latente (nenhum TRE201 na populacao). Ver docs/SIRL-1224.md.
+COMPOSTOS = [
+    ("CD_TYPE_RISQUE='TRE201'", [
+        ('P1_4_4',  "CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE201' THEN 0 END"),
+        ('P1_4_5',  "CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE201'"
+                    " THEN NVL(C_ENR.CD_DEVISE_MNT_DECOUVERT,'EUR') END"),
+    ]),
+    ("CD_TYPE_RISQUE='TRE401'", [
+        ('P1_4_14', "CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE401' THEN NULL"
+                    " ELSE NVL(C_ENR.MNT_LOYER,0) END"),
+        ('P1_4_15', "CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE401' THEN NULL"
+                    " ELSE NVL(C_ENR.CD_DEVISE_CRD,'EUR') END"),
+    ]),
+]
+
+
+def composto(raw):
+    """Devolve [(coluna, expressao)] quando o token escreve dois campos."""
+    e = re.sub(r"\s+", '', raw).upper()
+    for chave, pares in COMPOSTOS:
+        if re.sub(r"\s+", '', chave).upper() in e:
+            return pares
+    return None
+
+
 stats = []
 blocks = []
 amapear = []
@@ -457,6 +510,7 @@ for num, perim, a, b, desc, where in VAR:
     nhdr = 0
     npos = 0
     npar = 0
+    ncomp = 0
     pos = 0
     convertidos = [convert(x['raw']).replace(':MASYSDATE', 'p_masysdate') for x in toks]
     saltar = set()
@@ -474,6 +528,12 @@ for num, perim, a, b, desc, where in VAR:
         pos += w
         expr = convertidos[k]
         if k in saltar:
+            continue
+        comp = composto(t['raw'])
+        if comp:
+            for c, e in comp:
+                items.append((c, e, t['line'], 'campo composto'))
+            ncomp += len(comp)
             continue
         if expr.strip().upper() == 'NULL':
             nfill += 1
@@ -520,6 +580,9 @@ for num, perim, a, b, desc, where in VAR:
     cl = '\n'.join('        %s%s' % (c, ',' if i < len(ded) - 1 else '')
                    for i, (c, _, _, _) in enumerate(ded))
     sl = ["        %-58s AS CD_PERIMETRE," % ("'%s'" % perim)]
+    sl.append("        %-58s AS NO_VARIANTE," % num)
+    sl.append("        %-58s AS ID_ENGAGEMENT," % 'C_ENR.ID_ENGAGEMENT')
+    sl.append("        %-58s AS DT_ARRETE," % 'C_ENR.DT_ARRETE')
     for i, (c, e, ln, ref) in enumerate(ded):
         comma = ',' if i < len(ded) - 1 else ''
         tag = 'L%s' % ln + ((' [%s]' % ref) if ref else ' [a mapper]')
@@ -530,7 +593,7 @@ for num, perim, a, b, desc, where in VAR:
         "    --   colonnes : %d (dont %d ancrees --P1) | %d fillers -> NULL"
         " | %d signes absorbes par le NUMBER\n"
         "    ------------------------------------------------------------------\n"
-        "    INSERT INTO ENG_CORP_P1_BIS\n    (\n        CD_PERIMETRE,\n%s\n    )\n"
+        "    INSERT INTO ENG_CORP_P1_BIS\n    (\n        CD_PERIMETRE,\n        NO_VARIANTE,\n        ID_ENGAGEMENT,\n        DT_ARRETE,\n%s\n    )\n"
         "    SELECT\n%s\n    FROM ENG_CORP_P1 C_ENR\n    WHERE\n%s;\n"
         % (num, desc, len(ded), nanch, nfill, nsign, cl, '\n'.join(sl), where))
 

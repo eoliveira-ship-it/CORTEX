@@ -17,6 +17,9 @@ CREATE TABLE ENG_CORP_P1_BIS (
     -- ---- Colonnes techniques ---------------------------------------
     ID_ENGAGEMENT      VARCHAR2(40),             -- ref engagement (ENG_CORP_P1.ID_ENGAGEMENT)
     CD_PERIMETRE       VARCHAR2(10),             -- 'NAT02' / 'HORS_NAT02' (M2 BTR vs post-compta)
+    NO_VARIANTE        NUMBER(1),                -- 1..8 : qual dos 8 SELECT do spool deu esta linha.
+                                                 -- Serve o spool vPACT: ORDER BY NO_VARIANTE devolve
+                                                 -- os registos pela ordem em que o ficheiro os tem hoje.
     DT_ARRETE          DATE,                     -- date d'arrete du traitement
     DT_TRAITEMENT      DATE DEFAULT SYSDATE,     -- horodatage d'alimentation
     -- ---- En-tete technique du pave P1  ('X.Y (P1)') ----------------
@@ -363,8 +366,8 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_21_74   VARCHAR2(40)   , -- P1 21.74    ALPHA/40  Lieu d'investissement du bien principal financé : type d
     P1_21_75   VARCHAR2(40)   , -- P1 21.75    ALPHA/40  Lieu d'investissement du bien principal financé : libell
     P1_21_76   VARCHAR2(40)   , -- P1 21.76    ALPHA/40  Lieu d'investissement du bien principal financé : lieu d
-    P1_21_77   NUMBER(9,7)    , -- P1 21.77    NUM/11 11 dont signe, séparateur et 7 décimales  Lieu d'investisse
-    P1_21_78   NUMBER(10,7)   , -- P1 21.78    NUM/12 12 dont signe, séparateur et 7 décimales  Lieu d'investisse
+    P1_21_77   VARCHAR2(11)   , -- P1 21.77    NUM/11 11 dont signe, séparateur et 7 décimales  Lieu d'investisse
+    P1_21_78   VARCHAR2(12)   , -- P1 21.78    NUM/12 12 dont signe, séparateur et 7 décimales  Lieu d'investisse
     P1_21_79   VARCHAR2(1)    , -- P1 21.79    ALPHA/1  Indicateur Titre de Participation
     P1_21_80   VARCHAR2(3)    , -- P1 21.80    ALPHA/3  Classification comptable de l'élément couvert par le déri
     P1_21_81   NUMBER(14,10)    , -- P1 21.81    NUM/10 10 dont signe et 5 décimales  DSCR (ratio de couverture des
