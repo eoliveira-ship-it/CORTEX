@@ -1,6 +1,23 @@
 -- =====================================================================
 -- O spool vPACT devolveu 0 linhas. Porque?
 --
+-- COMECA PELO CENSO DOS PAVES -- e um comando de shell, nao SQL, e separa
+-- as duas familias de causa numa linha:
+--
+--     cut -c39-40 $SORTIE/CRRCORP_vPACT.dat | sort | uniq -c
+--
+-- Os bytes 39-40 de cada linha sao o codigo do pave (a seguir ao cabecalho
+-- arrete 8 + entite 5 + appli 12 + frequence 1 + horodatage 12 = 38).
+--
+--   C1/C5 aparecem e mais nada  -> o SELECT do P1 deu ERRO. O shell tem
+--       "whenever sqlerror exit 1" na linha 203: o sqlplus aborta ali e
+--       tudo o que vinha depois (P1, P2, M1, P9) nunca chega a ser escrito.
+--       A razao esta em  $V30RACINE/log/030_CREATION_SPOOL_CRRCORP_sql_vPACT.log
+--
+--   C1, C5, P2, M1, P9 aparecem e so falta P1  -> nao houve erro: o SELECT
+--       correu e devolveu ZERO linhas. Ai sim, corre os blocos abaixo.
+--
+-- =====================================================================
 -- Correr com F5. Cada bloco elimina uma causa. Para na primeira que der
 -- zero: e essa.
 -- =====================================================================
