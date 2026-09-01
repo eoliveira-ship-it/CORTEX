@@ -30,7 +30,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 3. pack_alim_tab_envoi_crrv4.sql compila o package
 4. run_procedure.sql             executa a alimentação
 5. test_P_ALIM_ENG_CORP_P1_BIS.sql   volumetria e controlo esperado/inserido
-6. teste_conteudo.sql            compara o conteudo com o ficheiro real
+6. teste_roundtrip.sql           nao-regressao por campo, contra o proprio spool
 ```
 
 No SQL Developer usar **F5** (Run Script), não F9.
@@ -55,6 +55,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `diag_perguntas.sql` | Escala das taxas, mapeamentos suspeitos, arrete da origem |
 | `diag_divergencias.sql` | Valor da tabela vs valor do ficheiro, lado a lado |
 | `testes` | Resultado da 1a execucao dos testes |
+| `teste_roundtrip.sql` | Nao-regressao por campo: tabela reformatada vs spool, mesma data |
 | `teste_conteudo.sql` | Compara a tabela com o ficheiro CRRCORP_P1 real, campo a campo |
 | `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
