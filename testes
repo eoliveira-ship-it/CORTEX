@@ -1,3 +1,38 @@
+verifica pkg
+1-
+PACK_ALIM_TAB_ENVOI_CRRV4_NEW	PACKAGE	VALID	2026-08-31 12:27
+PACK_ALIM_TAB_ENVOI_CRRV4_NEW	PACKAGE BODY	VALID	2026-09-01 13:34
+2-
+13298	"NVL(C_ENR.MATURITE_EFF, 0)                                 AS P1_3_20,  -- L693 [position V44]
+"
+13686	"1                                                          AS P1_3_20,  -- L1198 [position V44]
+"
+14072	"NVL(C_ENR.MATURITE_EFF, 0)                                 AS P1_3_20,  -- L1699 [position V44]
+"
+14355	"C_ENR.MATURITE_EFF                                         AS P1_3_20,  -- L3118 [position V44]
+"
+14653	"NVL(C_ENR.MATURITE_EFF, 0)                                 AS P1_3_20,  -- L3631 [position V44]
+"
+14939	"C_ENR.MATURITE_EFF                                         AS P1_3_20,  -- L4249 [position V44]
+"
+15152	"NVL(C_ENR.MATURITE_EFF, 0)                                 AS P1_3_20,  -- L4776 [position V44]
+"
+15377	"NVL(C_ENR.MATURITE_EFF, 0)                                 AS P1_3_20,  -- L5299 [position V44]
+"
+
+3-
+
+P_ENTITE	VARCHAR2	1
+P_MASYSDATE	VARCHAR2	2
+P_PERIMETRE	VARCHAR2	3
+
+4-
+0	29.2712	2.648
+
+-----------------
+
+
+
 -- 3) Volumetrie par perimetre
 SELECT CD_PERIMETRE, COUNT(*) AS lignes
   FROM ENG_CORP_P1_BIS GROUP BY CD_PERIMETRE ORDER BY 1; --122138
