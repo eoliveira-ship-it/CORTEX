@@ -12,7 +12,7 @@
 -- borne le FICHIER, pas la valeur stockee. Voir docs/SIRL-1224.md.
 -- Champs   : 662 P1 (642 corps + 20 en-tete) + 4 techniques
 -- =====================================================================
-
+drop table ENG_CORP_P1_BIS;
 CREATE TABLE ENG_CORP_P1_BIS (
     -- ---- Colonnes techniques ---------------------------------------
     ID_ENGAGEMENT      VARCHAR2(40),             -- ref engagement (ENG_CORP_P1.ID_ENGAGEMENT)
@@ -686,7 +686,6 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_635     VARCHAR2(1)    , -- P1 635      ALPHA/1  Indicateur Facteur de Conversion de Crédit (CCF) modèle i
     P1_1001    DATE           , -- P1 1001     DATE/8  Date de réalisation du tirage
     P1_1002    DATE             -- P1 1002     DATE/8  Date d'échéance du tirage
-)
-TABLESPACE HCRR ;
+) ;
 
 COMMENT ON TABLE ENG_CORP_P1_BIS IS 'SIRL-1224 - Donnees pave P1 (regles de gestion sorties du spool 030_spool_Extract_CRRCORP)';
