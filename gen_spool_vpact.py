@@ -1,4 +1,4 @@
-"""Gera 030_spool_Extract_CRRCORP_vPACT.sql : o spool sem regras de negocio.
+"""Gera 030_spool_Extract_CRRCORP-novo.sql : o spool sem regras de negocio.
 
 O spool atual produz o pave P1 com OITO select sobre ENG_CORP_P1, cada um com
 as suas regras. Este gerador substitui-os por select sobre ENG_CORP_P1_BIS,
@@ -36,8 +36,8 @@ from conv_spool import convert
 NL = chr(10)
 Q = chr(39)
 TAB = 'ENG_CORP_P1_BIS'
-FONTE = 'spool.sql'
-SAIDA = '030_spool_Extract_CRRCORP_vPACT.sql'
+FONTE = '030_spool_Extract_CRRCORP-antigo.sql'
+SAIDA = '030_spool_Extract_CRRCORP-novo.sql'
 
 # ------------------------------------------------------------------ regua
 src = open('align_v44.py', encoding='utf-8').read()
@@ -258,7 +258,7 @@ while i < len(orig):
 
 CAB = [
     '-- =====================================================================',
-    '-- 030_spool_Extract_CRRCORP_vPACT.sql          (SIRL-1224)',
+    '-- 030_spool_Extract_CRRCORP-novo.sql          (SIRL-1224)',
     '--',
     '-- Versao vPACT do 030_spool_Extract_CRRCORP.sql : o pave P1 deixa de ser',
     '-- calculado aqui. As regras de negocio passaram para a procedure',

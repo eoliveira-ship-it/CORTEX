@@ -2,7 +2,7 @@
 
 ## O problema
 
-O `spool.sql` deste repo declara no cabeçalho:
+O `030_spool_Extract_CRRCORP-antigo.sql` deste repo declara no cabeçalho:
 
 ```
 -- Notice        : CRRCV4.4_Grande Clientèle_Corporate_V44.02.xlsx

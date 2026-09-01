@@ -4,7 +4,7 @@
 -- COMECA PELO CENSO DOS PAVES -- e um comando de shell, nao SQL, e separa
 -- as duas familias de causa numa linha:
 --
---     cut -c39-40 $SORTIE/CRRCORP_vPACT.dat | sort | uniq -c
+--     cut -c39-40 $SORTIE/CRRCORP-novo.dat | sort | uniq -c
 --
 -- Os bytes 39-40 de cada linha sao o codigo do pave (a seguir ao cabecalho
 -- arrete 8 + entite 5 + appli 12 + frequence 1 + horodatage 12 = 38).
@@ -12,7 +12,7 @@
 --   C1/C5 aparecem e mais nada  -> o SELECT do P1 deu ERRO. O shell tem
 --       "whenever sqlerror exit 1" na linha 203: o sqlplus aborta ali e
 --       tudo o que vinha depois (P1, P2, M1, P9) nunca chega a ser escrito.
---       A razao esta em  $V30RACINE/log/030_CREATION_SPOOL_CRRCORP_sql_vPACT.log
+--       A razao esta em  $V30RACINE/log/030_CREATION_SPOOL_CRRCORP-novo_sql.log
 --
 --   C1, C5, P2, M1, P9 aparecem e so falta P1  -> nao houve erro: o SELECT
 --       correu e devolveu ZERO linhas. Ai sim, corre os blocos abaixo.
@@ -88,7 +88,7 @@ SELECT COUNT(*) AS linhas_que_o_spool_deveria_escrever
 -- que o SQL Developer nao da de graca:
 --
 --   * &1 e &2  -- os parametros posicionais de "spool &1/&2 append".
---     No SQL*Plus vem de  @spool.sql /caminho ficheiro.dat
+--     No SQL*Plus vem de  @030_spool_Extract_CRRCORP-antigo.sql /caminho ficheiro.dat
 --     No SQL Developer nao ha parametros posicionais: o &1 vira uma
 --     substituicao que ele pede numa caixa. Se lhe deres um caminho que
 --     nao existe, o ficheiro fica vazio ou nem se cria.

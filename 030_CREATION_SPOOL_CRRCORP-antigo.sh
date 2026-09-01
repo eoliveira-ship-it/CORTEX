@@ -2,7 +2,7 @@
 ## CAL-Version : 1.41                                                         ##
 ################################################################################
 ################################################################################
-## Script        : 030_CREATION_SPOOL_CRRCORP_vPACT.sh                        ##
+## Script        : 030_CREATION_SPOOL_CRRCORP-antigo.sh                              ##
 ## Objet         : Creation fichier spool CRRCORP                             ##
 ##                                                                            ##
 ## Type          : Traitement Shell                                           ##
@@ -23,26 +23,29 @@
 ##                                                                            ##
 ################################################################################
 # -- Nom de ce shell
-nom_shell=030_CREATION_SPOOL_CRRCORP_vPACT.sh
+nom_shell=030_CREATION_SPOOL_CRRCORP-antigo.sh
 
 
 # -- Nom du fichier d'envoi
 # /!\ sans extension spool creera un .lst  
-V30ENVOICRRFIC="CRRCORP_vPACT.dat"
+V30ENVOICRRFIC="CRRCORP-antigo.dat"
 #export V30ENVOICRRV4FIC
 
 # -- Nom du fichier log
-V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRCORP_vPACT.log
+V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRCORP-antigo.log
 #export V30ENVOICRRV4LOG
 file_log="${V30RACINE}/log/${V30ENVOICRRV4LOG}"
 
 # -- Nom du fichier log sql
-V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP_sql_vPACT.log
+V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP-antigo_sql.log
 #export V30ENVOICRRV4ERR
 
 # requete pour les fichiers spool 
 
-spool_sql="${SQL}/030_spool_Extract_CRRCORP_vPACT.sql"
+# ATENCAO: aqui havia uma SEGUNDA atribuicao, sem comentario, a apontar
+# para o spool vPACT. Sobrepunha-se a esta e fazia o shell ANTIGO correr
+# o spool NOVO. Ficava so uma.
+spool_sql="${SQL}/030_spool_Extract_CRRCORP-antigo.sql"
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"

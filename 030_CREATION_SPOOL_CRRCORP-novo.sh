@@ -2,7 +2,7 @@
 ## CAL-Version : 1.41                                                         ##
 ################################################################################
 ################################################################################
-## Script        : 030_CREATION_SPOOL_CRRCORP.sh                              ##
+## Script        : 030_CREATION_SPOOL_CRRCORP-novo.sh                        ##
 ## Objet         : Creation fichier spool CRRCORP                             ##
 ##                                                                            ##
 ## Type          : Traitement Shell                                           ##
@@ -23,29 +23,26 @@
 ##                                                                            ##
 ################################################################################
 # -- Nom de ce shell
-nom_shell=030_CREATION_SPOOL_CRRCORP.sh
+nom_shell=030_CREATION_SPOOL_CRRCORP-novo.sh
 
 
 # -- Nom du fichier d'envoi
 # /!\ sans extension spool creera un .lst  
-V30ENVOICRRFIC="CRRCORP.dat"
+V30ENVOICRRFIC="CRRCORP-novo.dat"
 #export V30ENVOICRRV4FIC
 
 # -- Nom du fichier log
-V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRCORP.log
+V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRCORP-novo.log
 #export V30ENVOICRRV4LOG
 file_log="${V30RACINE}/log/${V30ENVOICRRV4LOG}"
 
 # -- Nom du fichier log sql
-V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP_sql.log
+V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP-novo_sql.log
 #export V30ENVOICRRV4ERR
 
 # requete pour les fichiers spool 
 
-spool_sql="${SQL}/030_spool_Extract_CRRCORP.sql"
-
-# NEW CRRCORP
-spool_sql="${SQL}/030_spool_Extract_CRRCORP_vPACT.sql"
+spool_sql="${SQL}/030_spool_Extract_CRRCORP-novo.sql"
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"

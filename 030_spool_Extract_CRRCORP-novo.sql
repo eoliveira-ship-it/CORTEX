@@ -1,5 +1,5 @@
 -- =====================================================================
--- 030_spool_Extract_CRRCORP_vPACT.sql          (SIRL-1224)
+-- 030_spool_Extract_CRRCORP-novo.sql          (SIRL-1224)
 --
 -- Versao vPACT do 030_spool_Extract_CRRCORP.sql : o pave P1 deixa de ser
 -- calculado aqui. As regras de negocio passaram para a procedure

@@ -56,7 +56,7 @@ print('notice V45 : %d campos, %d octetos' % (len(notice), sum(f['len'] for f in
 print('regua V44  : %d campos, %d octetos' % (len(v44), TOT_V44))
 
 # ----------------------------------------------------------------- spool
-lines = open('spool.sql', encoding='utf-8', errors='replace').read().split('\n')
+lines = open('030_spool_Extract_CRRCORP-antigo.sql', encoding='utf-8', errors='replace').read().split('\n')
 
 
 def strip_line(l, in_block):

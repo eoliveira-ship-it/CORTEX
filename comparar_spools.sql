@@ -36,11 +36,11 @@ END;
 
 PROMPT
 PROMPT === 1/2 : spool ATUAL -> CRRCORP_antigo.dat
-@spool.sql &1 CRRCORP_antigo.dat
+@030_spool_Extract_CRRCORP-antigo.sql &1 CRRCORP_antigo.dat
 
 PROMPT
 PROMPT === 2/2 : spool vPACT -> CRRCORP_novo.dat
-@030_spool_Extract_CRRCORP_vPACT.sql &1 CRRCORP_novo.dat
+@030_spool_Extract_CRRCORP-novo.sql &1 CRRCORP_novo.dat
 
 SET TERM ON
 SET FEED ON
