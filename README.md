@@ -26,12 +26,23 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 
 ```
 1. ENG_CORP_P1_BIS.sql           cria a tabela (666 colunas)
-2. verifica_tabela.sql           confirma que ficou certa
-3. pack_alim_tab_envoi_crrv4.sql compila o package
-4. run_procedure.sql             executa a alimentação
-5. test_P_ALIM_ENG_CORP_P1_BIS.sql   volumetria e controlo esperado/inserido
-6. teste_roundtrip.sql           nao-regressao por campo, contra o proprio spool
+2. pack_alim_tab_envoi_crrv4.sql compila o package
+3. TESTES.sql                    executa a procedure e corre os 4 testes
 ```
+
+`TESTES.sql` é o ficheiro único de testes. Corre, por esta ordem:
+
+| | Teste | Pergunta a que responde |
+|---|---|---|
+| T1 | Estrutura | a tabela na base é a que o DDL manda? (666 colunas + as 15 alargadas) |
+| T2 | Package | o código compilado é o do repositório? |
+| T3 | Volumetria | as linhas inseridas são as que os 8 `WHERE` do spool devolvem? (`ecart` = 0) |
+| T4 | Round-trip | o valor guardado reproduz o que o spool escreve hoje? (176 colunas × 200 engajamentos) |
+
+T4 é o teste central: para cada coluna corre a expressão do spool sobre
+`ENG_CORP_P1` e a mesma expressão sobre `ENG_CORP_P1_BIS`, na mesma linha e na
+mesma data. Se as duas strings são iguais, a conversão está certa. Resultado
+vazio = conforme.
 
 No SQL Developer usar **F5** (Run Script), não F9.
 
@@ -46,21 +57,15 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
 | `erro` | Log de compilação/execução Oracle — erros já corrigidos |
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
-| `tipos` | Tipos reais das colunas de `ENG_CORP_P1` (saída do `diag_tipos.sql`) |
+| `tipos` | Tipos reais das colunas de `ENG_CORP_P1`, lidos do dicionario |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
-| `run_procedure.sql` | Executa a procedure (a chamada pronta a correr) |
-| `verifica_tabela.sql` | Confirma que a tabela criada bate com o DDL |
-| `diag_tipos.sql` | Tipos reais das colunas de origem (dicionario) |
-| `diag_precisao.sql` | Diagnostico ORA-01438: colunas NUMBER pequenas demais |
-| `diag_perguntas.sql` | Escala das taxas, mapeamentos suspeitos, arrete da origem |
-| `diag_divergencias.sql` | Valor da tabela vs valor do ficheiro, lado a lado |
+| `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
+| `TESTES.sql` | Ficheiro unico de testes: estrutura, package, volumetria, round-trip |
 | `testes` | Resultado da 1a execucao dos testes |
-| `teste_roundtrip.sql` | Nao-regressao por campo: tabela reformatada vs spool, mesma data |
-| `teste_conteudo.sql` | Compara a tabela com o ficheiro CRRCORP_P1 real, campo a campo |
-| `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
 | `align_v44.py` | Reconstroi a regua V44 e mede o alinhamento posicional |
-| `gen_procedure.py` / `conv_spool.py` | Geradores (regeneram a procedure e o teste a partir do spool) |
+| `gen_procedure.py` / `conv_spool.py` | Geradores: regeneram a procedure a partir do spool |
+| `gen_testes.py` | Gera o `TESTES.sql` a partir do spool, do DDL e da procedure |
 
 ### Fonte (entrada)
 

@@ -1,17 +1,198 @@
 -- =====================================================================
--- NAO-REGRESSAO ao nivel do campo, sem ficheiro de referencia.
+-- SIRL-1224 : ENG_CORP_P1_BIS -- ficheiro unico de testes
+--
+-- Correr no SQL Developer com F5 (Run Script), nao F9.
+--
+-- Ordem: 1. ENG_CORP_P1_BIS.sql            (cria a tabela)
+--        2. pack_alim_tab_envoi_crrv4.sql  (compila o package)
+--        3. este ficheiro
+--
+-- T1 ESTRUTURA   a tabela na base e a que o DDL manda?
+-- T2 PACKAGE     o codigo compilado e o do repositorio?
+-- T3 VOLUMETRIA  o nr de linhas e o que os 8 WHERE do spool devolvem?
+-- T4 ROUND-TRIP  o valor guardado reproduz o que o spool escreve hoje?
+-- =====================================================================
+SET SERVEROUTPUT ON
+SET LINESIZE 32000
+SET PAGESIZE 200
+
+-- ---------------------------------------------------------------------
+-- T1  ESTRUTURA DA TABELA
+-- ---------------------------------------------------------------------
+COLUMN column_name FORMAT A14
+COLUMN esperado    FORMAT A14
+COLUMN instalado   FORMAT A14
+
+-- T1.1  contagem : esperado 666 colunas
+SELECT 666 AS esperado_colunas, COUNT(*) AS instalado_colunas,
+       CASE WHEN COUNT(*) = 666 THEN 'OK' ELSE 'FALHA' END AS veredicto
+  FROM ALL_TAB_COLUMNS WHERE table_name = 'ENG_CORP_P1_BIS';
+
+-- T1.2  as colunas alargadas (as que causaram ORA-01438 ou perda de
+--       decimais). Um FALHA aqui = tabela criada com um DDL antigo.
+SELECT t.column_name, t.esperado,
+       'NUMBER('||c.data_precision||','||c.data_scale||')' AS instalado,
+       CASE WHEN 'NUMBER('||c.data_precision||','||c.data_scale||')' = t.esperado
+            THEN 'OK' ELSE 'FALHA' END AS veredicto
+  FROM (
+        SELECT 'P1_18_1'    AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_18_10'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_21_30'   AS column_name, 'NUMBER(21,2)'  AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_21_43'   AS column_name, 'NUMBER(24,9)'  AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_21_60'   AS column_name, 'NUMBER(24,9)'  AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_21_81'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_21_82'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_22_19'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_22_23'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_22_24'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_22_27'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_22_28'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_22_29'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_3_20'    AS column_name, 'NUMBER(18,10)' AS esperado FROM DUAL
+        UNION ALL
+        SELECT 'P1_4_30'    AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
+       ) t
+  LEFT JOIN ALL_TAB_COLUMNS c ON c.table_name  = 'ENG_CORP_P1_BIS'
+                             AND c.column_name = t.column_name
+ ORDER BY t.column_name;
+
+-- ---------------------------------------------------------------------
+-- T2  PACKAGE INSTALADO
+--     Nao se adivinha o que esta compilado: le-se o dicionario. Um
+--     package obsoleto ja produziu P1_3_20 = 520547 em vez de 2,95.
+-- ---------------------------------------------------------------------
+COLUMN object_name   FORMAT A34
+COLUMN argument_name FORMAT A14
+
+-- T2.1  estado e data de compilacao (STATUS tem de ser VALID)
+SELECT object_name, object_type, status,
+       TO_CHAR(last_ddl_time,'YYYY-MM-DD HH24:MI') AS compilado_em
+  FROM ALL_OBJECTS WHERE object_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW' ORDER BY object_type;
+
+-- T2.2  assinatura : a procedure atual tem 3 parametros
+SELECT position, argument_name, data_type
+  FROM ALL_ARGUMENTS
+ WHERE object_name = 'P_ALIM_ENG_CORP_P1_BIS' AND package_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW'
+ ORDER BY position;
+
+-- ---------------------------------------------------------------------
+-- T3  VOLUMETRIA : esperado (fonte) vs inserido (tabela)
+--     Os 8 SELECT abaixo sao os 8 WHERE dos 8 INSERT da procedure,
+--     copiados do spool. ECART tem de ser 0.
+-- ---------------------------------------------------------------------
+DECLARE
+    v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');
+    v_t0        TIMESTAMP    := SYSTIMESTAMP;
+BEGIN
+    -- p_perimetre : 'NAT02' (M2 BTR) | 'HORS_NAT02' (apos compta) | 'TOTAL'
+    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS('TOTAL', v_masysdate, 'TOTAL');
+    DBMS_OUTPUT.PUT_LINE('procedure OK - duracao : '||TO_CHAR(SYSTIMESTAMP - v_t0));
+END;
+/
+
+WITH esperado AS (
+    SELECT 1 AS variante, 'NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'N'
+      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
+      AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
+            OR NVL(C_ENR.MNT_VR,0) >= 1 )
+      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+    UNION ALL
+    SELECT 2 AS variante, 'NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
+      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
+      AND NVL(C_ENR.MNT_SOLD_K_A,0) >= 1
+      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )
+    UNION ALL
+    SELECT 3 AS variante, 'NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
+      AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
+      AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
+      AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )
+      AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
+            OR NVL(C_ENR.MNT_VR,0) >= 1 )
+    UNION ALL
+    SELECT 4 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND C_ENR.FLAG_HN = 'O'
+      AND C_ENR.CD_TYPE_RISQUE IN ('TRE100')
+    UNION ALL
+    SELECT 5 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND C_ENR.FLAG_HN = 'O'
+      AND SUBSTR(C_ENR.CD_TYPE_RISQUE,1,4) IN ('TRE2','TRE4','TRE5')
+    UNION ALL
+    SELECT 6 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND C_ENR.FLAG_HN = 'O'
+      AND C_ENR.CD_TYPE_RISQUE IN ('EQU101')
+    UNION ALL
+    SELECT 7 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND C_ENR.FLAG_HN = 'O'
+      AND C_ENR.CD_TYPE_RISQUE IN ('SIG201','INR101')
+    UNION ALL
+    SELECT 8 AS variante, 'HORS_NAT02' AS perimetre, COUNT(*) AS nb
+      FROM ENG_CORP_P1 C_ENR WHERE
+      A_EXTRAIRE = 'O'
+      AND (C_ENR.CD_CONSO_CPT = 'TOTAL' OR 'TOTAL' = 'TOTAL')
+      AND C_ENR.FLAG_HN = 'O'
+      AND C_ENR.CD_TYPE_RISQUE LIKE '%VAR1%'
+)
+SELECT e.perimetre,
+       SUM(e.nb) AS esperado,
+       NVL(MAX(i.nb),0) AS inserido,
+       SUM(e.nb) - NVL(MAX(i.nb),0) AS ecart
+  FROM esperado e
+  -- LEFT JOIN: se um perimetro nao foi alimentado tem de aparecer com ecart
+  LEFT JOIN (SELECT CD_PERIMETRE, COUNT(*) AS nb
+          FROM ENG_CORP_P1_BIS GROUP BY CD_PERIMETRE) i
+    ON i.CD_PERIMETRE = e.perimetre
+ GROUP BY e.perimetre ORDER BY 1;
+
+-- ---------------------------------------------------------------------
+-- T4  ROUND-TRIP -- o teste central
 --
 -- Para cada coluna corre-se, na MESMA linha e na MESMA data:
 --    a expressao do spool sobre ENG_CORP_P1      (A)
 --    a mesma expressao    sobre ENG_CORP_P1_BIS  (B)
--- Se a conversao esta certa, as duas strings sao iguais.
+-- Se a conversao esta certa as duas strings sao iguais: o valor guardado,
+-- reformatado, reproduz o que o spool escreve hoje.
 --
--- Devolve as colunas que NAO reproduzem o spool. Vazio = tudo conforme.
 -- Sao 176 colunas x 200 engajamentos.
---
--- Prerequisito: package RECOMPILADO com a versao atual.
--- =====================================================================
-SET LINESIZE 32000
+-- Coluna de resultado VAZIA = engajamento totalmente conforme.
+-- ---------------------------------------------------------------------
 COLUMN id_engagement FORMAT A26
 COLUMN colunas_que_nao_reproduzem FORMAT A120
 
