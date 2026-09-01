@@ -45,6 +45,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` por perímetro + 8 `INSERT` |
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
 | `erro` | Log de compilação/execução Oracle — erros já corrigidos |
+| `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
 | `tipos` | Tipos reais das colunas de `ENG_CORP_P1` (saída do `diag_tipos.sql`) |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
 | `run_procedure.sql` | Executa a procedure (a chamada pronta a correr) |
