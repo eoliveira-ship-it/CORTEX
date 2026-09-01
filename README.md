@@ -82,6 +82,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `tipos` | Tipos reais das colunas de `ENG_CORP_P1`, lidos do dicionario |
 | `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
+| `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
 | `TESTES.sql` | Ficheiro unico de testes: estrutura, package, volumetria, round-trip |

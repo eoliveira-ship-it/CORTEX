@@ -28,12 +28,12 @@
 -- Domaine       : RINT                                                       --
 -- Application   : 030  - Declarations Des Risques                            --
 --------------------------------------------------------------------------------
--- Notice        : CRRCV4.4_Grande ClientÃ¨le_Corporate_V44.02.xlsx            --
+-- Notice        : CRRCV4.4_Grande Clientèle_Corporate_V44.02.xlsx            --
 --------------------------------------------------------------------------------
 -- Creation      : le 18/05/2021 par DUGUET MARC                              --
 -- Modifications :                                                            --
 --------------------------------------------------------------------------------
--- 18/03/2026 MESQUIPE: SIRL-500 - [QDD BÃ¢le 4] Absence mnt acquisition dans  --
+-- 18/03/2026 MESQUIPE: SIRL-500 - [QDD Bâle 4] Absence mnt acquisition dans  --
 --                                 extraction CRR                             --
 -- 22/01/2026 GOMESHU : Projet FED- CRR C3RD                                  --
 -- 19/01/2026 GOMESHU : SIRL-519                                              --
@@ -89,7 +89,7 @@ Formats  :  char 4201
   / ! \                     pas de point-virgule dans commentaires
   -----   
 
-select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limitÃ¯Â¿Â½ a 4000 car 
+select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limitï¿½ a 4000 car 
 Pour avoir les 4201 car : 
 select ( champ1 || champ2 ) as lignedetail1, champ3 as lignedetail2  from table  : 
 le spool va ecrire la ligne "lignedetail1 lignedetail2"  (avec 1 blanc entre les 2)
@@ -112,7 +112,7 @@ SET HEADING OFF
 SET FEED OFF
 set trimspool OFF
 --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
---SET linesize 4201   --4201  mais requete SQL limite Ã¯Â¿Â½ 4000 !
+--SET linesize 4201   --4201  mais requete SQL limite ï¿½ 4000 !
 -- Mantis 11841 - Modification linesize
 --SET linesize 5099   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
 --SET linesize 5699   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
@@ -128,11 +128,11 @@ spool &1/&2 append;
 ------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------------------
--- Ã¯Â¿Â½01: a partir de P_UTLF_TIERS_C1 
+-- ï¿½01: a partir de P_UTLF_TIERS_C1 
 -- 2 select 
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
--- Ã¯Â¿Â½01a: a partir de C_C1 
+-- ï¿½01a: a partir de C_C1 
 ------------------------------------------------------------------------------------------------------------------------
 select 
         to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -159,17 +159,17 @@ select
        RPAD(' ', 40)||
        RPAD(' ', 40)||
        RPAD(' ', 20)||
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 40)||
-       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 90)||
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 40)||
+       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 90)||
        TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')|| -- a modifier
 -- 29/05/2018 CDS Atos (JMP) ANACREDIT  US346 
 -- Remplacement de la zone libre de 76 blancs par :
--- * 25 Blancs destinÃ¯Â¿Â½s Ã¯Â¿Â½ C 14.30 Ã¯Â¿Â½ C 14.34 dans les US a venir,
--- * Le nombre de salariÃ¯Â¿Â½s sur 6 chiffres,
+-- * 25 Blancs destinï¿½s ï¿½ C 14.30 ï¿½ C 14.34 dans les US a venir,
+-- * Le nombre de salariï¿½s sur 6 chiffres,
 -- * Puis 45 Blancs.
        --07/01/2019 CDS Atos (SQN) US 615
 --       RPAD(' ',76)||
---       RPAD(' ',25)|| On split le 25 en 10+1+5+1+8 pour C 14.30 Ã¯Â¿Â½ C 14.34
+--       RPAD(' ',25)|| On split le 25 en 10+1+5+1+8 pour C 14.30 ï¿½ C 14.34
        -- 13/05/2019 - CDS ATOS (LFD) - US 791
        --RPAD(' ',10)||--RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||
        --RPAD(' ',1)||--RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||
@@ -207,8 +207,8 @@ select
        RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 70)||
-       RPAD(NVL(translate(upper(C_ENR.VILLE), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 30)||
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 70)||
+       RPAD(NVL(translate(upper(C_ENR.VILLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 30)||
        RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||
        --29/01/2019 CDS Atos (SQN) US 649
        --15/01/18 CDS ATOS (EMM) Sprint 3 US 2 Rework
@@ -236,9 +236,9 @@ select
        RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)|| -- C1 8.82 pos 695 - BALE4
        LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||
        RPAD(NVL(C_ENR.IND_WL, '9'), 1)|| --C1 4.18	Indicateur Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrÃ©e en Watch List
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrée en Watch List
        RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.24	Date de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrÃ©e en Watch List
+       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrée en Watch List
        RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||--C1 4.26	Motif de sortie en Watch List
        RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||
        '  '||
@@ -263,7 +263,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||    --- champ ref_ident_nat_2 de 2 caracteres dans la table -- 18/02/2019 - CDS ATOS (GBD) - US731  (C1 8.6)
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 114)||
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 114)||
        LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||
        '     '||
        RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||
@@ -283,7 +283,7 @@ select
     and (cd_conso_cpt = :ENTITE  or :ENTITE = 'TOTAL' );
 
 ------------------------------------------------------------------------------------------------------------------------
--- Ã¯Â¿Â½01b: a partir de C_C2 
+-- ï¿½01b: a partir de C_C2 
 ------------------------------------------------------------------------------------------------------------------------
 select   
           to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -305,8 +305,8 @@ select
        RPAD(' ', 40)||
        RPAD(' ', 40)||
        RPAD(' ', 20)||
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 40)||
-       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 90)||
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 40)||
+       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 90)||
        TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')|| --a modifier
        --07/01/2019 CDS Atos (SQN) US 615
        --RPAD(' ',76)||
@@ -346,8 +346,8 @@ select
        RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 70)||
-       RPAD(NVL(translate(upper(C_ENR.VILLE), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 30)||
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 70)||
+       RPAD(NVL(translate(upper(C_ENR.VILLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 30)||
        RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||
        --29/01/2019 CDS Atos (SQN) US 649
        --15/01/18 CDS ATOS (EMM) Sprint 3 US 2 Rework
@@ -375,9 +375,9 @@ select
        RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)|| -- C1 8.82 pos 695 - BALE4
        LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||
        RPAD(NVL(C_ENR.IND_WL, '9'), 1)|| --C1 4.18	Indicateur Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrÃ©e en Watch List
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrée en Watch List
        RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.24	Date de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrÃ©e en Watch List
+       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrée en Watch List
        RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||--C1 4.26	Motif de sortie en Watch List
        RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||
        '  '||
@@ -402,7 +402,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||    --- champ ref_ident_nat_2 de 2 caracteres dans la table -- 18/02/2019 - CDS ATOS (GBD) - US731  (C1 8.6)
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), 'ÃÃÃÃÃÃÃÃÃÃÃÃÃÃ', 'AACEEEEIIOOUUU'), ' '), 114)||
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 114)||
        LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||
        '     '||
        RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||
@@ -426,7 +426,7 @@ select
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- Ã¯Â¿Â½02: a partir de P_UTLF_AUTORISATION_F1     
+-- ï¿½02: a partir de P_UTLF_AUTORISATION_F1     
 ------------------------------------------------------------------------------------------------------------------------
 select
        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -523,7 +523,7 @@ select
        RPAD(NVL(C_ENR.REF_SYNDICATION,' '), 40)||
        -- FIN LFD
 	   --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)|| --KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃÂ¨me de gestion source'
+	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)|| --KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source'
 	   RPAD(' ', 5)||
        lPAD(' ', 3169)		--4000 - 831
      as lignedetail1,  -- debut ligne (taille <= 4000)
@@ -538,7 +538,7 @@ select
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- Ã¯Â¿Â½03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
+-- ï¿½03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
 ------------------------------------------------------------------------------------------------------------------------
 select
          to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -565,7 +565,7 @@ select
        RPAD(' ', 20)||
        RPAD(' ', 10)||
        RPAD(NVL(C_ENR.CD_METHODO_BALE2, ' '), 7)||
-       --28/11/2018 - CDS ATOS (SQN) - Mantis 45281 : Code moteur erronÃ¯Â¿Â½ pour P2 et F2
+       --28/11/2018 - CDS ATOS (SQN) - Mantis 45281 : Code moteur erronï¿½ pour P2 et F2
        RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||
        --Fin SQN
        --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
@@ -584,7 +584,7 @@ select
        -- FIN - CDS ATOS (PSR) - ANACREDIT US 348
 	   --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
        RPAD(' ', 5)||
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃÂ¨me de gestion source'
+	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source'
 	   RPAD(' ', 5)||
 	   RPAD(' ', 3456)  --4000 - 544
      as lignedetail1,  -- debut ligne (taille <= 4000)
@@ -1035,7 +1035,7 @@ select
        RPAD(nvl(C_ENR.CD_NATURE_OPE,' '),12)||
        RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_ENG, 'YYYYMMDD'), ' '), 8)||
        NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630')||
-       RPAD(' ', 10)||    --taux pondÃ¯Â¿Â½ration baloise
+       RPAD(' ', 10)||    --taux pondï¿½ration baloise
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF)||
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_CCF)||        -- 08/02/2019 - CDS ATOS (GBD)- US677 : Taux CCF (P2 18.10)  ( *100 fait a l'alimentation)
        pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_EAD)||   -- 08/02/2019 - CDS ATOS (GBD)- US677 : Montant EAD (P2 18.5) 
@@ -1256,7 +1256,7 @@ select
 	  RPAD(' ',1)|| --P2 31.20
 	  RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P2 31.21 M71371
 	  RPAD(' ',2)|| --P2 31.22
-    -- US 261 - KLx Risque (VDC) [CRRv4.3] Leasing - CRR Corporate - Score 7 'Montant des fonds remis ÃÂ  date '
+    -- US 261 - KLx Risque (VDC) [CRRv4.3] Leasing - CRR Corporate - Score 7 'Montant des fonds remis Ã  date '
     -- P2 32.23 
 	  case when C_ENR.MNT_FOND_REMIS_DATE is null then RPAD(' ',19) else pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_FOND_REMIS_DATE) end ||
 	  case when C_ENR.DEV_FOND_REMIS_DATE is null then RPAD(' ',3) else RPAD(C_ENR.DEV_FOND_REMIS_DATE,3,' ') end ||
@@ -1551,10 +1551,10 @@ select
        case when C_ENR.MNT_CCNE_RECUS_GAR is null  then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_CCNE_RECUS_GAR) end || --M1 8.45
        RPAD(NVL(C_ENR.CD_DEV_MNT_CCNE_RECUS_GAR, ' '), 3)|| --M1 8.46
 	   --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT) || --M1 6.8 - BÃ¢le 4 - MR12731 
+	   pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT) || --M1 6.8 - Bâle 4 - MR12731 
 	   RPAD(' ', 19) || --M1 6.9
 	   RPAD(' ', 3) || --M1 6.10
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20) ||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃÂ¨me de gestion source' --M1 1.40
+	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20) ||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source' --M1 1.40
 	   RPAD(' ', 5) ||
 	   RPAD(' ', 40) ||
 	   RPAD(' ', 40) ||
@@ -1622,7 +1622,7 @@ select
     RPAD(' ', 40)||
     CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_C',40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074
     CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40)  END || -- P9 1.16 :: M72074
-    -- Les champs 1.11 et 1.16 ont pas la mÃªme regle d'alimentation que dans la table  provisions_decotes_p9 
+    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9 
     RPAD(' ', 20)||
     NVL(C_ENR.CD_NAT_DEPRE, ' ')||
     NVL(C_ENR.CD_PERIM_PROV, ' ')||
@@ -1696,7 +1696,7 @@ SELECT
        RPAD(' ', 40)||
        CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_S',40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074 
        CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END || -- P9 1.16 :: M72074 
-    -- Les champs 1.11 et 1.16 ont pas la mÃªme regle d'alimentation que dans la table  provisions_decotes_p9  -- P9 1.16
+    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9  -- P9 1.16
 	   -- FIN LFD
        RPAD(' ', 20)||
        NVL(C_ENR.CD_NAT_DEPRE, ' ')||
@@ -1772,10 +1772,10 @@ SELECT
   RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)                                       || -- 1.6   :: ID_LIGNE_DET
   RPAD(' ', 40)                                                                || -- 1.8   :: IDENTIFIANT SURETE RECUE
   CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT, 40)           -- 1.11  :: ID_ENGAGEMENT || M72074
-    ELSE RPAD(' ', 40)                                                            -- La regle du spool n'est pas la mÃªme que la regle 
+    ELSE RPAD(' ', 40)                                                            -- La regle du spool n'est pas la même que la regle 
   END                                                                          ||    -- d'alimentation de la table provisions_decotes_p9 
   CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40)           -- 1.16  :: ID_PROVISION || M72074
-    ELSE  RPAD(' ', 40)                                                         -- La regle du spool n'est pas la mÃªme que la regle
+    ELSE  RPAD(' ', 40)                                                         -- La regle du spool n'est pas la même que la regle
   END                                                                          ||    -- d'alimentation de la table provisions_decotes_p9 
   RPAD(' ', 20)                                                                || -- 1.99(11) + 1.98(7) + 1.97(2) = 20
   NVL(C_ENR.CD_NAT_DEPRE, ' ')                                                 || -- 2.3   :: CD_NAT_DEPRE
@@ -2235,7 +2235,7 @@ select
 		RPAD(' ',40)||
         CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT,40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074
         CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END ||  --P9 1.16 :: M72074
-    -- Les champs 1.11 et 1.16 ont pas la mÃªme regle d'alimentation que dans la table  provisions_decotes_p9 
+    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9 
 		RPAD(' ',20)||
 		RPAD(NVL(C_ENR.CD_NAT_DEPRE,' '),1,' ')||
 		RPAD(NVL(C_ENR.CD_PERIM_PROV,' '),1,' ')||

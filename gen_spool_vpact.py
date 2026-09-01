@@ -277,7 +277,10 @@ CAB = [
     '-- GERADO por gen_spool_vpact.py -- nao editar a mao.',
     '-- =====================================================================',
 ]
-open(SAIDA, 'w', encoding='utf-8').write(NL.join(CAB) + NL + NL.join(novo) + NL)
+# escreve-se em latin-1, como o original: assim tudo o que nao e o pave P1
+# fica byte a byte igual e um diff entre os dois spools mostra so o que mudou.
+open(SAIDA, 'w', encoding='latin-1', errors='replace').write(
+    NL.join(CAB) + NL + NL.join(novo) + NL)
 # O TESTES.sql compara, campo a campo, a expressao ORIGINAL do spool com a
 # expressao vPACT. Escreve-se aqui a lista para o gen_testes.py a ler: assim o
 # teste verifica exatamente o que o spool novo emite, sem duplicar a logica.
