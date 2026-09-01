@@ -30,6 +30,7 @@ e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 3. pack_alim_tab_envoi_crrv4.sql compila o package
 4. run_procedure.sql             executa a alimentação
 5. test_P_ALIM_ENG_CORP_P1_BIS.sql   volumetria e controlo esperado/inserido
+6. teste_conteudo.sql            compara o conteudo com o ficheiro real
 ```
 
 No SQL Developer usar **F5** (Run Script), não F9.
@@ -50,6 +51,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `verifica_tabela.sql` | Confirma que a tabela criada bate com o DDL |
 | `diag_tipos.sql` | Tipos reais das colunas de origem (dicionario) |
 | `diag_precisao.sql` | Diagnostico ORA-01438: colunas NUMBER pequenas demais |
+| `teste_conteudo.sql` | Compara a tabela com o ficheiro CRRCORP_P1 real, campo a campo |
 | `test_P_ALIM_ENG_CORP_P1_BIS.sql` | Script de teste da procedure (volumetria + controlo esperado/inserido) |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
 | `align_v44.py` | Reconstroi a regua V44 e mede o alinhamento posicional |
