@@ -8,7 +8,7 @@
 --           p = long - signe - separateur ; s = nb decimales (col 21)
 --           Champ vide dans le spool => NULL
 -- Sans cle : pas de PRIMARY KEY (table de travail / historisation)
--- 3 colonnes ELARGIES par rapport a la notice : la precision de la notice
+-- Colonnes ELARGIES por rapport a la notice : la precision de la notice
 -- borne le FICHIER, pas la valeur stockee. Voir docs/SIRL-1224.md.
 -- Champs   : 662 P1 (642 corps + 20 en-tete) + 4 techniques
 -- =====================================================================
@@ -63,7 +63,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_3_16    VARCHAR2(1)    , -- P1 3.16     ALPHA/1  Indicateur accord de netting prudentiel
     P1_3_17    VARCHAR2(25)   , -- P1 3.17     ALPHA/25  Référence du contrat de netting prudentiel
     P1_3_19    VARCHAR2(3)    , -- P1 3.19     ALPHA/3  Devise de règlement de l'accord de netting prudentiel
-    P1_3_20    NUMBER(12,4)    , -- P1 3.20     NUM/6 6 dont 4 décimales  Maturité résiduelle
+    P1_3_20    NUMBER(18,10)    , -- P1 3.20     NUM/6 6 dont 4 décimales  Maturité résiduelle
     P1_3_31    VARCHAR2(12)   , -- P1 3.31     ALPHA/12  Zone libre (Ex PCCO – Nominal)
     P1_3_32    VARCHAR2(2)    , -- P1 3.32     ALPHA/2  Rôle du Tiers dans l'opération d'affacturage
     P1_3_33    VARCHAR2(2)    , -- P1 3.33     ALPHA/2  Nature d'OPCVM Garanti
@@ -140,7 +140,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_4_27    NUMBER(18,2)   , -- P1 4.27     NUM/19 19 dont signe et 2 décimales  Montant de la part de finance
     P1_4_28    VARCHAR2(3)    , -- P1 4.28     ALPHA/3  Devise du montant de la part de financement garanti par d
     P1_4_29    VARCHAR2(1)    , -- P1 4.29     ALPHA/1  Indicateur créance titrisée
-    P1_4_30    NUMBER(9,5)    , -- P1 4.30     NUM/10 10 dont signe et 5 décimales  Expected Loss Best Estimate (
+    P1_4_30    NUMBER(14,10)    , -- P1 4.30     NUM/10 10 dont signe et 5 décimales  Expected Loss Best Estimate (
     P1_4_31    VARCHAR2(1)    , -- P1 4.31     ALPHA/1  Indicateur Produit à sous-jacent
     P1_4_32    VARCHAR2(1)    , -- P1 4.32     ALPHA/1  Indicateur de granularité
     P1_4_33    DATE           , -- P1 4.33     DATE/8  Date d'acquisition de la dernière part
@@ -279,9 +279,9 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_16_41   NUMBER(18,2)   , -- P1 16.41    NUM/19 19 dont signe et 2 décimales  Montant du gain RWA obtenu pa
     P1_16_42   VARCHAR2(3)    , -- P1 16.42    ALPHA/3  Devise du montant du gain RWA obtenu par le CAP sur les e
     P1_16_99   VARCHAR2(3)    , -- P1 16.99    ALPHA/3  Filler
-    P1_18_1    NUMBER(9,5)    , -- P1 18.1     NUM/10 10 dont signe et 5 décimales  Loss Given Default (LGD)
+    P1_18_1    NUMBER(14,10)    , -- P1 18.1     NUM/10 10 dont signe et 5 décimales  Loss Given Default (LGD)
     P1_18_5    NUMBER(18,2)   , -- P1 18.5     NUM/19 19 dont signe et 2 décimales  Montant de l'Exposition en ca
-    P1_18_10   NUMBER(9,5)    , -- P1 18.10    NUM/10 10 dont signe et 5 décimales  Crédit Conversion Factor (CCF
+    P1_18_10   NUMBER(14,10)    , -- P1 18.10    NUM/10 10 dont signe et 5 décimales  Crédit Conversion Factor (CCF
     P1_18_17   VARCHAR2(3)    , -- P1 18.17    ALPHA/3  Devise du montant de l'Exposition en cas de Défaut (EAD)
     P1_18_18   VARCHAR2(3)    , -- P1 18.18    ALPHA/3  Devise d'origine du contrat
     P1_19_5    VARCHAR2(3)    , -- P1 19.5     ALPHA/3  Classification comptable de référence des actifs
@@ -367,8 +367,8 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_21_78   NUMBER(10,7)   , -- P1 21.78    NUM/12 12 dont signe, séparateur et 7 décimales  Lieu d'investisse
     P1_21_79   VARCHAR2(1)    , -- P1 21.79    ALPHA/1  Indicateur Titre de Participation
     P1_21_80   VARCHAR2(3)    , -- P1 21.80    ALPHA/3  Classification comptable de l'élément couvert par le déri
-    P1_21_81   NUMBER(9,5)    , -- P1 21.81    NUM/10 10 dont signe et 5 décimales  DSCR (ratio de couverture des
-    P1_21_82   NUMBER(9,5)    , -- P1 21.82    NUM/10 10 dont signe et 5 décimales  DSCR (ratio de couverture des
+    P1_21_81   NUMBER(14,10)    , -- P1 21.81    NUM/10 10 dont signe et 5 décimales  DSCR (ratio de couverture des
+    P1_21_82   NUMBER(14,10)    , -- P1 21.82    NUM/10 10 dont signe et 5 décimales  DSCR (ratio de couverture des
     P1_21_83   NUMBER(14,9)   , -- P1 21.83    NUM/15 15 dont signe et 9 décimales  Ratio de couverture des intér
     P1_21_84   NUMBER(14,9)   , -- P1 21.84    NUM/15 15 dont signe et 9 décimales  Ratio prêts-coûts (LTC) à l'o
     P1_21_85   NUMBER(14,9)   , -- P1 21.85    NUM/15 15 dont signe et 9 décimales  Taux de précommercialisation 
@@ -401,17 +401,17 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_22_16   VARCHAR2(1)    , -- P1 22.16    ALPHA/1  Type d'amortissement du capital
     P1_22_17   VARCHAR2(1)    , -- P1 22.17    ALPHA/1  Fréquence d'amortissement du capital
     P1_22_18   VARCHAR2(1)    , -- P1 22.18    ALPHA/1  Fréquence de paiement des intérêts
-    P1_22_19   NUMBER(9,5)    , -- P1 22.19    NUM/10 10 dont signe et 5 décimales  Taux client à l'octroi
+    P1_22_19   NUMBER(14,10)    , -- P1 22.19    NUM/10 10 dont signe et 5 décimales  Taux client à l'octroi
     P1_22_20   VARCHAR2(1)    , -- P1 22.20    ALPHA/1  Modalité de remboursement de la créance
     P1_22_21   DATE           , -- P1 22.21    DATE/8  Date de première échéance
     P1_22_22   DATE           , -- P1 22.22    DATE/8  Date de fin du différé d'amortissement
-    P1_22_23   NUMBER(9,5)    , -- P1 22.23    NUM/10 10 dont signe et 5 décimales  Taux plafond
-    P1_22_24   NUMBER(9,5)    , -- P1 22.24    NUM/10 10 dont signe et 5 décimales  Taux plancher
+    P1_22_23   NUMBER(14,10)    , -- P1 22.23    NUM/10 10 dont signe et 5 décimales  Taux plafond
+    P1_22_24   NUMBER(14,10)    , -- P1 22.24    NUM/10 10 dont signe et 5 décimales  Taux plancher
     P1_22_25   VARCHAR2(1)    , -- P1 22.25    ALPHA/1  Fréquence de révision du taux
     P1_22_26   NUMBER(3)      , -- P1 22.26    NUM/3  Périodicité de révision du taux en nombre
-    P1_22_27   NUMBER(9,5)    , -- P1 22.27    NUM/10 10 dont signe et 5 décimales  Taux client de la période en 
-    P1_22_28   NUMBER(9,5)    , -- P1 22.28    NUM/10 10 dont signe et 5 décimales  Taux de marge additive
-    P1_22_29   NUMBER(9,5)    , -- P1 22.29    NUM/10 10 dont signe et 5 décimales  Taux de marge multiplicative
+    P1_22_27   NUMBER(14,10)    , -- P1 22.27    NUM/10 10 dont signe et 5 décimales  Taux client de la période en 
+    P1_22_28   NUMBER(14,10)    , -- P1 22.28    NUM/10 10 dont signe et 5 décimales  Taux de marge additive
+    P1_22_29   NUMBER(14,10)    , -- P1 22.29    NUM/10 10 dont signe et 5 décimales  Taux de marge multiplicative
     P1_22_30   VARCHAR2(7)    , -- P1 22.30    ALPHA/7  Base de calcul des intérêts
     P1_22_31   DATE           , -- P1 22.31    DATE/8  Date du premier déblocage de fonds
     P1_22_32   NUMBER(18,2)   , -- P1 22.32    NUM/19 19 dont signe et 2 décimales  Montant du premier déblocage 

@@ -17,6 +17,8 @@ import io
 import re
 import sys
 
+from conv_spool import convert
+
 NL = chr(10)
 Q = chr(39)
 N_LINHAS = 200
@@ -55,19 +57,34 @@ for t in tokenize(589, 1068):
         w = nf['len'] if nf else 0
     ach = [f for f in v44 if f['start'] < pos + w and f['start'] + f['len'] > pos]
     pos += w
-    if len(ach) != 1:
+    col = None
+    if t.get('ref'):                       # ancora do spool: prevalece
+        num = t['ref'].split()[1].replace('.', '_')
+        for cand in ('P1_' + num, 'P1_H_' + num):
+            if cand in COLS:
+                col = cand
+                break
+    if col is None and len(ach) == 1:      # senao, a regua V44
+        col = col_de(ach[0]['ref'])
+    if col is None:
         continue
-    col = col_de(ach[0]['ref'])
     if col not in ALIMENTADAS or col not in COLS or col in vistos:
         continue
     bruto = re.sub(r'\s+', ' ', t['raw']).strip().rstrip('|').strip()
-    fontes = set(re.findall(r'C_ENR\.([A-Za-z0-9_]+)', bruto))
-    if len(fontes) != 1:
-        continue                      # varias origens: reconstrucao insegura
     if ':MASYSDATE' in bruto.upper():
         continue                      # depende da execucao
-    fonte = fontes.pop()
-    refeito = re.sub(r'C_ENR\.' + fonte + r'\b', 'B.' + col, bruto, flags=re.I)
+    # a tabela guarda a expressao JA convertida; reconstruir = trocar essa
+    # expressao por B.COLUNA dentro do token original (ex.: o spool faz
+    # RPAD(ID_ENGAGEMENT||'_C',40) e a tabela ja guarda ID||'_C').
+    conv = re.sub(r'\s+', ' ', convert(t['raw'])).strip()
+    if conv and conv in bruto:
+        refeito = bruto.replace(conv, 'B.' + col)
+    else:
+        fontes = set(re.findall(r'C_ENR\.([A-Za-z0-9_]+)', bruto))
+        if len(fontes) != 1:
+            continue                  # varias origens: reconstrucao insegura
+        refeito = re.sub(r'C_ENR\.' + fontes.pop() + r'\b',
+                         'B.' + col, bruto, flags=re.I)
     if refeito == bruto:
         continue
     vistos.add(col)
