@@ -21,3 +21,33 @@ SELECT CD_PERIMETRE, COUNT(*) AS lignes
 242296-00-0_C	P1_H_0_1 P1_1_2 P1_4_9 P1_4_31(esperado NULL) P1_3_20 P1_3_3 P1_4_29(esperado NULL) P1_22_54 P1_22_23 P1_22_24 P1_22_28 P1_22_29 P1_22_34 P1_22_70 P1_30_22(esperado NULL) P1_30_24(esperado NULL) P1_31_5 P1_31_17 P1_31_18 P1_21_43 P1_21_55(esperado NULL) 
 311684FK0_C	P1_H_0_1 P1_1_2 P1_4_31(esperado NULL) P1_3_20 P1_3_3 P1_4_29(esperado NULL) P1_22_54 P1_22_23 P1_22_24 P1_22_28 P1_22_29 P1_22_60 P1_22_70 P1_30_22(esperado NULL) P1_30_24(esperado NULL) P1_31_5 P1_31_17 P1_31_18 P1_21_43 P1_21_55(esperado NULL) 
 331354BK0_C	P1_H_0_1 P1_1_2 P1_4_9 P1_4_31(esperado NULL) P1_3_20 P1_3_3 P1_4_29(esperado NULL) P1_22_54 P1_22_23 P1_22_24 P1_22_28 P1_22_29 P1_22_34 P1_22_70 P1_30_22(esperado NULL) P1_30_24(esperado NULL) P1_31_5 P1_31_17 P1_31_18 P1_21_43 P1_21_55(esperado NULL) 
+
+
+---------------
+
+P1_H_0_1    	20250630	31-MAY-25	Date darrêté
+P1_1_2      	07	01	Traitement moteur bâlois
+P1_4_9      	+000000000001840388	18902.34	Montant du capital restant dû
+P1_4_31     	 	 	Indicateur Produit à sous-jacent
+P1_3_20     	029698	520547	Maturité résiduelle
+P1_3_3      	20250630	31-MAY-25	Date de valeur de prise deffet du con
+P1_4_29     	 	 	Indicateur créance titrisée
+P1_22_54    	044102018101820230720FR		Grille Modèle de notation à lorigine
+P1_22_23    	+000000000		Taux plafond
+P1_22_24    	+000000000		Taux plancher
+P1_22_28    	+000000000		Taux de marge additive
+P1_22_29    	+000000000		Taux de marge multiplicative
+P1_22_34    	+000000000001815589	18654.35	Montant du capital théorique restant d
+P1_22_70    	00000	0	Nombre de jours de retard de paiement
+P1_30_22    	 	N	Référence du contrat cadre
+P1_30_24    	 	N	Référence du contrat de netting contra
+P1_31_5     	N	2	Indicateur responsabilité solidaire
+P1_31_17    	+0006	66	Durée initiale du prêt
+P1_31_18    	+0006	66	Durée totale du prêt à date
+P1_21_43    	0		Ratio prudentiel dExposition/valeur (
+P1_21_55    	 	NA021	NATure dOpération de lengagement pou
+P1_26_1     	1	1	Indicateur mobilisation de lactif
+P1_22_11    	N	N	Indicateur éligibilité de lactif à un
+P1_26_3     	 		Référence de mobilisation de lactif
+P1_26_4     	 		Code organisme de mobilisation
+P1_22_60    	+000000000000000000	0	Montant de léchéance en cours
