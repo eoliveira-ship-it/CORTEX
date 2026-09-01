@@ -42,10 +42,11 @@ V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP_sql.log
 
 # requete pour les fichiers spool 
 
+# ATENCAO: abaixo desta linha havia uma SEGUNDA atribuicao de spool_sql,
+# sem comentario, a apontar para 030_spool_Extract_CRRCORP_vPACT.sql.
+# Sobrepunha-se a esta: o shell ANTIGO corria o spool NOVO, e os dois
+# ficheiros que se querem comparar saiam do mesmo sitio. Ficou uma so.
 spool_sql="${SQL}/030_spool_Extract_CRRCORP.sql"
-
-# NEW CRRCORP
-spool_sql="${SQL}/030_spool_Extract_CRRCORP_vPACT.sql"
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"

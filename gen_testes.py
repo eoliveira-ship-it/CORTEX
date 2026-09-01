@@ -92,7 +92,7 @@ casos = NL.join(
 # teste que reutilizasse as constantes do gerador nunca daria por isso.
 FIM_DOS_BLOCOS = [(1, 1068), (2, 1575), (3, 2069), (4, 3449),
                   (5, 4010), (6, 4593), (7, 5049), (8, 5628)]
-LIN = open('030_spool_Extract_CRRCORP-antigo.sql', encoding='latin-1').read().split(NL)
+LIN = open('030_spool_Extract_CRRCORP.sql', encoding='latin-1').read().split(NL)
 
 
 def where_do_spool(fim):

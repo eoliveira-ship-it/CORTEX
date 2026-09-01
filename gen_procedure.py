@@ -2,7 +2,7 @@ import re, sys
 sys.path.insert(0, '.')
 from conv_spool import convert
 
-lines = open('030_spool_Extract_CRRCORP-antigo.sql', encoding='utf-8', errors='replace').read().split('\n')
+lines = open('030_spool_Extract_CRRCORP.sql', encoding='utf-8', errors='replace').read().split('\n')
 
 
 def strip_line(l, in_block):
