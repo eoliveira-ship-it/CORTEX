@@ -59,9 +59,9 @@ def col_de(ref):
 
 
 # --------------------------------------------------- T4 : pares round-trip
-pares = []
+porcol = {}
+com_dados = set()   # ancoras que TEM um token com dados de origem
 pos = 0
-vistos = set()
 for t in tokenize(589, 1068):
     w = width(t['raw'])
     if w is None:
@@ -78,8 +78,10 @@ for t in tokenize(589, 1068):
                 break
     if col is None and len(ach) == 1:      # senao, a regua V44
         col = col_de(ach[0]['ref'])
-    if col is None or col not in ALIMENTADAS or col not in COLS or col in vistos:
+    if col is None or col not in ALIMENTADAS or col not in COLS:
         continue
+    if 'C_ENR.' in t['raw'].upper():
+        com_dados.add(col)
     bruto = re.sub(r'\s+', ' ', t['raw']).strip().rstrip('|').strip()
     if ':MASYSDATE' in bruto.upper():
         continue                           # depende do momento da execucao
@@ -93,8 +95,29 @@ for t in tokenize(589, 1068):
         refeito = re.sub(r'C_ENR\.' + fontes.pop() + r'\b', 'B.' + col, bruto, flags=re.I)
     if refeito == bruto:
         continue
-    vistos.add(col)
-    pares.append((col, bruto, refeito))
+    # Um campo pode estar partido em dois tokens que partilham a ancora: o
+    # sinal e o valor. Ex., em P1 31.17:
+    #     RPAD('+',1) || case when ... LPAD(CEIL(...),5,'0') ... end
+    # So o segundo transporta dados. Guardam-se os dois e escolhe-se depois,
+    # senao a ancora ficava presa ao literal '+' e a coluna comparava o sinal
+    # com o valor guardado -- falha em 100% das linhas.
+    porcol.setdefault(col, []).append((bruto, refeito))
+
+# por coluna: o token que referencia a origem ganha; se nenhum referencia, e
+# uma coluna de valor constante ('EUR', 'P1', ...) e fica o primeiro.
+pares = []
+EXCLUIDAS = []
+for col, lst in porcol.items():
+    escolha = next((x for x in lst if 'C_ENR.' in x[0].upper()), None)
+    if escolha is None:
+        # nenhum candidato utilizavel. Se a ancora TINHA um token com dados,
+        # esse token foi rejeitado (varias colunas de origem: reconstrucao
+        # insegura) e o que sobra e so o sinal -- comparar isso nao diz nada.
+        if col in com_dados:
+            EXCLUIDAS.append(col)
+            continue
+        escolha = lst[0]        # coluna de valor constante ('EUR', 'P1', ...)
+    pares.append((col, escolha[0], escolha[1]))
 
 casos = NL.join(
     "         CASE WHEN NVL(%s,%s@%s) <> NVL(%s,%s@%s)" % (o, Q, Q, r, Q, Q)
@@ -203,6 +226,13 @@ a("  FROM ALL_ARGUMENTS")
 a(" WHERE object_name = 'P_ALIM_ENG_CORP_P1_BIS' AND package_name = '%s'" % PKG)
 a(" ORDER BY position;")
 a("")
+a("-- T2.3  se T2.1 devolveu INVALID, a razao esta aqui. Resultado vazio = sem")
+a("--       erros: um INVALID sem erros e so uma dependencia que mudou, e a")
+a("--       proxima chamada recompila sozinha.")
+a("COLUMN texto FORMAT A96")
+a("SELECT type, line, position, TRIM(text) AS texto")
+a("  FROM ALL_ERRORS WHERE name = '%s' ORDER BY sequence;" % PKG)
+a("")
 a("-- ---------------------------------------------------------------------")
 a("-- T3  VOLUMETRIA : esperado (fonte) vs inserido (tabela)")
 a("--     Os 8 SELECT abaixo sao os 8 WHERE dos 8 INSERT da procedure,")
@@ -242,6 +272,14 @@ a("-- Se a conversao esta certa as duas strings sao iguais: o valor guardado,")
 a("-- reformatado, reproduz o que o spool escreve hoje.")
 a("--")
 a("-- Sao %d colunas x %d engajamentos." % (len(pares), N_LINHAS))
+if EXCLUIDAS:
+    a("--")
+    a("-- Fora do teste: %s." % ", ".join(sorted(EXCLUIDAS)))
+    a("-- Nestes o spool parte o campo em sinal + valor e o valor vem de")
+    a("-- varias colunas de origem: nao ha reconstrucao textual segura.")
+    a("-- Sao os campos onde o LPAD(...,5) do spool TRUNCA valores > 99999;")
+    a("-- a tabela guarda o valor certo, o ficheiro e que perde. Ver")
+    a("-- docs/SIRL-1224.md.")
 a("-- Coluna de resultado VAZIA = engajamento totalmente conforme.")
 a("-- ---------------------------------------------------------------------")
 a("COLUMN id_engagement FORMAT A26")

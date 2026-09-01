@@ -88,6 +88,13 @@ SELECT position, argument_name, data_type
  WHERE object_name = 'P_ALIM_ENG_CORP_P1_BIS' AND package_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW'
  ORDER BY position;
 
+-- T2.3  se T2.1 devolveu INVALID, a razao esta aqui. Resultado vazio = sem
+--       erros: um INVALID sem erros e so uma dependencia que mudou, e a
+--       proxima chamada recompila sozinha.
+COLUMN texto FORMAT A96
+SELECT type, line, position, TRIM(text) AS texto
+  FROM ALL_ERRORS WHERE name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW' ORDER BY sequence;
+
 -- ---------------------------------------------------------------------
 -- T3  VOLUMETRIA : esperado (fonte) vs inserido (tabela)
 --     Os 8 SELECT abaixo sao os 8 WHERE dos 8 INSERT da procedure,
@@ -190,7 +197,14 @@ SELECT e.perimetre,
 -- Se a conversao esta certa as duas strings sao iguais: o valor guardado,
 -- reformatado, reproduz o que o spool escreve hoje.
 --
--- Sao 176 colunas x 200 engajamentos.
+-- Sao 174 colunas x 200 engajamentos.
+--
+-- Fora do teste: P1_31_17, P1_31_18.
+-- Nestes o spool parte o campo em sinal + valor e o valor vem de
+-- varias colunas de origem: nao ha reconstrucao textual segura.
+-- Sao os campos onde o LPAD(...,5) do spool TRUNCA valores > 99999;
+-- a tabela guarda o valor certo, o ficheiro e que perde. Ver
+-- docs/SIRL-1224.md.
 -- Coluna de resultado VAZIA = engajamento totalmente conforme.
 -- ---------------------------------------------------------------------
 COLUMN id_engagement FORMAT A26
@@ -479,10 +493,6 @@ SELECT C_ENR.ID_ENGAGEMENT,
               THEN 'P1_30_24 ' END ||
          CASE WHEN NVL(RPAD (NVL(C_ENR.IND_ISF,'2'), 1),'@') <> NVL(RPAD (NVL(B.P1_31_5,'2'), 1),'@')
               THEN 'P1_31_5 ' END ||
-         CASE WHEN NVL(RPAD ('+', 1),'@') <> NVL(RPAD (B.P1_31_17, 1),'@')
-              THEN 'P1_31_17 ' END ||
-         CASE WHEN NVL(RPAD ('+', 1),'@') <> NVL(RPAD (B.P1_31_18, 1),'@')
-              THEN 'P1_31_18 ' END ||
          CASE WHEN NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END,'@') <> NVL(B.P1_31_22,'@')
               THEN 'P1_31_22 ' END ||
          CASE WHEN NVL(RPAD ('EUR', 3),'@') <> NVL(RPAD (B.P1_29_4, 3),'@')
