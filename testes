@@ -51,3 +51,20 @@ P1_22_11    	N	N	Indicateur éligibilité de lactif à un
 P1_26_3     	 		Référence de mobilisation de lactif
 P1_26_4     	 		Code organisme de mobilisation
 P1_22_60    	+000000000000000000	0	Montant de léchéance en cours
+
+
+-----
+1-
+MATURITE_EFF	0	29.271232876712328767123287671232876712	2.69
+TX_LGD_PREDICTIF_LOCAL	0	0	0
+TX_TRC	0	0	0
+
+2-
+N	N	2	NA021	
+N	N	2	NA021	
+N	N	2	NA021	
+N	N	2	NA021	
+N	N	2	NA021	
+
+3-
+20250531	118393
