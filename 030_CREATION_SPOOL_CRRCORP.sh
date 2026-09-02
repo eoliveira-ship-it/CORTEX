@@ -31,6 +31,7 @@ nom_shell=030_CREATION_SPOOL_CRRCORP.sh
 V30ENVOICRRFIC="CRRCORP.dat"
 #export V30ENVOICRRV4FIC
 
+
 # -- Nom du fichier log
 V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRCORP.log
 #export V30ENVOICRRV4LOG
@@ -42,10 +43,6 @@ V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP_sql.log
 
 # requete pour les fichiers spool 
 
-# ATENCAO: abaixo desta linha havia uma SEGUNDA atribuicao de spool_sql,
-# sem comentario, a apontar para 030_spool_Extract_CRRCORP_vPACT.sql.
-# Sobrepunha-se a esta: o shell ANTIGO corria o spool NOVO, e os dois
-# ficheiros que se querem comparar saiam do mesmo sitio. Ficou uma so.
 spool_sql="${SQL}/030_spool_Extract_CRRCORP.sql"
 
 # entite de depart (cherche suivante) et compteur
@@ -119,6 +116,7 @@ entite=`echo "${execution_requete}" | tr -d '\r\n'`
 recup_arrete()
 {
 SQL_arrete="select to_char(nvl((SELECT max(dt_arrete) FROM TIE_TIERS),(SELECT max(dt_arrete) FROM ENG_CORP_P1)),'YYYYMMDD') from dual;"
+
 
 # lance la requete pour recuperer la date d'arrete
 execution_requete=`sqlplus -s $V30LOGIN << EOF
@@ -529,6 +527,7 @@ spool off;
 EXIT;
 EOF
 
+
 # -------------------------------
 #   Analyse erreur
 # -------------------------------
@@ -545,6 +544,22 @@ then
   fi
 fi
 
+
+
+trace_log "INF" "Lancement du script 030_spool_Extract_CRRCORP_vPACT.sh"
+
+sh /app/list/ddr2dv/RUN_KLX/cortex/030_CREATION_SPOOL_CRRCORP_vPACT.sh
+RC=$?
+
+if [ $RC -ne 0 ]
+then
+    ERR $RC "Erreur lors de l'exécution du script 030_spool_Extract_CRRCORP_vPACT.sh"
+    exit $RC
+fi
+
+trace_log "INF" "Fin du script 030_spool_Extract_CRRCORP_vPACT.sh"
+
+
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"
 trace_log "INF" 0 "$DATE_TRT - FIN CREATION FICHIER ENVOI POUR CASA" $nom_shell
@@ -555,3 +570,5 @@ trace_log "INF" 0 "-----------------------------------------------------------"
 # -------------------------------
 # chmod 777 $LOG/030_CREATION*CRRCORP*
 # chmod 777 $SORTIE/CRRCORP*
+
+
