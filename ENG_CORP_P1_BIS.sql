@@ -686,6 +686,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_635     VARCHAR2(1)    , -- P1 635      ALPHA/1  Indicateur Facteur de Conversion de Crédit (CCF) modèle i
     P1_1001    DATE           , -- P1 1001     DATE/8  Date de réalisation du tirage
     P1_1002    DATE             -- P1 1002     DATE/8  Date d'échéance du tirage
-) ;
+) TABLESPACE DDR_DATA
+;
 
 COMMENT ON TABLE ENG_CORP_P1_BIS IS 'SIRL-1224 - Donnees pave P1 (regles de gestion sorties du spool 030_spool_Extract_CRRCORP)';
