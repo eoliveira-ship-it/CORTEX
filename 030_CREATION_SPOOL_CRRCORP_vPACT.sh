@@ -518,7 +518,7 @@ set serveroutput on size 1000000;
 whenever oserror exit 9;
 whenever sqlerror exit sql.sqlcode;
 
-execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_PERIM_ENVOI_CRR_P1;
+execute PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS;
 
 spool off;
 
@@ -536,7 +536,7 @@ then
   CRP=$?
   if [ $CRP != 0 ]
   then
-    echo "Erreur dans 030_CREATION_SPOOL_CRRCORP durant P_ALIM_PERIM_ENVOI_CRR_P1"
+    echo "Erreur dans 030_CREATION_SPOOL_CRRCORP durant P_ALIM_ENG_CORP_P1_BIS"
     exit 1
   fi
 fi
