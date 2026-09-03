@@ -55,7 +55,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_3_2     DATE           , -- P1 3.2      DATE/8  Date de début de l'engagement
     P1_3_3     DATE           , -- P1 3.3      DATE/8  Date de valeur de prise d'effet du contrat
     P1_3_4     DATE           , -- P1 3.4      DATE/8  Date de fin de l'engagement
-    P1_3_7     NUMBER(1)      , -- P1 3.7      NUM/1  Sens de la transaction
+    P1_3_7     VARCHAR2(1)      , -- P1 3.7      NUM/1  Sens de la transaction
     P1_3_8     NUMBER(18,2)   , -- P1 3.8      NUM/19 19 dont signe et 2 décimales  Montant nominal
     P1_3_9     VARCHAR2(3)    , -- P1 3.9      ALPHA/3  Devise du montant nominal
     P1_3_10    NUMBER(18,2)   , -- P1 3.10     NUM/19 19 dont signe et 2 décimales  Montant notionnel de la jambe

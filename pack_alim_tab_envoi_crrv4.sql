@@ -15548,7 +15548,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #8  (Hors-NAT VAR1 - spool L5061)
-    --   colonnes : 101 (dont 35 ancrees --P1) | 318 fillers -> NULL | 3 signes absorbes par le NUMBER
+    --   colonnes : 132 (dont 35 ancrees --P1) | 318 fillers -> NULL | 3 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -15587,67 +15587,98 @@ BEGIN
         P1_3_9,
         P1_3_31,
         P1_12_1,
+        P1_3_7,
         P1_2_99,
-        P1_3_80,
-        P1_3_81,
-        P1_3_82,
-        P1_3_83,
-        P1_3_15,
-        P1_13_10,
-        P1_3_16,
-        P1_3_17,
-        P1_3_19,
-        P1_3_84,
-        P1_3_85,
-        P1_3_72,
-        P1_3_73,
-        P1_3_20,
-        P1_4_8,
         P1_3_75,
         P1_4_42,
-        P1_3_3,
-        P1_3_36,
-        P1_15_1,
-        P1_15_2,
-        P1_3_86,
-        P1_3_87,
-        P1_3_88,
-        P1_11_1,
-        P1_3_76,
-        P1_3_77,
         P1_3_10,
-        P1_8_2,
+        P1_3_11,
+        P1_3_12,
+        P1_3_13,
         P1_10_2,
         P1_8_1,
+        P1_8_2,
         P1_8_11,
         P1_8_12,
+        P1_20_1,
+        P1_20_2,
+        P1_20_3,
+        P1_20_4,
         P1_22_56,
         P1_22_57,
+        P1_22_1,
+        P1_22_51,
+        P1_22_5,
         P1_22_52,
+        P1_22_6,
+        P1_22_53,
         P1_22_54,
+        P1_22_55,
+        P1_22_7,
         P1_22_8,
         P1_22_9,
+        P1_22_12,
         P1_22_16,
+        P1_22_36,
         P1_22_66,
+        P1_22_71,
         P1_22_72,
+        P1_23_1,
+        P1_23_2,
         P1_23_3,
+        P1_23_4,
+        P1_23_5,
+        P1_23_6,
         P1_23_7,
+        P1_23_8,
+        P1_23_9,
+        P1_23_10,
+        P1_23_11,
+        P1_24_1,
         P1_24_3,
         P1_24_20,
         P1_24_23,
         P1_24_24,
-        P1_26_99,
-        P1_27_99,
-        P1_30_22,
+        P1_26_1,
+        P1_22_11,
+        P1_26_3,
+        P1_26_4,
+        P1_27_3,
+        P1_27_4,
+        P1_30_1,
+        P1_30_2,
+        P1_30_3,
+        P1_30_12,
+        P1_30_13,
+        P1_30_14,
+        P1_30_15,
+        P1_30_16,
+        P1_30_17,
+        P1_30_18,
+        P1_30_19,
+        P1_30_20,
+        P1_30_21,
         P1_30_23,
-        P1_30_26,
+        P1_30_25,
+        P1_30_27,
         P1_31_2,
+        P1_31_3,
+        P1_31_4,
+        P1_31_5,
+        P1_31_6,
         P1_31_9,
+        P1_31_10,
         P1_31_17,
         P1_31_18,
         P1_31_22,
+        P1_31_37,
+        P1_29_3,
         P1_29_4,
+        P1_50_1,
         P1_50_2,
+        P1_50_3,
+        P1_50_8,
+        P1_50_9,
         P1_21_46,
         P1_21_68,
         P1_21_55,
@@ -15694,67 +15725,98 @@ BEGIN
         C_ENR.CD_DEVISE_NOMINAL                                    AS P1_3_9,  -- L5213 [position V44]
         C_ENR.PCCO_NOMINAL                                         AS P1_3_31,  -- L5214 [position V44]
         C_ENR.NATURE_PROD_SS_JACENT                                AS P1_12_1,  -- L5215 [position V44]
+        C_ENR.SENS_TRANSACTION                                     AS P1_3_7,  -- L5216 [position V44]
         C_ENR.CD_METH_IFRS9_PD_ORIG                                AS P1_2_99,  -- L5222 [P1 2.99]
-        NVL((C_ENR.MNT_MTM), 0)                                    AS P1_3_80,  -- L5223 [position V44]
-        C_ENR.CD_DEVISE_MTM                                        AS P1_3_81,  -- L5225 [position V44]
-        C_ENR.PCCO_MTM                                             AS P1_3_82,  -- L5226 [position V44]
-        C_ENR.MODELE_ASSIETE_RISQUE                                AS P1_3_83,  -- L5227 [position V44]
-        C_ENR.IND_ACCORD_COLLATERISATION                           AS P1_3_15,  -- L5228 [position V44]
-        C_ENR.REF_ACCORD_COLLATERISATION                           AS P1_13_10,  -- L5229 [position V44]
-        C_ENR.IND_ACCORD_NETTING                                   AS P1_3_16,  -- L5230 [position V44]
-        C_ENR.REF_CONTRAT_NETTING                                  AS P1_3_17,  -- L5231 [position V44]
-        C_ENR.DEV_CONTRAT_NETTING                                  AS P1_3_19,  -- L5232 [position V44]
-        NVL((C_ENR.MT_ASSIETE_INTERNE), 0)                         AS P1_3_84,  -- L5233 [position V44]
-        C_ENR.DEV_ASSIETE_INTERNE                                  AS P1_3_85,  -- L5234 [position V44]
-        NVL((C_ENR.MT_ASSIETE_REGLEMENTAIRE), 0)                   AS P1_3_72,  -- L5235 [position V44]
-        C_ENR.DEV_ASSIETE_REGLEMENTAIRE                            AS P1_3_73,  -- L5236 [position V44]
-        NVL(C_ENR.MATURITE_EFF, 0)                                 AS P1_3_20,  -- L5299 [position V44]
-        C_ENR.TOP_ENG                                              AS P1_4_8,  -- L5302 [position V44]
         C_ENR.INSTRUMENT_FINANCIER                                 AS P1_3_75,  -- L5304 [P1 3.75]
         C_ENR.CD_TYPE_PROD_BANCAIRE                                AS P1_4_42,  -- L5305 [P1 4.42]
-        C_ENR.DT_ARRETE                                            AS P1_3_3,  -- L5306 [position V44]
-        C_ENR.IND_CCP                                              AS P1_3_36,  -- L5330 [position V44]
-        C_ENR.CODE_INDICE_BOURSE                                   AS P1_15_1,  -- L5336 [position V44]
-        C_ENR.CODE_PAYS_BOURSE                                     AS P1_15_2,  -- L5337 [position V44]
-        NVL((C_ENR.MT_CVA_COMPTA), 0)                              AS P1_3_86,  -- L5341 [position V44]
-        C_ENR.DEV_CVA_COMPTA                                       AS P1_3_87,  -- L5343 [position V44]
-        C_ENR.IND_RISQ_COLLAT_SPECIF                               AS P1_3_88,  -- L5344 [position V44]
-        C_ENR.TYPE_CREDIT_DERIVE                                   AS P1_11_1,  -- L5347 [position V44]
-        C_ENR.IND_DENOUEMENT_CDS                                   AS P1_3_76,  -- L5348 [position V44]
-        C_ENR.IND_ELLIGIBILITE_CVA                                 AS P1_3_77,  -- L5349 [position V44]
-        ABS(TRUNC(NVL(C_ENR.MT_SPREAD, 0)))                        AS P1_3_10,  -- L5357 [position V44]
-        C_ENR.TYPE_SWAP                                            AS P1_8_2,  -- L5363 [position V44]
+        NVL((C_ENR.MT_NOTIONNEL_ACH), 0)                           AS P1_3_10,  -- L5359 [position V44]
+        C_ENR.DEV_NOTIONNEL_ACH                                    AS P1_3_11,  -- L5360 [position V44]
+        NVL((C_ENR.MT_NOTIONNEL_VENDU), 0)                         AS P1_3_12,  -- L5361 [position V44]
+        C_ENR.DEV_NOTIONNEL_VENDU                                  AS P1_3_13,  -- L5362 [position V44]
         C_ENR.IND_CALL_PUT                                         AS P1_10_2,  -- L5365 [P1 10.2]
         C_ENR.TYPE_TAUX_PAYE                                       AS P1_8_1,  -- L5366 [P1 8.1]
+        C_ENR.REF_TAUX_PAYE                                        AS P1_8_2,  -- L5367 [P1 8.2]
         C_ENR.TYPE_TAUX_RECU                                       AS P1_8_11,  -- L5368 [P1 8.11]
         C_ENR.REF_TAUX_RECU                                        AS P1_8_12,  -- L5369 [P1 8.12]
+        NVL((C_ENR.MT_QUANTITE_RECUE), 0)                          AS P1_20_1,  -- L5370 [position V44]
+        C_ENR.UNITE_QUANTITE_RECUE                                 AS P1_20_2,  -- L5371 [position V44]
+        NVL((C_ENR.MT_QUANTITE_LIVREE), 0)                         AS P1_20_3,  -- L5372 [position V44]
+        C_ENR.UNITE_QUANTITE_LIVREE                                AS P1_20_4,  -- L5373 [position V44]
         C_ENR.IND_PROD_ECH                                         AS P1_22_56,  -- L5380 [P1 22.56]
         C_ENR.IND_OBJ_MET_PAL                                      AS P1_22_57,  -- L5382 [P1 22.57]
-        'ND'                                                       AS P1_22_52,  -- L5386 [position V44]
-        C_ENR.ORGA_NOTATION_ORIG                                   AS P1_22_54,  -- L5388 [position V44]
-        97                                                         AS P1_22_8,  -- L5395 [position V44]
+        C_ENR.REF_UNIQ_CONT                                        AS P1_22_1,  -- L5383 [position V44]
+        C_ENR.REF_UNIQ_ELEM_CONT                                   AS P1_22_51,  -- L5384 [position V44]
+        'ND'                                                       AS P1_22_5,  -- L5386 [position V44]
+        C_ENR.NOTE_EXT_ORI                                         AS P1_22_52,  -- L5387 [position V44]
+        C_ENR.ORGA_NOTATION_ORIG                                   AS P1_22_6,  -- L5388 [position V44]
+        C_ENR.SEG_NOT_ORI                                          AS P1_22_53,  -- L5390 [position V44]
+        CASE WHEN C_ENR.GRI_MOD_NOT_ORI IS NULL THEN NULL ELSE C_ENR.GRI_MOD_NOT_ORI||'FR' END AS P1_22_54,  -- L5391 [position V44]
+        upper(C_ENR.METH_NOT_ORI)                                  AS P1_22_55,  -- L5394 [position V44]
+        '97'                                                       AS P1_22_7,  -- L5395 [position V44]
+        C_ENR.MNT_CONTRAT_ORIGINE                                  AS P1_22_8,  -- L5396 [P1 22.8]
         NVL(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR')                  AS P1_22_9,  -- L5397 [P1 22.9]
+        C_ENR.IND_ECH_FOUR                                         AS P1_22_12,  -- L5398 [position V44]
         C_ENR.TYPE_AMOR_CAP                                        AS P1_22_16,  -- L5402 [P1 22.16]
+        C_ENR.IND_RMB_ANTICIPE                                     AS P1_22_36,  -- L5404 [position V44]
         C_ENR.CD_PAYS_JURIDICTION                                  AS P1_22_66,  -- L5411 [P1 22.66]
+        CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then NULL ELSE C_ENR.CD_MOTIF_SCO_LC0267 END AS P1_22_71,  -- L5414 [position V44]
         C_ENR.BUCKET_IFRS9                                         AS P1_22_72,  -- L5416 [P1 22.72]
-        C_ENR.ELI_OUT_MUT_PROV                                     AS P1_23_3,  -- L5418 [position V44]
-        C_ENR.CLA_COMP_ACT_IFRS9                                   AS P1_23_7,  -- L5424 [position V44]
+        C_ENR.ELI_OUT_MUT_PROV                                     AS P1_23_1,  -- L5418 [position V44]
+        C_ENR.CENTRE_RES                                           AS P1_23_2,  -- L5422 [position V44]
+        C_ENR.SYS_GEST_SRC                                         AS P1_23_3,  -- L5423 [position V44]
+        C_ENR.CLA_COMP_ACT_IFRS9                                   AS P1_23_4,  -- L5424 [position V44]
+        C_ENR.CLA_COMP_ACT_NATIONALE                               AS P1_23_5,  -- L5425 [position V44]
+        C_ENR.IND_ACT_DEP_ORI                                      AS P1_23_6,  -- L5426 [position V44]
+        C_ENR.ZONE_APP_COMP                                        AS P1_23_7,  -- L5427 [position V44]
+        C_ENR.CD_METH_IFRS9_PD                                     AS P1_23_8,  -- L5429 [position V44]
+        C_ENR.CD_METH_IFRS9_LGD                                    AS P1_23_9,  -- L5430 [position V44]
+        C_ENR.CD_METH_IFRS9_CCF                                    AS P1_23_10,  -- L5431 [position V44]
+        C_ENR.CD_METH_IFRS9_TX                                     AS P1_23_11,  -- L5432 [position V44]
+        C_ENR.ELIGIB_PRUDENT_VAL                                   AS P1_24_1,  -- L5434 [position V44]
         C_ENR.HIERARCHIE_JUSTE_VALEUR                              AS P1_24_3,  -- L5441 [P1 24.3]
         C_ENR.IND_BCK_TO_BCK                                       AS P1_24_20,  -- L5444 [P1 24.20]
         C_ENR.INTENTION_COUVERTURE                                 AS P1_24_23,  -- L5446 [P1 24.23]
         C_ENR.TYPE_REL_COUVERTURE                                  AS P1_24_24,  -- L5447 [P1 24.24]
-        C_ENR.IND_MOBIL_ACTIF                                      AS P1_26_99,  -- L5450 [position V44]
-        NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS P1_27_99,  -- L5459 [position V44]
-        C_ENR.CD_BASE_CALCUL_INT_PAYE                              AS P1_30_22,  -- L5481 [position V44]
+        C_ENR.IND_MOBIL_ACTIF                                      AS P1_26_1,  -- L5450 [position V44]
+        C_ENR.ELIG_MOB_BANQUE_CENTRALE                             AS P1_22_11,  -- L5452 [position V44]
+        C_ENR.REF_MOB_ACTIF                                        AS P1_26_3,  -- L5454 [position V44]
+        C_ENR.CD_ORGA_MOBIL                                        AS P1_26_4,  -- L5455 [position V44]
+        NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2')                AS P1_27_3,  -- L5459 [position V44]
+        C_ENR.MOTIF_EXCLU_ANACREDIT                                AS P1_27_4,  -- L5461 [position V44]
+        C_ENR.TYPE_CTT_CADDRE                                      AS P1_30_1,  -- L5466 [position V44]
+        C_ENR.IND_PROTOCOLE_ISDA_ENTITE                            AS P1_30_2,  -- L5467 [position V44]
+        C_ENR.IND_PROTOCOLE_ISDA_CPTY                              AS P1_30_3,  -- L5468 [position V44]
+        NVL(C_ENR.MNT_CCNE_JB_VENDUE, 0)                           AS P1_30_12,  -- L5470 [position V44]
+        C_ENR.CD_DEV_MNT_CCNE_JB_VENDUE                            AS P1_30_13,  -- L5471 [position V44]
+        NVL(C_ENR.MNT_CCNE_JB_ACHETEE, 0)                          AS P1_30_14,  -- L5472 [position V44]
+        C_ENR.CD_DEV_MNT_CCNE_JB_ACHETEE                           AS P1_30_15,  -- L5473 [position V44]
+        C_ENR.PRD_PAY_TX_RECU                                      AS P1_30_16,  -- L5474 [position V44]
+        CASE WHEN C_ENR.TYPE_TAUX_RECU IN ('V','R') THEN NVL(C_ENR.MRG_TX_RECU, 0) ELSE NULL END AS P1_30_17,  -- L5475 [position V44]
+        C_ENR.CD_BASE_CALCUL_INT_RECU                              AS P1_30_18,  -- L5477 [position V44]
+        C_ENR.PRD_PAY_TX_PAYE                                      AS P1_30_19,  -- L5478 [position V44]
+        CASE WHEN C_ENR.TYPE_TAUX_PAYE IN ('V','R') THEN NVL(C_ENR.MRG_TX_PAYE, 0) ELSE NULL END AS P1_30_20,  -- L5479 [position V44]
+        C_ENR.CD_BASE_CALCUL_INT_PAYE                              AS P1_30_21,  -- L5481 [position V44]
         'N'                                                        AS P1_30_23,  -- L5486 [P1 30.23]
-        'N'                                                        AS P1_30_26,  -- L5490 [position V44]
-        C_ENR.FINALITE_OPERATION                                   AS P1_31_2,  -- L5492 [position V44]
-        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_9,  -- L5497 [position V44]
+        'N'                                                        AS P1_30_25,  -- L5490 [position V44]
+        C_ENR.FINALITE_OPERATION                                   AS P1_30_27,  -- L5492 [position V44]
+        C_ENR.REF_UNIQ_CONT                                        AS P1_31_2,  -- L5494 [position V44]
+        C_ENR.REF_UNIQ_ELEM_CONT                                   AS P1_31_3,  -- L5495 [position V44]
+        C_ENR.MNT_ENG_DT_SIGN_CTRT                                 AS P1_31_4,  -- L5496 [position V44]
+        C_ENR.IND_RESPO_SOLIDAIRE                                  AS P1_31_5,  -- L5497 [position V44]
+        NVL(C_ENR.IND_ISF, '2')                                    AS P1_31_6,  -- L5498 [position V44]
+        C_ENR.CD_COMMUNE_BIEN_FINAN                                AS P1_31_9,  -- L5501 [position V44]
+        C_ENR.CD_PAYS_BIEN_FINAN                                   AS P1_31_10,  -- L5502 [position V44]
         0                                                          AS P1_31_17,  -- L5506 [P1 31.17]
         0                                                          AS P1_31_18,  -- L5508 [P1 31.18]
         CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE502' THEN '01' WHEN C_ENR.CD_TYPE_RISQUE LIKE 'TRE%' THEN '02' ELSE '04' END AS P1_31_22,  -- L5514 [P1 31.22]
+        C_ENR.IND_GAR_SANS_LIMITE                                  AS P1_31_37,  -- L5520 [position V44]
+        C_ENR.MNT_SUBV_HT                                          AS P1_29_3,  -- L5524 [position V44]
         'EUR'                                                      AS P1_29_4,  -- L5525 [P1 29.4]
-        'EUR'                                                      AS P1_50_2,  -- L5531 [position V44]
+        'EUR'                                                      AS P1_50_1,  -- L5531 [position V44]
+        C_ENR.PCEC_MNT_RISQUE                                      AS P1_50_2,  -- L5532 [position V44]
+        C_ENR.MNT_RISQUE                                           AS P1_50_3,  -- L5533 [position V44]
+        C_ENR.PCEC_ICNE                                            AS P1_50_8,  -- L5536 [position V44]
+        C_ENR.MNT_ICNE                                             AS P1_50_9,  -- L5537 [position V44]
         C_ENR.IND_CONF_CRIT_OPE                                    AS P1_21_46,  -- L5574 [P1 21.46]
         C_ENR.NIV_RISQUE_CRR3                                      AS P1_21_68,  -- L5593 [P1 21.68]
         C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR                            AS P1_21_55,  -- L5594 [P1 21.55]
