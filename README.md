@@ -8,7 +8,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 
 | Ticket | Assunto | Estado |
 |---|---|---|
-| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 NAT02 sem diferenças; variante 8 132/149 mapeada |
+| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟡 NAT02 provado; Hors NAT02 corrigido, por testar |
 | **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | ⬜ não iniciado |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | ⬜ não iniciado |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
@@ -111,6 +111,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat neutralizando o horodatage e a linha ENTETE |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
+| `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
 | `TESTES.sql` | Ficheiro unico de testes: estrutura, package, volumetria, round-trip |
 | `testes` | Resultado da 1a execucao dos testes |

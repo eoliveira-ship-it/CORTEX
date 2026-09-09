@@ -285,47 +285,9 @@ def col_notice(ref):
 # tokens. Confirmado nas duas pontas: no ficheiro real REF_UNIQ_CONT comeca
 # em 4040 (soma dos tokens: 4039), e onde o spool tem ancora explicita a
 # regua+1 devolve sempre a coluna que a ancora nomeia.
-DESVIO_A_PARTIR_DE = 4000
-
-# A variante 8 (derivados, --VAR1) tem um layout PROPRIO entre os offsets
-# 989 e 2250: onde a variante 1 tem preenchimento em branco (campos que nao
-# se aplicam a produtos standard), a 8 tem os campos especificos do produto
-# derivado -- MTM, nominal, netting, swap/opcao, taxas paga/recebida. A
-# regua da variante 1 nao serve ali, so a partir do byte em que os dois
-# layouts voltam a coincidir.
-#
-# Medido comparando as ancoras --P1 que as duas variantes tem em comum:
-# identicas ate ao byte 969 (P1 2.99), e a partir do byte 2251 a variante 8
-# fica SEMPRE 9 bytes a frente da 1 -- confirmado em 89 ancoras seguidas,
-# do 2259 (P1 22.56) ao 5680 (P1 31.53), sem uma unica excecao.
-DESVIO_VARIANTE_8 = 9
-LIMIAR_VARIANTE_8 = 2251
-
-# Entre 989 (P1 2.99, ultima ancora em comum antes da zona) e o limiar acima,
-# a variante 1 fica em branco (RPAD(' ',354) e RPAD(' ',466)) e a 8 tem os
-# campos proprios do derivado. A regua V44 nessa faixa e teorica -- vem do
-# comprimento/uso da notice, nunca confirmada contra um token real da
-# variante 1 -- e so calha coincidir com posicoes que nada tem a ver
-# (aconteceu com NATURE_OPTION a "acertar" em P1 8.2 por sorte de byte). So
-# os mapeamentos confirmados a mao (MAPEAMENTO_VARIANTE_8) valem ali.
-ZONA_DERIVADOS_V8 = (989, LIMIAR_VARIANTE_8)
-
-# Nove campos, todos dentro dessa mesma zona (offsets 945 a 2007), nao tem
-# ancora --P1 no spool E nao correspondem a nenhum campo da variante 1 --
-# sao dados que so a variante 8 tem (derivados: notional comprado/vendido,
-# quantidade a receber/entregar, sentido da transacao). Identificados pelo
-# nome de negocio na notice: P1 3.7, 3.10-3.13, 20.1-20.4.
-MAPEAMENTO_VARIANTE_8 = {
-    945:  'P1_3_7',     # Sens de la transaction
-    1883: 'P1_3_10',    # Montant notionnel de la jambe achetee des derives
-    1902: 'P1_3_11',    # Devise du montant du notionnel de la jambe achetee
-    1905: 'P1_3_12',    # Montant du notionnel de la jambe vendue des derives
-    1924: 'P1_3_13',    # Devise du montant du notionnel de la jambe vendue
-    1963: 'P1_20_1',    # Quantite a recevoir
-    1982: 'P1_20_2',    # Unite de mesure de la quantite a recevoir
-    1985: 'P1_20_3',    # Quantite a livrer
-    2004: 'P1_20_4',    # Unite de mesure de la quantite a livrer
-}
+from layout_variantes import (DESVIO_A_PARTIR_DE,                               ZONA_DERIVADOS_V8,
+                              MAPEAMENTO_VARIANTE_8,
+                              VARIANTES_DO_COMPOSTO)
 
 
 def col_por_posicao(pos, w, variante=None):
@@ -338,8 +300,6 @@ def col_por_posicao(pos, w, variante=None):
     if variante == 8 and ZONA_DERIVADOS_V8[0] <= pos < ZONA_DERIVADOS_V8[1]:
         return None
     p = pos
-    if variante == 8 and pos >= LIMIAR_VARIANTE_8:
-        p -= DESVIO_VARIANTE_8
     d = 1 if p >= DESVIO_A_PARTIR_DE else 0
     p += d
     exato = [f for f in V44 if f['start'] == p and f['len'] == w]
@@ -534,10 +494,15 @@ COMPOSTOS = [
 ]
 
 
-def composto(raw):
-    """Devolve [(coluna, expressao)] quando o token escreve dois campos."""
+def composto(raw, variante):
+    """Devolve [(coluna, expressao)] quando o token escreve dois campos.
+    So nas variantes que TEM o campo composto: a 5 tem um CASE que
+    tambem comeca por TRE201 mas e so o montante."""
     e = re.sub(r"\s+", '', raw).upper()
     for chave, pares in COMPOSTOS:
+        tipo = chave.split("'")[1]
+        if variante not in VARIANTES_DO_COMPOSTO[tipo]:
+            continue
         if re.sub(r"\s+", '', chave).upper() in e:
             return pares
     return None
@@ -577,7 +542,7 @@ for num, perim, a, b, desc, where in VAR:
         expr = convertidos[k]
         if k in saltar:
             continue
-        comp = composto(t['raw'])
+        comp = composto(t['raw'], num)
         if comp:
             for c, e in comp:
                 items.append((c, e, t['line'], 'campo composto'))

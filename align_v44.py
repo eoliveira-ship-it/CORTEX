@@ -173,7 +173,15 @@ def width(e):
     if not t:
         return None
     U = t.upper()
-    if U.startswith('CASE'):
+    # Um token que so decide o SINAL de um montante vale 1 byte, por mais
+    # comprido que o CASE seja. Sem isto, o
+    #     (CASE WHEN MT_SPREAD >=0 THEN '+' ELSE '-' END)
+    # da variante 8 ficava medido a 10 (o que a regua tem naquela posicao)
+    # e punha toda a variante 9 bytes fora do sitio a partir dali.
+    lits = re.findall(r"'([^']*)'", t)
+    if lits and all(x.strip() in ('+', '-') for x in lits):
+        return 1
+    if U.startswith('CASE') or U.startswith('(CASE'):
         ws_ = []
         for m in re.finditer(r'\b(THEN|ELSE)\b', U):
             rest = t[m.end():]

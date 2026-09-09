@@ -22,16 +22,19 @@ token:
 ORDEM DOS REGISTOS
 ------------------
 Hoje o ficheiro traz as variantes 1-3 antes dos paves P2/M1/P9 e as 4-8
-depois. Um unico select mudaria essa ordem. Por isso geram-se DOIS select --
-um por perimetro, cada um no lugar que o bloco original ocupava -- ambos com
-ORDER BY NO_VARIANTE. Assim o ficheiro sai na mesma ordem e a nao-regressao
-pode ser um diff simples.
+depois. Geram-se SEIS select, nos dois lugares que os blocos originais
+ocupavam: um para o NAT02 (as variantes 1-3 partilham o layout) e cinco para
+o Hors NAT02, um por variante -- porque as variantes 4 a 8 escrevem campos
+diferentes nas mesmas posicoes da linha. Assim o ficheiro sai na mesma ordem
+e a nao-regressao e um diff simples.
 """
 import io
 import re
 import sys
 
 from conv_spool import convert
+from layout_variantes import (VARIANTES, DESVIO_A_PARTIR_DE,                               ZONA_DERIVADOS_V8,
+                              MAPEAMENTO_VARIANTE_8, VARIANTES_DO_COMPOSTO)
 
 NL = chr(10)
 Q = chr(39)
@@ -53,10 +56,20 @@ tokenize, width, v44 = ns['tokenize'], ns['width'], ns['v44']
 DDL = open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
 COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s', DDL, re.M))
 proc = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
-ALIM = set(re.findall(r'AS (P1_[A-Z0-9_]+)', proc.split('-- INSERT #1')[1]
-                      .split('-- INSERT #2')[0]))
 
-DESVIO_A_PARTIR_DE = 4000   # o separador lignedetail1/2; ver gen_procedure.py
+
+def alimentadas(n):
+    """Colunas que o INSERT #n enche. Cada variante enche um conjunto
+    diferente -- ler so o do INSERT #1 fazia o spool procurar, nas linhas
+    Hors NAT02, colunas que nunca ninguem tinha preenchido."""
+    b = proc.split('-- INSERT #%d' % n)[1]
+    if n < 8:
+        b = b.split('-- INSERT #%d' % (n + 1))[0]
+    return set(re.findall(r'AS (P1_[A-Z0-9_]+)', b))
+
+
+ALIM = {n: alimentadas(n) for n, _, _, _ in VARIANTES}
+
 
 
 def col_notice(f):
@@ -66,14 +79,19 @@ def col_notice(f):
     return 'P1_' + r.split()[1].replace('.', '_')
 
 
-def resolve(t, off, w):
+def resolve(t, off, w, variante):
     if t.get('ref'):
         num = t['ref'].split()[1].replace('.', '_')
         for c in ('P1_' + num, 'P1_H_' + num):
             if c in COLS:
                 return c
-    d = 1 if off >= DESVIO_A_PARTIR_DE else 0
-    p = off + d
+    if variante == 8 and off in MAPEAMENTO_VARIANTE_8:
+        c = MAPEAMENTO_VARIANTE_8[off]
+        return c if c in COLS else None
+    if variante == 8 and ZONA_DERIVADOS_V8[0] <= off < ZONA_DERIVADOS_V8[1]:
+        return None
+    p = off
+    p += 1 if p >= DESVIO_A_PARTIR_DE else 0
     ex = [f for f in v44 if f['start'] == p and f['len'] == w]
     ca = ex if len(ex) == 1 else [f for f in v44
                                   if f['start'] < p + w and f['start'] + f['len'] > p]
@@ -87,11 +105,11 @@ def resolve(t, off, w):
 # guarda-os em duas colunas; aqui volta a juntar-se. O NULL de uma marca o
 # branco das duas.
 COMPOSTAS = {
-    "CD_TYPE_RISQUE='TRE201'":
+    'TRE201':
         "CASE WHEN P1_4_5 IS NULL THEN RPAD(' ', 22)" + NL
         + "            ELSE pack_utilitaire.f_format_montant_bis2(P1_4_4)"
         + "||RPAD(P1_4_5, 3) END",
-    "CD_TYPE_RISQUE='TRE401'":
+    'TRE401':
         "CASE WHEN P1_4_15 IS NULL THEN RPAD(' ', 22)" + NL
         + "            ELSE pack_utilitaire.f_format_montant_bis2(P1_4_14)"
         + "||RPAD(P1_4_15, 3) END",
@@ -100,20 +118,55 @@ COMPOSTAS = {
 # Tokens cujo valor vem de VARIAS colunas de origem: a substituicao textual
 # nao e segura, escreve-se a formatacao a mao sobre a coluna. A chave e o
 # offset do campo na linha.
+# Tokens cujo valor vem de VARIAS colunas de origem: a substituicao textual
+# nao e segura, escreve-se a formatacao a mao sobre a coluna guardada.
+# A chave e (variante, offset) -- o mesmo offset noutra variante e outro campo.
 EXPLICITAS = {
-    451:  "NVL(TO_CHAR(P1_5_3, 'YYYYMMDD'), RPAD(' ', 8))",
-    581:  "CASE WHEN P1_4_6 IS NULL THEN RPAD(' ', 19)"
-          " ELSE pack_utilitaire.f_format_montant_bis2(P1_4_6) END",
-    712:  "CASE WHEN P1_3_40 IS NULL THEN RPAD(' ', 19)"
-          " ELSE pack_utilitaire.f_format_montant_bis2(P1_3_40) END",
-    731:  "RPAD(NVL(P1_3_41, ' '), 3)",
-    734:  "CASE WHEN P1_3_42 IS NULL THEN RPAD(' ', 19)"
-          " ELSE pack_utilitaire.f_format_montant_bis2(P1_3_42) END",
-    753:  "RPAD(NVL(P1_3_43, ' '), 3)",
-    2911: "RPAD(NVL(P1_23_7, ' '), 40)",
-    4205: "LPAD(P1_31_17, 5, '0')",
-    4211: "LPAD(P1_31_18, 5, '0')",
-    4936: "RPAD(NVL(P1_21_31, ' '), 3)",
+    # ---- variante 1 (e, por partilharem layout, 2 e 3) -------------------
+    (1, 451):  "NVL(TO_CHAR(P1_5_3, 'YYYYMMDD'), RPAD(' ', 8))",
+    (1, 581):  "CASE WHEN P1_4_6 IS NULL THEN RPAD(' ', 19)"
+               " ELSE pack_utilitaire.f_format_montant_bis2(P1_4_6) END",
+    (1, 712):  "CASE WHEN P1_3_40 IS NULL THEN RPAD(' ', 19)"
+               " ELSE pack_utilitaire.f_format_montant_bis2(P1_3_40) END",
+    (1, 731):  "RPAD(NVL(P1_3_41, ' '), 3)",
+    (1, 734):  "CASE WHEN P1_3_42 IS NULL THEN RPAD(' ', 19)"
+               " ELSE pack_utilitaire.f_format_montant_bis2(P1_3_42) END",
+    (1, 753):  "RPAD(NVL(P1_3_43, ' '), 3)",
+    (1, 2911): "RPAD(NVL(P1_23_7, ' '), 40)",
+    (1, 4205): "LPAD(P1_31_17, 5, '0')",
+    (1, 4211): "LPAD(P1_31_18, 5, '0')",
+    (1, 4936): "RPAD(NVL(P1_21_31, ' '), 3)",
+
+    # ---- variante 4 ------------------------------------------------------
+    (4, 4936): "RPAD(NVL(P1_21_31, ' '), 3)",
+
+    # ---- variante 5 ------------------------------------------------------
+    # As datas condicionadas: a procedure ja guarda NULL quando a condicao
+    # nao se verifica, por isso aqui basta o NULL -> brancos.
+    (5, 440):  "NVL(TO_CHAR(P1_21_2, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 451):  "NVL(TO_CHAR(P1_5_3, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 481):  "CASE WHEN P1_4_4 IS NULL THEN RPAD(' ', 19)"
+               " ELSE pack_utilitaire.f_format_montant_bis2(P1_4_4) END",
+    (5, 581):  "CASE WHEN P1_4_6 IS NULL THEN RPAD(' ', 19)"
+               " ELSE pack_utilitaire.f_format_montant_bis2(P1_4_6) END",
+    (5, 600):  "RPAD(NVL(P1_4_7, ' '), 3)",
+    (5, 2186): "NVL(TO_CHAR(P1_21_10, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 2194): "NVL(TO_CHAR(P1_21_11, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 2202): "NVL(TO_CHAR(P1_21_12, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 2210): "NVL(TO_CHAR(P1_21_13, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 2218): "NVL(TO_CHAR(P1_21_14, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 2226): "NVL(TO_CHAR(P1_21_15, 'YYYYMMDD'), RPAD(' ', 8))",
+    (5, 4205): "LPAD(P1_31_17, 5, '0')",
+    (5, 4211): "LPAD(P1_31_18, 5, '0')",
+    (5, 4936): "RPAD(NVL(P1_21_31, ' '), 3)",
+
+    # ---- variante 8 ------------------------------------------------------
+    # A marge so existe quando a taxa e variavel ou revisavel; a procedure
+    # guarda NULL nos outros casos.
+    (8, 3922): "CASE WHEN P1_30_17 IS NULL THEN RPAD(' ', 10)"
+               " ELSE pack_utilitaire.f_format_taux(P1_30_17) END",
+    (8, 3940): "CASE WHEN P1_30_20 IS NULL THEN RPAD(' ', 10)"
+               " ELSE pack_utilitaire.f_format_taux(P1_30_20) END",
 }
 
 
@@ -121,21 +174,23 @@ def norm(s):
     return re.sub(r'\s+', '', s).upper()
 
 
-def expressao(t, off, w):
-    """Devolve (expr_vPACT, coluna_ou_None). Levanta se nao souber."""
+def expressao(t, off, w, variante):
+    """Devolve (expr_vPACT, coluna_ou_None), ou (None, None) se nao souber."""
     raw = re.sub(r'\s+', ' ', t['raw']).strip().rstrip('|').strip()
-    for chave, expr in COMPOSTAS.items():
-        if norm(chave) in norm(raw):
+    for tipo, expr in COMPOSTAS.items():
+        if variante not in VARIANTES_DO_COMPOSTO[tipo]:
+            continue
+        if norm("CD_TYPE_RISQUE='%s'" % tipo) in norm(raw):
             return expr, 'composta'
-    if off in EXPLICITAS:
-        return EXPLICITAS[off], 'explicita'
+    if (variante, off) in EXPLICITAS:
+        return EXPLICITAS[(variante, off)], 'explicita'
     if not re.search(r'C_ENR\.', raw, re.I) and ':MASYSDATE' not in raw.upper():
         return raw, None                       # filler ou literal: copia
     if ':MASYSDATE' in raw.upper():
         return raw, None                       # a data de extracao vem do shell
-    col = resolve(t, off, w)
-    if col is None or col not in ALIM:
-        return None, None
+    col = resolve(t, off, w, variante)
+    if col is None or col not in ALIM[variante]:
+        return None, None      # o chamador decide: branco da largura certa
     conv = re.sub(r'\s+', ' ', convert(t['raw'])).strip()
     if conv and conv in raw:
         return raw.replace(conv, col), col
@@ -145,79 +200,82 @@ def expressao(t, off, w):
     return None, None
 
 
-# ------------------------------------------------------- construcao da lista
-linhas = []
-pos = 0
-n_col = n_fil = 0
-falhas = []
-for t in tokenize(589, 1068):
-    w = width(t['raw'])
-    if w is None:
-        nf = next((f for f in v44 if f['start'] == pos), None)
-        w = nf['len'] if nf else 0
-    off = pos
-    pos += w
-    e, col = expressao(t, off, w)
-    if e is None:
-        falhas.append((off, w, re.sub(r'\s+', ' ', t['raw']).strip()[:70]))
-        continue
-    if col:
-        n_col += 1
-    else:
-        n_fil += 1
-    marca = ('-- pos %-5d [%s]' % (off, col)) if col else ('-- pos %-5d' % off)
-    linhas.append('       %s||   %s' % (e, marca))
-
-if falhas:
-    print('TOKENS NAO RESOLVIDOS: %d' % len(falhas))
-    for o, w, r in falhas:
-        print('   off=%-5d w=%-3d %s' % (o, w, r))
-    raise SystemExit('spool nao gerado: ha campos sem origem')
-
-corpo = NL.join(linhas)
-corpo = corpo.rstrip()
-corpo = re.sub(r'\|\|(\s*--[^\n]*)$', r'  \1', corpo)   # tira o ultimo ||
-
-# lignedetail1 / lignedetail2 : o spool parte a linha em duas colunas porque
-# uma expressao SQL nao passa dos 4000 caracteres. O corte nao se adivinha
-# pela soma das larguras -- le-se do proprio spool: o tokenizador parte o
-# token onde aparece "as lignedetail1", e as duas metades ficam com o mesmo
-# par (s,e). O corte e entre elas. Da 4000, que e o que o spool documenta.
-TOKENS = list(tokenize(589, 1068))
-CORTE = next(k for k in range(len(TOKENS) - 1)
-             if TOKENS[k]['s'] == TOKENS[k + 1]['s']
-             and TOKENS[k]['e'] == TOKENS[k + 1]['e'])
-print('corte lignedetail1/2 depois do token %d' % CORTE)
-
-
-def bloco(perimetro, comentario):
-    l1, l2 = [], []
+def percorre(a, b2):
+    """Tokens de um SELECT com o seu offset e largura."""
+    out = []
     pos = 0
-    for k, t in enumerate(TOKENS):
+    for t in tokenize(a, b2):
         w = width(t['raw'])
         if w is None:
             nf = next((f for f in v44 if f['start'] == pos), None)
             w = nf['len'] if nf else 0
-        off = pos
+        out.append((pos, w, t))
         pos += w
-        e, col = expressao(t, off, w)
-        alvo = l1 if k <= CORTE else l2
+    return out
+
+
+# --------------------------------------------------- validacao e cortes
+# So se geram blocos para estas: o NAT02 sai todo do layout da variante 1
+# (as 1, 2 e 3 partilham-no) e o Hors NAT02 leva uma por variante.
+EMITIDAS = (1, 4, 5, 6, 7, 8)
+
+TOKENS = {n: percorre(a, b2) for n, _, a, b2 in VARIANTES}
+
+# Tokens de dados sem coluna onde guardar o valor. Nao impedem a geracao --
+# saem como branco da largura certa, que mantem a linha alinhada -- mas sao
+# listados, porque cada um e um campo que o ficheiro novo perde.
+SEM_COLUNA = {}
+for n in EMITIDAS:
+    for off, w, t in TOKENS[n]:
+        if expressao(t, off, w, n)[0] is None:
+            SEM_COLUNA[(n, off)] = w
+
+if SEM_COLUNA:
+    print('campos sem coluna (saem em branco): %d' % len(SEM_COLUNA))
+    for n in EMITIDAS:
+        q = [o for (v, o) in SEM_COLUNA if v == n]
+        if q:
+            print('   variante %d: %d campos' % (n, len(q)))
+
+
+def corte(n):
+    ts = [t for _, _, t in TOKENS[n]]
+    return next(k for k in range(len(ts) - 1)
+                if ts[k]['s'] == ts[k + 1]['s'] and ts[k]['e'] == ts[k + 1]['e'])
+
+
+CORTE = {n: corte(n) for n, _, _, _ in VARIANTES}
+
+
+def bloco(variante, filtro, comentario):
+    """Um SELECT sobre a tabela, com a lista de campos DESTA variante."""
+    l1, l2 = [], []
+    n_col = 0
+    for k, (off, w, t) in enumerate(TOKENS[variante]):
+        e, col = expressao(t, off, w, variante)
+        if e is None:
+            e = "RPAD(' ', %d)" % w
+            col = None
+        elif col:
+            n_col += 1
+        alvo = l1 if k <= CORTE[variante] else l2
         marca = ('-- pos %-5d %s' % (off, col)) if col else ('-- pos %-5d' % off)
         alvo.append('       %s||   %s' % (e, marca))
-    for L in (l1, l2):
-        L[-1] = re.sub(r'\|\|(\s+--)', r'  \1', L[-1])
-    return (
-        '------------------------------------------------------------------'
-        '------------------------------------------------------\n'
-        '-- %s\n'
-        '------------------------------------------------------------------'
-        '------------------------------------------------------\n'
-        'select\n%s\n     as lignedetail1,\n%s\n     as lignedetail2\n'
-        '  from %s\n'
-        " where CD_PERIMETRE = '%s'\n"
-        "   and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')\n"
-        ' order by NO_VARIANTE;\n'
-        % (comentario, NL.join(l1), NL.join(l2), TAB, perimetro))
+    for L_ in (l1, l2):
+        L_[-1] = re.sub(r'\|\|(\s+--)', r'  \1', L_[-1])
+    print('   %-46s %3d campos com coluna' % (comentario[:46], n_col))
+    risca = '-' * 120
+    return (risca + NL
+            + '-- ' + comentario + NL
+            + risca + NL
+            + 'select' + NL + NL.join(l1) + NL
+            + '     as lignedetail1,' + NL
+            + NL.join(l2) + NL
+            + '     as lignedetail2' + NL
+            + '  from ' + TAB + NL
+            + ' where ' + filtro + NL
+            + '   and (P1_H_0_2 = :ENTITE or :ENTITE = ' + Q + 'TOTAL' + Q + ')' + NL
+            + ' order by NO_VARIANTE;' + NL)
 
 # ------------------------------------------------------------- montagem final
 orig = open(FONTE, encoding='latin-1').read().split(NL)
@@ -249,11 +307,19 @@ while i < len(orig):
         i += 1
         continue
     if alvo == BLOCOS[0]:
-        novo.append(bloco('NAT02',
-                          'PAVE P1 - perimetre NAT02 (substitui os select E04a/E04b/E04c)'))
+        # As variantes 1, 2 e 3 partilham o layout -- provado por dados:
+        # 113368 registos byte a byte iguais. Um SELECT chega para as tres.
+        novo.append(bloco(1, "CD_PERIMETRE = 'NAT02'",
+                          'PAVE P1 - perimetre NAT02 (substitui E04a/E04b/E04c)'))
     elif alvo == BLOCOS[3]:
-        novo.append(bloco('HORS_NAT02',
-                          'PAVE P1 - perimetre Hors NAT02 (substitui os 5 select E05a..E05e)'))
+        # As variantes 4 a 8 NAO partilham o layout entre si nem com a 1:
+        # cada uma escreve campos diferentes nas mesmas posicoes. Cada uma
+        # leva o seu SELECT, com a sua lista de campos, pela mesma ordem em
+        # que o spool antigo as escreve.
+        for n_var in (4, 5, 6, 7, 8):
+            novo.append(bloco(n_var, 'NO_VARIANTE = %d' % n_var,
+                              'PAVE P1 - Hors NAT02, variante %d (substitui E05%s)'
+                              % (n_var, 'abcde'[n_var - 4])))
     i = alvo[1]          # salta o bloco original
 
 CAB = [
@@ -265,12 +331,15 @@ CAB = [
     '-- pack_alim_tab_envoi_crrv4.P_ALIM_ENG_CORP_P1_BIS, que alimenta a',
     '-- tabela ENG_CORP_P1_BIS. Aqui fica so a formatacao.',
     '--',
-    '-- Os 8 select sobre ENG_CORP_P1 dao lugar a 2 select sobre a tabela, um',
-    '-- por perimetro, cada um no lugar do bloco que substitui. Sao dois e nao',
-    '-- um porque o ficheiro traz hoje as variantes 1-3 antes dos paves',
-    '-- P2/M1/P9 e as 4-8 depois: mantendo os dois lugares, e mantendo o',
-    '-- ORDER BY NO_VARIANTE dentro de cada um, o ficheiro sai na mesma ordem',
-    '-- e a nao-regressao e um diff simples.',
+    '-- Os 8 select sobre ENG_CORP_P1 dao lugar a 6 select sobre a tabela:',
+    '--   1 para o perimetro NAT02  (variantes 1-3, que partilham o layout,',
+    '--     o que esta provado por dados: 113368 registos byte a byte iguais)',
+    '--   5 para o Hors NAT02       (variantes 4-8, uma cada, porque cada uma',
+    '--     escreve campos DIFERENTES nas mesmas posicoes da linha)',
+    '--',
+    '-- Ficam nos dois lugares que os blocos originais ocupavam, porque o',
+    '-- ficheiro traz as variantes 1-3 antes dos paves P2/M1/P9 e as 4-8',
+    '-- depois. Assim o ficheiro sai na mesma ordem.',
     '--',
     '-- Os restantes paves (C1/C5, P2, M1, P9) ficam exatamente como estavam.',
     '--',
@@ -284,17 +353,13 @@ open(SAIDA, 'w', encoding='latin-1', errors='replace').write(
 # O TESTES.sql compara, campo a campo, a expressao ORIGINAL do spool com a
 # expressao vPACT. Escreve-se aqui a lista para o gen_testes.py a ler: assim o
 # teste verifica exatamente o que o spool novo emite, sem duplicar a logica.
+# So a variante 1: e a unica com dados suficientes para o teste (os 200
+# engajamentos que o T4 usa vem todos do perimetro NAT02).
 import json
+
 pares = []
-pos = 0
-for t in TOKENS:
-    w = width(t['raw'])
-    if w is None:
-        nf = next((f for f in v44 if f['start'] == pos), None)
-        w = nf['len'] if nf else 0
-    off = pos
-    pos += w
-    e, col = expressao(t, off, w)
+for off, w, t in TOKENS[1]:
+    e, col = expressao(t, off, w, 1)
     if not col:
         continue
     pares.append({'off': off, 'col': col,
@@ -302,7 +367,4 @@ for t in TOKENS:
                   'vpact': re.sub(r'\s+', ' ', e).strip()})
 json.dump(pares, open('pares_vpact.json', 'w', encoding='utf-8'), indent=1)
 print('pares para o teste  : %d  -> pares_vpact.json' % len(pares))
-
-print('campos com coluna : %d' % n_col)
-print('fillers/literais  : %d' % n_fil)
 print('-> %s' % SAIDA)

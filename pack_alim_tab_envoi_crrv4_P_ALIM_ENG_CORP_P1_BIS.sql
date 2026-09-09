@@ -1652,7 +1652,7 @@ BEGIN
 
     ------------------------------------------------------------------
     -- INSERT #5  (Hors-NAT TRE2/TRE4/TRE5 - spool L3462)
-    --   colonnes : 192 (dont 59 ancrees --P1) | 219 fillers -> NULL | 2 signes absorbes par le NUMBER
+    --   colonnes : 192 (dont 60 ancrees --P1) | 219 fillers -> NULL | 2 signes absorbes par le NUMBER
     ------------------------------------------------------------------
     INSERT INTO ENG_CORP_P1_BIS
     (
@@ -1886,8 +1886,8 @@ BEGIN
         C_ENR.CD_IMP_PRUDENT                                       AS P1_4_1,  -- L3518 [position V44]
         C_ENR.TOP_ENG_DOUTEUX                                      AS P1_5_2,  -- L3519 [P1 5.2]
         (CASE WHEN C_ENR.TOP_ENG_DOUTEUX = 'Y' THEN C_ENR.DT_ENG_DOUTEUX ELSE NULL END) AS P1_5_3,  -- L3520 [P1 5.3]
-        CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE201' THEN 0 END       AS P1_4_4,  -- L3534 [campo composto]
-        CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE201' THEN NVL(C_ENR.CD_DEVISE_MNT_DECOUVERT,'EUR') END AS P1_4_5,  -- L3534 [campo composto]
+        (CASE WHEN C_ENR.CD_TYPE_RISQUE = 'TRE201' AND NVL(C_ENR.MNT_SOLDE, 0) >=0 THEN NVL((C_ENR.MNT_SOLDE), 0) ELSE NULL END ) AS P1_4_4,  -- L3534 [P1 4.4]
+        C_ENR.CD_DEVISE_MNT_DECOUVERT                              AS P1_4_5,  -- L3541 [position V44]
         NVL((C_ENR.MNT_CRD), 0)                                    AS P1_4_9,  -- L3550 [P1 4.9]
         NVL(C_ENR.CD_DEVISE_CRD, 'EUR')                            AS P1_4_13,  -- L3552 [P1 4.13]
         C_ENR.MNT_LOYER                                            AS P1_4_14,  -- L3553 [position V44]
