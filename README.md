@@ -31,12 +31,11 @@ faltava — nesta fotografia não há registos TRE2% em NAT02, por isso o defeit
 era latente. Continua a ser um defeito: noutro arrêté a procedure carregaria
 linhas que o ficheiro não leva.
 
-Última comparação dos `CRRCORP.dat` (122225 registos): 122168 idênticos, 57
-diferentes, todos Hors NAT02 — 45 `VAR104`, 11 `TRE100`, 1 `EQU101`. As duas
-causas estão corrigidas (maturidade `P1 3.20` nas variantes 4 e 6; zona dos
-derivados da variante 8, que já não tem nenhum campo sem coluna). Falta voltar
-a correr o ciclo para o confirmar, e repor o `TABLESPACE HCRR` no DDL antes da
-entrega.
+**Não-regressão provada:** os `CRRCORP.dat` gerados pelo spool antigo e pelo
+vPACT têm os mesmos **122225 registos, byte a byte**, sem mascarar nenhum campo
+— NAT02 e Hors NAT02 (`VAR104`, `TRE409`, `TRE100`, `EQU101`, `SIG201`). Só a
+ordem das linhas difere. Falta decidir a ordenação e repor o `TABLESPACE HCRR`
+no DDL antes da entrega.
 
 Detalhe do SIRL-1224: [docs/SIRL-1224.md](docs/SIRL-1224.md)
 Mapeamento posicional: [docs/REGUA-V44.md](docs/REGUA-V44.md)
