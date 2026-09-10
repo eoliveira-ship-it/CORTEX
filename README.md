@@ -34,8 +34,10 @@ linhas que o ficheiro não leva.
 **Não-regressão provada:** os `CRRCORP.dat` gerados pelo spool antigo e pelo
 vPACT têm os mesmos **122225 registos, byte a byte**, sem mascarar nenhum campo
 — NAT02 e Hors NAT02 (`VAR104`, `TRE409`, `TRE100`, `EQU101`, `SIG201`). Só a
-ordem das linhas difere. Falta decidir a ordenação e repor o `TABLESPACE HCRR`
-no DDL antes da entrega.
+ordem das linhas difere, e fica assim: o spool antigo também não tem `ORDER BY`,
+a ordem nunca foi garantida, e o teste de não-regressão é **por conteúdo**, não
+por `diff` linha a linha ([decisão](docs/SIRL-1224.md#a-ordem-das-linhas-decisão)).
+Falta repor o `TABLESPACE HCRR` no DDL antes da entrega.
 
 Detalhe do SIRL-1224: [docs/SIRL-1224.md](docs/SIRL-1224.md)
 Mapeamento posicional: [docs/REGUA-V44.md](docs/REGUA-V44.md)
