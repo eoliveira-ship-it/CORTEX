@@ -221,7 +221,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_10_24   VARCHAR2(3)    , -- P1 10.24    ALPHA/3  Devise du montant cours spot
     P1_10_99   VARCHAR2(24)   , -- P1 10.99    ALPHA/24  Filler
     P1_11_1    VARCHAR2(3)    , -- P1 11.1     ALPHA/3  Type de dérivé de crédit
-    P1_11_2    NUMBER(9,5)    , -- P1 11.2     NUM/10 10 dont signe et 5 décimales  Spread de marché du dérivé
+    P1_11_2    NUMBER(18,10)  , -- P1 11.2    NUM/10 10 dont signe et 5 décimales  Spread de marché du dérivé
     P1_11_4    VARCHAR2(20)   , -- P1 11.4     ALPHA/20  Identifiant local du tiers couvert par le Dérivé de créd
     P1_11_5    VARCHAR2(10)   , -- P1 11.5     ALPHA/10  Identifiant central du tiers couvert par le Dérivé de cr
     P1_11_12   VARCHAR2(2)    , -- P1 11.12    ALPHA/2  Source du rating de la tranche

@@ -7,10 +7,8 @@ as funcoes pack_utilitaire.F_FORMAT_*), que e o que um spool deve fazer.
 
 COMO SE CONSTROI CADA CAMPO
 ---------------------------
-Percorre-se a lista de tokens do select da variante 1 -- o layout e comum as
-oito variantes; verificou-se no ficheiro real que as 120789 linhas, incluindo
-as VAR104 da variante 8, trazem o tipo de risco nos bytes 290..296. Para cada
-token:
+Percorre-se a lista de tokens do select de CADA variante emitida (1 para o
+NAT02, 4 a 8 para o Hors NAT02). Para cada token:
 
   * sem coluna de origem (RPAD(' ',n), literais) -> copia-se tal e qual;
   * com coluna de origem -> troca-se a expressao do VALOR pela coluna da
@@ -28,12 +26,13 @@ o Hors NAT02, um por variante -- porque as variantes 4 a 8 escrevem campos
 diferentes nas mesmas posicoes da linha. Assim o ficheiro sai na mesma ordem
 e a nao-regressao e um diff simples.
 """
+import collections
 import io
 import re
 import sys
 
 from conv_spool import convert
-from layout_variantes import (VARIANTES, DESVIO_A_PARTIR_DE,                               ZONA_DERIVADOS_V8,
+from layout_variantes import (VARIANTES, DESVIO_A_PARTIR_DE,
                               MAPEAMENTO_VARIANTE_8, VARIANTES_DO_COMPOSTO)
 
 NL = chr(10)
@@ -71,6 +70,20 @@ def alimentadas(n):
 ALIM = {n: alimentadas(n) for n, _, _, _ in VARIANTES}
 
 
+def guardadas(n):
+    """{coluna: expressao} que o INSERT #n guarda."""
+    b = proc.split('-- INSERT #%d' % n)[1]
+    if n < 8:
+        b = b.split('-- INSERT #%d' % (n + 1))[0]
+    d = {}
+    for m in re.finditer(r'^\s*(\S.*?)\s+AS (P1_[A-Z0-9_]+),?\s*--', b, re.M):
+        d.setdefault(m.group(2), m.group(1).strip())
+    return d
+
+
+GUARD = {n: guardadas(n) for n, _, _, _ in VARIANTES}
+
+
 
 def col_notice(f):
     r = f['ref']
@@ -88,8 +101,6 @@ def resolve(t, off, w, variante):
     if variante == 8 and off in MAPEAMENTO_VARIANTE_8:
         c = MAPEAMENTO_VARIANTE_8[off]
         return c if c in COLS else None
-    if variante == 8 and ZONA_DERIVADOS_V8[0] <= off < ZONA_DERIVADOS_V8[1]:
-        return None
     p = off
     p += 1 if p >= DESVIO_A_PARTIR_DE else 0
     ex = [f for f in v44 if f['start'] == p and f['len'] == w]
@@ -192,7 +203,11 @@ def expressao(t, off, w, variante):
     if col is None or col not in ALIM[variante]:
         return None, None      # o chamador decide: branco da largura certa
     conv = re.sub(r'\s+', ' ', convert(t['raw'])).strip()
-    if conv and conv in raw:
+    # So se troca o valor isolado pelo convert quando e EXATAMENTE o que a
+    # procedure guarda. O convert nao conhece ABS/TRUNC/MOD como formato: em
+    # LPAD(ABS(TRUNC(C_ENR.X)),2,'0') isolava ABS(TRUNC(C_ENR.X)) e o spool
+    # ficava LPAD(col,2,'0') -- a maturidade 0.0055 saia '.0.005'.
+    if conv and conv in raw and norm(conv) == norm(GUARD[variante].get(col, '')):
         return raw.replace(conv, col), col
     fontes = set(x.upper() for x in re.findall(r'C_ENR\.([A-Za-z0-9_]+)', raw, re.I))
     if len(fontes) == 1:
@@ -236,6 +251,30 @@ if SEM_COLUNA:
         q = [o for (v, o) in SEM_COLUNA if v == n]
         if q:
             print('   variante %d: %d campos' % (n, len(q)))
+
+# Verificacao: nenhuma funcao do token original pode desaparecer, a nao ser as
+# que a procedure ja aplicou ao guardar. Apanha, sem base de dados, o caso do
+# LPAD(ABS(TRUNC(x)),2,'0') que virava LPAD(col,2,'0').
+FUNCOES = re.compile(r'\b(ABS|TRUNC|MOD|SUBSTR|LPAD|RPAD|TO_CHAR|UPPER|NVL|CASE|F_FORMAT_[A-Z0-9_]+)\b', re.I)
+
+
+def funcoes(s):
+    return collections.Counter(x.upper() for x in FUNCOES.findall(s))
+
+
+PERDAS = []
+for n in EMITIDAS:
+    for off, w, t in TOKENS[n]:
+        e, col = expressao(t, off, w, n)
+        if not col or col in ('composta', 'explicita') or col not in GUARD[n]:
+            continue
+        falta = (funcoes(t['raw']) - funcoes(GUARD[n][col])) - funcoes(e)
+        if falta:
+            PERDAS.append((n, off, col, sorted(falta), e))
+if PERDAS:
+    for p in PERDAS:
+        print('FORMATO PERDIDO variante %d pos %d %s: %s -> %s' % p)
+    sys.exit(1)
 
 
 def corte(n):

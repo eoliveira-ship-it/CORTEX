@@ -42,7 +42,8 @@ COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s', DDL, re.M))
 N_COLS = len(re.findall(r'^\s+([A-Z][A-Z0-9_]*)\s+(?:NUMBER|DATE|VARCHAR2)', DDL, re.M))
 ALVO = {'P1_21_30', 'P1_21_43', 'P1_21_60', 'P1_3_20', 'P1_18_1', 'P1_18_10',
         'P1_21_81', 'P1_21_82', 'P1_22_19', 'P1_22_23', 'P1_22_24', 'P1_22_27',
-        'P1_22_28', 'P1_22_29', 'P1_4_30'}
+        'P1_22_28', 'P1_22_29', 'P1_4_30',
+        'P1_11_2'}   # guarda o MT_SPREAD bruto, para o spool refazer o sinal
 ALARGADAS = sorted(
     (m.group(1), m.group(2))
     for m in re.finditer(r'^\s+(P1_[A-Z0-9_]+)\s+(NUMBER\(\d+,\s*\d+\))', DDL, re.M)

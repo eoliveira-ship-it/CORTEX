@@ -285,7 +285,7 @@ def col_notice(ref):
 # tokens. Confirmado nas duas pontas: no ficheiro real REF_UNIQ_CONT comeca
 # em 4040 (soma dos tokens: 4039), e onde o spool tem ancora explicita a
 # regua+1 devolve sempre a coluna que a ancora nomeia.
-from layout_variantes import (DESVIO_A_PARTIR_DE,                               ZONA_DERIVADOS_V8,
+from layout_variantes import (DESVIO_A_PARTIR_DE,
                               MAPEAMENTO_VARIANTE_8,
                               VARIANTES_DO_COMPOSTO)
 
@@ -297,8 +297,6 @@ def col_por_posicao(pos, w, variante=None):
     if variante == 8 and pos in MAPEAMENTO_VARIANTE_8:
         c = MAPEAMENTO_VARIANTE_8[pos]
         return c if c in DDL_COLS else None
-    if variante == 8 and ZONA_DERIVADOS_V8[0] <= pos < ZONA_DERIVADOS_V8[1]:
-        return None
     p = pos
     d = 1 if p >= DESVIO_A_PARTIR_DE else 0
     p += d
@@ -532,6 +530,17 @@ for num, perim, a, b, desc, where in VAR:
             convertidos[k] = par_int_dec(convertidos[k], convertidos[k + 1])
             saltar.add(k + 1)
             npar += 1
+    # Sinal e valor em dois tokens sobre a MESMA coluna de origem:
+    #   (CASE WHEN C_ENR.X >=0 THEN '+' ELSE '-' END) || LPAD(ABS(TRUNC(NVL(C_ENR.X,0))),4,'0')
+    # O token de sinal nao vira coluna, e o ABS do valor apaga o sinal. Guarda-se
+    # o C_ENR.X inteiro, para o spool poder refazer os dois pedacos -- incluindo
+    # o NULL, que o CASE escreve como '-'.
+    for k in range(1, len(toks)):
+        if k in saltar or not is_sign(convertidos[k - 1]):
+            continue
+        fs = set(x.upper() for x in re.findall(r'C_ENR\.([A-Za-z0-9_]+)', convertidos[k - 1], re.I))
+        if len(fs) == 1 and INT_DEC.match(convertidos[k].strip()) and fontes_valor(convertidos[k]) == fs:
+            convertidos[k] = 'C_ENR.' + fs.pop()
     for k, t in enumerate(toks):
         w = WIDTH(t['raw'])
         if w is None:

@@ -2027,8 +2027,8 @@ select
        RPAD(' ',8)||   -- pos 1381 
        RPAD(' ',1)||   -- pos 1389 
        RPAD(' ',29)||   -- pos 1390 
-       LPAD(P1_3_20,2,'0')||   -- pos 1419  P1_3_20
-       LPAD(P1_3_20,4,'0')||   -- pos 1421  P1_3_20
+       LPAD(ABS(TRUNC(P1_3_20)),2,'0')||   -- pos 1419  P1_3_20
+       LPAD(ABS(MOD(P1_3_20 *10000,10000)),4,'0')||   -- pos 1421  P1_3_20
        RPAD(NVL(P1_4_8, ' '),1,' ')||   -- pos 1425  P1_4_8
        RPAD(' ',3)||   -- pos 1426 
        RPAD(' ',2)||   -- pos 1429 
@@ -2954,8 +2954,8 @@ select
        RPAD(' ',1)||   -- pos 1390 
        RPAD(' ',4)||   -- pos 1391 
        RPAD(' ',24)||   -- pos 1395 
-       LPAD(P1_3_20,2,'0')||   -- pos 1419  P1_3_20
-       LPAD(P1_3_20,4,'0')||   -- pos 1421  P1_3_20
+       LPAD(ABS(TRUNC(P1_3_20)),2,'0')||   -- pos 1419  P1_3_20
+       LPAD(ABS(MOD(P1_3_20 *10000,10000)),4,'0')||   -- pos 1421  P1_3_20
        RPAD(NVL(P1_4_8,' '),1,' ')||   -- pos 1425  P1_4_8
        RPAD(' ',3)||   -- pos 1426 
        RPAD(NVL(P1_3_75, ' '),2,' ')||   -- pos 1429  P1_3_75
@@ -3797,19 +3797,19 @@ select
        RPAD(' ',3)||   -- pos 965  
        RPAD(' ',1)||   -- pos 968  
        RPAD(NVL(P1_2_99,' '), 20)||   -- pos 969   P1_2_99
-       RPAD(' ', 19)||   -- pos 989  
-       RPAD(' ', 3)||   -- pos 1008 
-       RPAD(' ', 12)||   -- pos 1011 
-       RPAD(' ', 1)||   -- pos 1023 
-       RPAD(' ', 1)||   -- pos 1024 
-       RPAD(' ', 25)||   -- pos 1025 
-       RPAD(' ', 1)||   -- pos 1050 
-       RPAD(' ', 25)||   -- pos 1051 
-       RPAD(' ', 3)||   -- pos 1076 
-       RPAD(' ', 19)||   -- pos 1079 
-       RPAD(' ', 3)||   -- pos 1098 
-       RPAD(' ', 19)||   -- pos 1101 
-       RPAD(' ', 3)||   -- pos 1120 
+       pack_utilitaire.f_format_montant_bis2(nvl((P1_3_80),0))||   -- pos 989   P1_3_80
+       RPAD(NVL(P1_3_81,' '),3,' ')||   -- pos 1008  P1_3_81
+       RPAD(NVL(P1_3_82,' '),12,' ')||   -- pos 1011  P1_3_82
+       RPAD(NVL(P1_3_83, ' '),1,' ')||   -- pos 1023  P1_3_83
+       RPAD(NVL(P1_3_15, ' '),1,' ')||   -- pos 1024  P1_3_15
+       RPAD(NVL(P1_13_10, ' '),25,' ')||   -- pos 1025  P1_13_10
+       RPAD(NVL(P1_3_16, ' '),1,' ')||   -- pos 1050  P1_3_16
+       RPAD(NVL(P1_3_17, ' '),25,' ')||   -- pos 1051  P1_3_17
+       RPAD(NVL(P1_3_19, ' '),3,' ')||   -- pos 1076  P1_3_19
+       pack_utilitaire.f_format_montant_bis2(nvl((P1_3_84),0))||   -- pos 1079  P1_3_84
+       RPAD(NVL(P1_3_85, ' '),3,' ')||   -- pos 1098  P1_3_85
+       pack_utilitaire.f_format_montant_bis2(nvl((P1_3_72),0))||   -- pos 1101  P1_3_72
+       RPAD(NVL(P1_3_73, ' '),3,' ')||   -- pos 1120  P1_3_73
        RPAD(' ',3)||   -- pos 1123 
        RPAD(' ',1)||   -- pos 1126 
        RPAD(' ',16)||   -- pos 1127 
@@ -3867,13 +3867,13 @@ select
        RPAD(' ',1)||   -- pos 1390 
        RPAD(' ',4)||   -- pos 1391 
        RPAD(' ',24)||   -- pos 1395 
-       RPAD(' ', 2)||   -- pos 1419 
-       RPAD(' ', 4)||   -- pos 1421 
-       RPAD(' ', 1)||   -- pos 1425 
+       LPAD(ABS(TRUNC(NVL(P1_3_20,0))),2,'0')||   -- pos 1419  P1_3_20
+       LPAD(ABS(MOD(NVL(P1_3_20,0) *10000,10000)),4,'0')||   -- pos 1421  P1_3_20
+       RPAD(NVL(P1_4_8, ' '),1,' ')||   -- pos 1425  P1_4_8
        RPAD(' ',3)||   -- pos 1426 
        RPAD(NVL(P1_3_75, ' '),2,' ')||   -- pos 1429  P1_3_75
        RPAD(NVL(P1_4_42,' '),6,' ')||   -- pos 1431  P1_4_42
-       RPAD(' ', 8)||   -- pos 1437 
+       RPAD(nvl(TO_CHAR(P1_3_3, 'YYYYMMDD'),' '),8,' ')||   -- pos 1437  P1_3_3
        RPAD(' ',16)||   -- pos 1445 
        RPAD(' ',20)||   -- pos 1461 
        RPAD(' ',10)||   -- pos 1481 
@@ -3894,34 +3894,34 @@ select
        RPAD(' ',1)||   -- pos 1657 
        RPAD(' ',1)||   -- pos 1658 
        RPAD(' ',1)||   -- pos 1659 
-       RPAD(' ', 1)||   -- pos 1660 
+       RPAD(NVL(P1_3_36, ' '),1,' ')||   -- pos 1660  P1_3_36
        RPAD(' ',30)||   -- pos 1661 
        RPAD(' ',12)||   -- pos 1691 
        RPAD(' ',1)||   -- pos 1703 
        RPAD(' ',8)||   -- pos 1704 
-       RPAD(' ', 2)||   -- pos 1712 
-       RPAD(' ', 2)||   -- pos 1714 
+       RPAD(NVL(P1_15_1, ' '),2,' ')||   -- pos 1712  P1_15_1
+       RPAD(NVL(P1_15_2, ' '),2,' ')||   -- pos 1714  P1_15_2
        RPAD(' ',20)||   -- pos 1716 
        RPAD(' ',10)||   -- pos 1736 
        RPAD(' ',30)||   -- pos 1746 
-       RPAD(' ', 19)||   -- pos 1776 
-       RPAD(' ', 3)||   -- pos 1795 
-       RPAD(' ', 1)||   -- pos 1798 
+       pack_utilitaire.f_format_montant_bis2(nvl((P1_3_86),0))||   -- pos 1776  P1_3_86
+       RPAD(NVL(P1_3_87, ' '),3,' ')||   -- pos 1795  P1_3_87
+       RPAD(NVL(P1_3_88, ' '),1,' ')||   -- pos 1798  P1_3_88
        RPAD(' ',30)||   -- pos 1799 
-       RPAD(' ', 3)||   -- pos 1829 
-       RPAD(' ', 1)||   -- pos 1832 
-       RPAD(' ', 1)||   -- pos 1833 
+       RPAD(NVL(P1_11_1, ' '),3,' ')||   -- pos 1829  P1_11_1
+       RPAD(NVL(P1_3_76, ' '),1,' ')||   -- pos 1832  P1_3_76
+       RPAD(NVL(P1_3_77, ' '),1,' ')||   -- pos 1833  P1_3_77
        RPAD(' ',20)||   -- pos 1834 
        RPAD(' ',10)||   -- pos 1854 
-       RPAD(' ', 1)||   -- pos 1864 
-       RPAD(' ', 4)||   -- pos 1865 
+       (CASE WHEN P1_11_2 >=0 THEN '+' ELSE '-' END)||   -- pos 1864  P1_11_2
+       LPAD(ABS(TRUNC(NVL(P1_11_2,0))),4,'0')||   -- pos 1865  P1_11_2
        RPAD(' ',5)||   -- pos 1869 
        pack_utilitaire.f_format_montant_bis2(nvl((P1_3_10),0))||   -- pos 1874  P1_3_10
        RPAD(NVL(P1_3_11, ' '),3,' ')||   -- pos 1893  P1_3_11
        pack_utilitaire.f_format_montant_bis2(nvl((P1_3_12),0))||   -- pos 1896  P1_3_12
        RPAD(NVL(P1_3_13, ' '),3,' ')||   -- pos 1915  P1_3_13
-       RPAD(' ', 2)||   -- pos 1918 
-       RPAD(' ', 3)||   -- pos 1920 
+       RPAD(NVL(P1_10_20, ' '),2,' ')||   -- pos 1918  P1_10_20
+       RPAD(NVL(P1_10_1, ' '),3,' ')||   -- pos 1920  P1_10_1
        RPAD(NVL(P1_10_2, ' '),1,' ')||   -- pos 1923  P1_10_2
        RPAD(NVL(P1_8_1, ' '),1,' ')||   -- pos 1924  P1_8_1
        RPAD(NVL(P1_8_2, ' '),14,' ')||   -- pos 1925  P1_8_2

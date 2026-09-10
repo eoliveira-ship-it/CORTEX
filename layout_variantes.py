@@ -52,16 +52,22 @@ DESVIO_A_PARTIR_DE = 4000
 # align_v44.width(). O ficheiro real confirma: o IND_PROD_ECH esta no byte
 # 2250 tanto num TRE501 (variante 1) como num VAR104 (variante 8).
 #
-# O que a variante 8 tem mesmo de proprio e o CONTEUDO entre os bytes 989 e
-# 2250: onde a variante 1 poe branco (RPAD(' ',354) e RPAD(' ',466)), a 8 poe
-# os campos do derivado -- MTM, nominal, netting, swap/opcao, taxas. Nessa
-# faixa a regua V44 nao vale: e reconstruida do comprimento/uso da notice e
-# nunca foi confirmada contra um token real, porque a variante 1 nao
-# implementa nada ali. So calha coincidir com posicoes que nada tem a ver --
-# o NATURE_OPTION chegou a "acertar" em P1 8.2 por sorte de byte.
-ZONA_DERIVADOS_V8 = (989, 2251)
+# O que a variante 8 tem de proprio e o CONTEUDO entre os bytes 989 e 2250:
+# onde a variante 1 poe branco (RPAD(' ',354) e RPAD(' ',466)), a 8 poe os
+# campos do derivado -- MTM, netting, CVA, swap/opcao, taxas.
+#
+# Essa faixa esteve excluida da regua (ZONA_DERIVADOS_V8) enquanto o token de
+# sinal estava mal medido: com os 9 bytes a mais, os campos caiam em posicoes
+# erradas (o NATURE_OPTION "acertava" em P1 8.2). Corrigida a medida, os 45
+# tokens com coluna de origem da faixa batem TODOS na regua com inicio e
+# largura exatos, e o nome da notice confirma cada um (MNT_MTM -> P1 3.80
+# Mark-to-Market, IND_ACCORD_NETTING -> P1 3.16 netting, NATURE_OPTION ->
+# P1 10.1 Nature de l'Option...). A exclusao deixou de ter razao e saiu: so
+# fazia os campos sairem em branco -- 45 VAR104 diferiam do ficheiro antigo.
 
-# Nessa faixa, os campos identificados a mao pelo nome de negocio na notice.
+# Os campos identificados a mao pelo nome de negocio na notice, antes de a
+# regua valer nesta faixa. Hoje coincidem com ela; ficam por serem os
+# confirmados pelo nome.
 MAPEAMENTO_VARIANTE_8 = {
     945:  'P1_3_7',     # Sens de la transaction
     1874: 'P1_3_10',    # Montant notionnel de la jambe achetee des derives
