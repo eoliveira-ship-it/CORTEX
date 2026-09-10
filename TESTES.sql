@@ -35,6 +35,8 @@ SELECT t.column_name, t.esperado,
        CASE WHEN 'NUMBER('||c.data_precision||','||c.data_scale||')' = t.esperado
             THEN 'OK' ELSE 'FALHA' END AS veredicto
   FROM (
+        SELECT 'P1_11_2'    AS column_name, 'NUMBER(18,10)' AS esperado FROM DUAL
+        UNION ALL
         SELECT 'P1_18_1'    AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
         UNION ALL
         SELECT 'P1_18_10'   AS column_name, 'NUMBER(14,10)' AS esperado FROM DUAL
