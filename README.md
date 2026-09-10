@@ -8,7 +8,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 
 | Ticket | Assunto | Estado |
 |---|---|---|
-| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟡 NAT02 provado; Hors NAT02 corrigido, por testar |
+| **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
 | **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | ⬜ não iniciado |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | ⬜ não iniciado |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
