@@ -252,7 +252,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 | 2 | Aceite do desvio do plano: **6 SELECTs** em vez de 1 | DSID | Mostrar o item 3 |
 | 3 | **Carga em duas fases.** O shell vPACT chama `'TOTAL'` de uma vez | entrega | Chamar `'NAT02'` no shell da M2 BTR e `'HORS_NAT02'` depois dos dados contábeis. Falta identificar esses shells na cadeia |
 | 4 | **Nome do package.** O shell chama `PACK_ALIM_TAB_ENVOI_CRRV4_NEW` (cópia do DEV2); o plano pede `pack_alim_tab_envoi_crrv4` | entrega | Alinhar na instalação (consulta 8.2) |
-| 5 | **`TABLESPACE`.** O DDL está com `DDR_DATA` (DEV2) | entrega | Trocar pelo de produção (consulta 8.1) |
+| 5 | ~~**`TABLESPACE`.**~~ ✅ **Resolvida em 2026-09-15:** `DDR_DATA` é o tablespace correto, confirmado com a equipe. O DDL não muda | — | — |
 | 6 | **`comparar_ficheiros.sh` não ordena** as linhas antes do `diff` | ajuste | Acrescentar `sort` (ver o item 10). Enquanto isso, usar os comandos do item 10 |
 | 7 | **`P1 3.41` / `P1 3.43`.** O antigo faz `RPAD(C_ENR.CD_DEV_VTR,3)` sem `NVL`: um TRE502 sem devise **encurta a linha em 3 bytes** e desalinha o resto. O novo escreve 3 brancos | DSID | Rodar a consulta 8.7-b. Hoje dá 0 casos (se não, os arquivos teriam diferido). Confirmar que o comportamento novo é o desejado |
 | 8 | Tipos de risco **sem dados** na base 20250531 (ex.: `INR101`) | teste | Validados só pelo gerador. Testar numa data de arrêté que os tenha (consulta 8.6) |
@@ -306,7 +306,7 @@ SELECT COLUMN_NAME, COMMENTS
  WHERE TABLE_NAME = 'ENG_CORP_P1_BIS'
    AND UPPER(COMMENTS) LIKE '%MARK-TO-MARKET%';
 
--- Tablespace atual das duas tabelas (pendência 5)
+-- Tablespace atual das duas tabelas. Esperado para a nova: DDR_DATA
 SELECT OWNER, TABLE_NAME, TABLESPACE_NAME
   FROM ALL_TABLES
  WHERE TABLE_NAME IN ('ENG_CORP_P1', 'ENG_CORP_P1_BIS');

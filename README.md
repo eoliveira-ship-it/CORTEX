@@ -37,7 +37,7 @@ vPACT têm os mesmos **122225 registos, byte a byte**, sem mascarar nenhum campo
 ordem das linhas difere, e fica assim: o spool antigo também não tem `ORDER BY`,
 a ordem nunca foi garantida, e o teste de não-regressão é **por conteúdo**, não
 por `diff` linha a linha ([decisão](docs/SIRL-1224.md#a-ordem-das-linhas-decisão)).
-Falta repor o `TABLESPACE HCRR` no DDL antes da entrega.
+O `TABLESPACE DDR_DATA` do DDL é o correto (confirmado em 2026-09-15).
 
 Detalhe do SIRL-1224: [docs/SIRL-1224.md](docs/SIRL-1224.md)
 Mapeamento posicional: [docs/REGUA-V44.md](docs/REGUA-V44.md)
