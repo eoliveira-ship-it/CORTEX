@@ -62,7 +62,7 @@ A procedure pode rodar em duas fases, como o chamado pede:
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell novo: chama a procedure e depois o spool novo |
 | `TESTES.sql` | Testes T1 a T4 (estrutura, package, volumetria, round-trip) |
 | `run_procedure.sql` | Roda a procedure manualmente |
-| `comparar_ficheiros.sh` | Compara dois `CRRCORP.dat` (ver a pendência no item 7) |
+| `comparar_ficheiros.sh` | Compara dois `CRRCORP.dat` por conteúdo (sem `MASYSDATE`, sem cabeçalho, linhas ordenadas) |
 | `gen_*.py`, `layout_variantes.py`, `align_v44.py`, `conv_spool.py` | Geradores: a tabela, a procedure, o spool e os testes são **gerados** a partir do spool antigo e da Notice. Não edite os `.sql` gerados à mão |
 
 ### As colunas da tabela
@@ -251,9 +251,9 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 | 1 | Aceite da DSID de que "arquivos idênticos" = **mesmo conteúdo**, ignorando `MASYSDATE` e ordem das linhas | DSID | Mostrar o item 4. Confirmar que ninguém que lê o `CRRCORP.dat` depende da ordem |
 | 2 | Aceite do desvio do plano: **6 SELECTs** em vez de 1 | DSID | Mostrar o item 3 |
 | 3 | **Carga em duas fases.** O shell vPACT chama `'TOTAL'` de uma vez | entrega | Chamar `'NAT02'` no shell da M2 BTR e `'HORS_NAT02'` depois dos dados contábeis. Falta identificar esses shells na cadeia |
-| 4 | **Nome do package.** O shell chama `PACK_ALIM_TAB_ENVOI_CRRV4_NEW` (cópia do DEV2); o plano pede `pack_alim_tab_envoi_crrv4` | entrega | Alinhar na instalação (consulta 8.2) |
+| 4 | ~~**Nome do package.**~~ ✅ **Resolvida em 2026-09-15:** mantém-se `PACK_ALIM_TAB_ENVOI_CRRV4_NEW`, como o shell já chama | — | — |
 | 5 | ~~**`TABLESPACE`.**~~ ✅ **Resolvida em 2026-09-15:** `DDR_DATA` é o tablespace correto, confirmado com a equipe. O DDL não muda | — | — |
-| 6 | **`comparar_ficheiros.sh` não ordena** as linhas antes do `diff` | ajuste | Acrescentar `sort` (ver o item 10). Enquanto isso, usar os comandos do item 10 |
+| 6 | ~~**`comparar_ficheiros.sh` não ordena**~~ ✅ **Resolvida em 2026-09-15:** o script ordena as linhas (`LC_ALL=C sort`) antes do `diff` | — | — |
 | 7 | **`P1 3.41` / `P1 3.43`.** O antigo faz `RPAD(C_ENR.CD_DEV_VTR,3)` sem `NVL`: um TRE502 sem devise **encurta a linha em 3 bytes** e desalinha o resto. O novo escreve 3 brancos | DSID | Rodar a consulta 8.7-b. Hoje dá 0 casos (se não, os arquivos teriam diferido). Confirmar que o comportamento novo é o desejado |
 | 8 | Tipos de risco **sem dados** na base 20250531 (ex.: `INR101`) | teste | Validados só pelo gerador. Testar numa data de arrêté que os tenha (consulta 8.6) |
 | 9 | **Estimativa de esforço para os outros spools**, pedida no chamado para as próximas MEPs | entregável | Não iniciado |
@@ -315,7 +315,7 @@ SELECT OWNER, TABLE_NAME, TABLESPACE_NAME
 ### 8.2 Package e procedure
 
 ```sql
--- Quais packages existem e se estão válidos (pendência 4: _NEW ou não?)
+-- Quais packages existem e se estão válidos (o shell usa o _NEW)
 SELECT OWNER, OBJECT_NAME, OBJECT_TYPE, STATUS, LAST_DDL_TIME
   FROM ALL_OBJECTS
  WHERE OBJECT_NAME LIKE 'PACK_ALIM_TAB_ENVOI_CRRV4%'
@@ -566,8 +566,12 @@ num dos lados:
 diff antigo.txt novo.txt | head -20
 ```
 
-> O `comparar_ficheiros.sh` do repositório faz o mesmo, **mas sem o `sort`**:
-> como a ordem das linhas muda, ele sempre vai acusar diferença (pendência 6).
+> O `comparar_ficheiros.sh` do repositório faz o mesmo e ainda mostra o
+> tamanho, o censo dos pavés e o byte da primeira diferença:
+>
+> ```bash
+> ./comparar_ficheiros.sh CRRCORP_antigo.dat CRRCORP_novo.dat
+> ```
 
 ---
 

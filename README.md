@@ -112,7 +112,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `explicacao.md` | Como a tabela sai da Notice, e a fórmula de Excel explicada passo a passo |
 | `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
-| `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat neutralizando o horodatage e a linha ENTETE |
+| `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |
