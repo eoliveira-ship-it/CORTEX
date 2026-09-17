@@ -248,7 +248,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 
 | # | Pendência | Tipo | Como resolver |
 |---|---|---|---|
-| 1 | Aceite da DSID de que "arquivos idênticos" = **mesmo conteúdo**, ignorando `MASYSDATE` e ordem das linhas | DSID | Mostrar o item 4. Confirmar que ninguém que lê o `CRRCORP.dat` depende da ordem |
+| 1 | ~~Aceite de que "arquivos idênticos" = **mesmo conteúdo**~~ ✅ **Resolvida em 2026-09-17:** arquivos idênticos = mesmo conteúdo, independente da ordem das linhas (o `MASYSDATE` também é ignorado) | — | — |
 | 2 | Aceite do desvio do plano: **6 SELECTs** em vez de 1 | DSID | Mostrar o item 3 |
 | 3 | **Carga em duas fases.** O shell vPACT chama `'TOTAL'` de uma vez | entrega | Chamar `'NAT02'` no shell da M2 BTR e `'HORS_NAT02'` depois dos dados contábeis. Falta identificar esses shells na cadeia |
 | 4 | ~~**Nome do package.**~~ ✅ **Resolvida em 2026-09-15:** mantém-se `PACK_ALIM_TAB_ENVOI_CRRV4_NEW`, como o shell já chama | — | — |
