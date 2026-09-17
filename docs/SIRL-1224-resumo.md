@@ -256,7 +256,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 | 6 | ~~**`comparar_ficheiros.sh` não ordena**~~ ✅ **Resolvida em 2026-09-15:** o script ordena as linhas (`LC_ALL=C sort`) antes do `diff` | — | — |
 | 7 | **`P1 3.41` / `P1 3.43`.** O antigo faz `RPAD(C_ENR.CD_DEV_VTR,3)` sem `NVL`: um TRE502 sem devise **encurta a linha em 3 bytes** e desalinha o resto. O novo escreve 3 brancos | DSID | Rodar a consulta 8.7-b. Hoje dá 0 casos (se não, os arquivos teriam diferido). Confirmar que o comportamento novo é o desejado |
 | 8 | Tipos de risco **sem dados** na base 20250531 (ex.: `INR101`) | teste | Validados só pelo gerador. Testar numa data de arrêté que os tenha (consulta 8.6) |
-| 9 | **Estimativa de esforço para os outros spools**, pedida no chamado para as próximas MEPs | entregável | Não iniciado |
+| 9 | ~~**Estimativa de esforço para os outros spools**~~ ⏸️ **Fora do escopo (2026-09-17):** este trabalho mexe só no P1; P2, M1, P9, C1/C5, F1/F2 e M5 ficam como estão. O chamado ainda cita a estimativa (linha 6 do ticket): avisar a DSID de que ela não faz parte desta entrega | decisão | — |
 | 10 | Histórico no HCRR (`030_spool_data.sql` + `030_spool_9M.sql`) e documento SFD/STD único | não prioritário | Não iniciado |
 
 > **Correção de uma pendência anterior.** Tinha sido listado para a DSID um
