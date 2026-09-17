@@ -1,6 +1,6 @@
 # SIRL-1224 — Resumo para a equipe
 
-> Situação em **10/09/2026**. Documento para repassar o trabalho a quem não
+> Situação em **17/09/2026**. Documento para repassar o trabalho a quem não
 > acompanhou. O histórico completo, com todas as investigações, está em
 > [SIRL-1224.md](SIRL-1224.md).
 

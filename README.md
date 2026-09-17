@@ -103,7 +103,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | Ficheiro | Conteúdo |
 |---|---|
 | `ENG_CORP_P1_BIS.sql` | DDL da tabela: 662 colunas P1 + 4 técnicas |
-| `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` por perímetro + 8 `INSERT` |
+| `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` da tabela + 8 `INSERT`, numa chamada só |
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
 | `erro` | Log de compilação/execução Oracle — erros já corrigidos |
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
