@@ -200,7 +200,7 @@ set serveroutput on size 1000000;
 whenever oserror exit 9;
 whenever sqlerror exit sql.sqlcode;
 
-execute PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS('TOTAL', TO_CHAR(SYSDATE,'YYYYMMDDHH24MI'), 'TOTAL');
+execute PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS('TOTAL', TO_CHAR(SYSDATE,'YYYYMMDDHH24MI'));
 
 spool off;
 

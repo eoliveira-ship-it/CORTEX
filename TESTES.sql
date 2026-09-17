@@ -84,7 +84,7 @@ SELECT object_name, object_type, status,
        TO_CHAR(last_ddl_time,'YYYY-MM-DD HH24:MI') AS compilado_em
   FROM ALL_OBJECTS WHERE object_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW' ORDER BY object_type;
 
--- T2.2  assinatura : a procedure atual tem 3 parametros
+-- T2.2  assinatura : a procedure atual tem 2 parametros (p_entite, p_masysdate)
 SELECT position, argument_name, data_type
   FROM ALL_ARGUMENTS
  WHERE object_name = 'P_ALIM_ENG_CORP_P1_BIS' AND package_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW'
@@ -106,8 +106,7 @@ DECLARE
     v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');
     v_t0        TIMESTAMP    := SYSTIMESTAMP;
 BEGIN
-    -- p_perimetre : 'NAT02' (M2 BTR) | 'HORS_NAT02' (apos compta) | 'TOTAL'
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS('TOTAL', v_masysdate, 'TOTAL');
+    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS('TOTAL', v_masysdate);
     DBMS_OUTPUT.PUT_LINE('procedure OK - duracao : '||TO_CHAR(SYSTIMESTAMP - v_t0));
 END;
 /

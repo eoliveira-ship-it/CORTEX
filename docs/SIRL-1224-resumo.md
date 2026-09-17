@@ -41,13 +41,17 @@ ENG_CORP_P1 ──► spool antigo (regras de negócio + formatação) ──►
 ENG_CORP_P1 ──► procedure (regras de negócio) ──► ENG_CORP_P1_BIS ──► spool vPACT (só formatação) ──► CRRCORP.dat
 ```
 
-A procedure pode rodar em duas fases, como o chamado pede:
+A procedure roda **numa chamada só**, dentro do shell do spool: esvazia a
+tabela e carrega o NAT02 e o Fora do NAT02 juntos (os 8 INSERTs).
 
-| Fase | Parâmetro `p_perimetre` | Quando |
-|---|---|---|
-| NAT02 | `'NAT02'` (INSERTs 1 a 3) | durante a M2 BTR |
-| Fora do NAT02 | `'HORS_NAT02'` (INSERTs 4 a 8) | depois de receber os dados contábeis |
-| Tudo de uma vez | `'TOTAL'` | usado hoje nos testes |
+```sql
+PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS(p_entite, p_masysdate);
+```
+
+> **Decisão de 2026-09-17.** O ticket falava em duas cargas (NAT02 na M2 BTR,
+> Fora do NAT02 depois dos dados contábeis). Ficou uma chamada só, como no
+> plano do Hugo, e o parâmetro `p_perimetre` foi retirado. A coluna
+> `CD_PERIMETRE` continua na tabela, só como informação (vem do `FLAG_HN`).
 
 ---
 
@@ -235,7 +239,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 | Teste | O que verifica | Último resultado registrado |
 |---|---|---|
 | T1 Estrutura | 667 colunas; as alargadas com a precisão certa | OK (a lista agora tem **16** colunas) |
-| T2 Package | package `VALID`, procedure com 3 parâmetros, `ALL_ERRORS` vazio | OK |
+| T2 Package | package `VALID`, procedure com 2 parâmetros (eram 3 antes de 2026-09-17), `ALL_ERRORS` vazio | OK |
 | T3 Volumetria | linhas na tabela = linhas que os 8 `WHERE` do spool devolvem | écart 0 |
 | T4 Round-trip | o valor gravado reproduz o que o spool escreve (196 colunas × 200 engajamentos) | tudo conforme |
 
@@ -250,7 +254,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 |---|---|---|---|
 | 1 | ~~Aceite de que "arquivos idênticos" = **mesmo conteúdo**~~ ✅ **Resolvida em 2026-09-17:** arquivos idênticos = mesmo conteúdo, independente da ordem das linhas (o `MASYSDATE` também é ignorado) | — | — |
 | 2 | Aceite do desvio do plano: **6 SELECTs** em vez de 1 | DSID | Mostrar o item 3 |
-| 3 | **Carga em duas fases.** O shell vPACT chama `'TOTAL'` de uma vez | entrega | Chamar `'NAT02'` no shell da M2 BTR e `'HORS_NAT02'` depois dos dados contábeis. Falta identificar esses shells na cadeia |
+| 3 | ~~**Carga em duas fases.**~~ ✅ **Resolvida em 2026-09-17:** uma chamada só; o parâmetro `p_perimetre` foi retirado da procedure. **Recompilar o package e rodar o `TESTES.sql` de novo** | — | — |
 | 4 | ~~**Nome do package.**~~ ✅ **Resolvida em 2026-09-15:** mantém-se `PACK_ALIM_TAB_ENVOI_CRRV4_NEW`, como o shell já chama | — | — |
 | 5 | ~~**`TABLESPACE`.**~~ ✅ **Resolvida em 2026-09-15:** `DDR_DATA` é o tablespace correto, confirmado com a equipe. O DDL não muda | — | — |
 | 6 | ~~**`comparar_ficheiros.sh` não ordena**~~ ✅ **Resolvida em 2026-09-15:** o script ordena as linhas (`LC_ALL=C sort`) antes do `diff` | — | — |
@@ -327,7 +331,7 @@ SELECT NAME, TYPE, LINE, POSITION, TEXT
  WHERE NAME LIKE 'PACK_ALIM_TAB_ENVOI_CRRV4%'
  ORDER BY NAME, TYPE, SEQUENCE;
 
--- Parâmetros da procedure. Esperado: p_entite, p_masysdate, p_perimetre
+-- Parâmetros da procedure. Esperado: p_entite, p_masysdate
 SELECT PACKAGE_NAME, ARGUMENT_NAME, POSITION, DATA_TYPE, IN_OUT
   FROM ALL_ARGUMENTS
  WHERE OBJECT_NAME = 'P_ALIM_ENG_CORP_P1_BIS'
@@ -431,8 +435,34 @@ ORDER BY 1;
 ### 8.6 Tipos de risco com e sem dados (pendência 8)
 
 ```sql
--- Fora do NAT02: o que existe nesta data de arrêté.
--- Tipo esperado que não aparecer aqui (ex.: INR101) só foi validado pelo gerador.
+-- Cada tipo que o spool trata no Fora do NAT02, com a quantidade na base.
+-- qtd = 0 -> o tipo não existe nesta data: o código dele só foi validado
+-- pelo gerador, não pela comparação dos arquivos.
+WITH esperado AS (
+    SELECT 4 AS variante, 'TRE100' AS tipo FROM DUAL UNION ALL
+    SELECT 5, 'TRE2*'  FROM DUAL UNION ALL
+    SELECT 5, 'TRE4*'  FROM DUAL UNION ALL
+    SELECT 5, 'TRE5*'  FROM DUAL UNION ALL
+    SELECT 6, 'EQU101' FROM DUAL UNION ALL
+    SELECT 7, 'SIG201' FROM DUAL UNION ALL
+    SELECT 7, 'INR101' FROM DUAL UNION ALL
+    SELECT 8, '*VAR1*' FROM DUAL
+)
+SELECT e.variante,
+       e.tipo,
+       COUNT(p.CD_TYPE_RISQUE) AS qtd,
+       CASE WHEN COUNT(p.CD_TYPE_RISQUE) = 0
+            THEN 'SEM DADOS - validado so pelo gerador'
+            ELSE 'testado na comparacao' END AS situacao
+  FROM esperado e
+  LEFT JOIN ENG_CORP_P1 p
+    ON p.CD_TYPE_RISQUE LIKE REPLACE(e.tipo, '*', '%')
+   AND p.A_EXTRAIRE = 'O'
+   AND p.FLAG_HN    = 'O'
+ GROUP BY e.variante, e.tipo
+ ORDER BY e.variante, e.tipo;
+
+-- Detalhe: todos os tipos Fora do NAT02 que existem nesta data.
 SELECT CD_TYPE_RISQUE, COUNT(*) AS qtd
   FROM ENG_CORP_P1
  WHERE A_EXTRAIRE = 'O'
@@ -465,6 +495,20 @@ SELECT COUNT(*)                                            AS total_tre502,
  WHERE A_EXTRAIRE = 'O'
    AND NVL(FLAG_HN,'N') = 'N'
    AND CD_TYPE_RISQUE = 'TRE502';
+
+-- (b2) Demonstração, sem depender dos dados: o que cada spool escreve
+--      quando a devise está vazia. Os colchetes mostram onde o campo começa
+--      e termina.
+SELECT '[' || RPAD(NULL, 3)           || ']' AS antigo,       -- []    : 0 caracteres, a linha encolhe 3
+       LENGTH(RPAD(NULL, 3))                  AS tam_antigo,   -- (nulo)
+       '[' || RPAD(NVL(NULL, ' '), 3) || ']' AS novo,         -- [   ] : 3 espaços, a linha fica no lugar
+       LENGTH(RPAD(NVL(NULL, ' '), 3))        AS tam_novo      -- 3
+  FROM DUAL;
+
+-- (b3) Com uma devise preenchida, os dois escrevem a mesma coisa.
+SELECT '[' || RPAD('EUR', 3) || ']'            AS antigo,     -- [EUR]
+       '[' || RPAD(NVL('EUR', ' '), 3) || ']' AS novo         -- [EUR]
+  FROM DUAL;
 
 -- (c) Spread dos derivados: justifica o alargamento de P1_11_2.
 --     O arquivo só tem 4 dígitos inteiros: acima de 9999 o spool antigo já trunca.

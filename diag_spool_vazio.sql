@@ -36,7 +36,7 @@ SELECT COUNT(*) AS linhas_na_tabela FROM ENG_CORP_P1_BIS;
 -- ---------------------------------------------------------------------
 -- 2) E o perimetro que o spool procura?
 --    O primeiro SELECT do spool pede CD_PERIMETRE = 'NAT02'.
---    Se NAT02 der 0, a procedure correu so para HORS_NAT02 (ou nenhum).
+--    Se NAT02 der 0, a fonte ENG_CORP_P1 nao tem NAT02 nesta data.
 -- ---------------------------------------------------------------------
 SELECT CD_PERIMETRE, NO_VARIANTE, COUNT(*) AS linhas
   FROM ENG_CORP_P1_BIS

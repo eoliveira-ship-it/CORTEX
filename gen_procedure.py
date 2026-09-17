@@ -652,8 +652,7 @@ extra = """-- ------------------------------------------------------------------
 -- 1) A AJOUTER DANS LA SPEC DU PACKAGE  pack_alim_tab_envoi_crrv4
 -- ---------------------------------------------------------------------
 --   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,
---                                     p_masysdate IN VARCHAR2,
---                                     p_perimetre IN VARCHAR2 DEFAULT 'TOTAL');
+--                                     p_masysdate IN VARCHAR2);
 
 
 -- ---------------------------------------------------------------------
@@ -662,41 +661,24 @@ extra = """-- ------------------------------------------------------------------
 """
 
 SIG = ("PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,"
-       + chr(10) + "                                       p_masysdate IN VARCHAR2,"
-       + chr(10) + "                                       p_perimetre IN VARCHAR2 DEFAULT 'TOTAL')")
+       + chr(10) + "                                       p_masysdate IN VARCHAR2)")
 
 _vid = [
     "IS",
     "BEGIN",
     "    ------------------------------------------------------------------",
-    "    -- Etape 1 : vider UNIQUEMENT le perimetre traite.",
+    "    -- Etape 1 : vider la table, puis la remplir en un seul appel",
+    "    --   (NAT02 et HORS_NAT02 ensemble, les 8 INSERT).",
     "    --   Pas de TRUNCATE : c'est du DDL (commit implicite), les donnees",
     "    --   seraient perdues meme si un INSERT echouait ensuite. Le DELETE",
-    "    --   reste dans la transaction et permet les DEUX alimentations",
-    "    --   successives prevues par le ticket : NAT02 (M2 BTR) puis",
-    "    --   HORS_NAT02 (apres reception des donnees comptables).",
+    "    --   reste dans la transaction.",
     "    ------------------------------------------------------------------",
-    "    IF p_perimetre NOT IN ('NAT02', 'HORS_NAT02', 'TOTAL') THEN",
-    "        RAISE_APPLICATION_ERROR(-20001,",
-    "            'p_perimetre invalide : '||p_perimetre||",
-    "            ' (attendu NAT02, HORS_NAT02 ou TOTAL)');",
-    "    END IF;",
-    "",
-    "    IF p_perimetre = 'TOTAL' THEN",
-    "        DELETE FROM ENG_CORP_P1_BIS;",
-    "    ELSE",
-    "        DELETE FROM ENG_CORP_P1_BIS WHERE CD_PERIMETRE = p_perimetre;",
-    "    END IF;",
+    "    DELETE FROM ENG_CORP_P1_BIS;",
     "",
 ]
 
 body = SIG + chr(10) + chr(10).join(_vid) + chr(10)
-body += "    IF p_perimetre IN ('NAT02', 'TOTAL') THEN" + chr(10) + chr(10)
-body += chr(10).join(blocks[:3])
-body += chr(10) + "    END IF;" + chr(10) + chr(10)
-body += "    IF p_perimetre IN ('HORS_NAT02', 'TOTAL') THEN" + chr(10) + chr(10)
-body += chr(10).join(blocks[3:])
-body += chr(10) + "    END IF;" + chr(10) + chr(10)
+body += chr(10).join(blocks) + chr(10)
 body += "    COMMIT;" + chr(10) + "END P_ALIM_ENG_CORP_P1_BIS;" + chr(10)
 
 open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='utf-8').write(hdr + extra + body)
@@ -795,8 +777,7 @@ _t.append("    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou un CD_CONSO_CPT prec
 _t.append("    v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');")
 _t.append('    v_t0        TIMESTAMP := SYSTIMESTAMP;')
 _t.append('BEGIN')
-_t.append("    -- p_perimetre : 'NAT02' (M2 BTR) | 'HORS_NAT02' (apres compta) | 'TOTAL'")
-_t.append("    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, 'TOTAL');")
+_t.append("    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate);")
 _t.append("    DBMS_OUTPUT.PUT_LINE('OK - duree : '||TO_CHAR(SYSTIMESTAMP - v_t0));")
 _t.append('END;')
 _t.append('/')
@@ -828,11 +809,6 @@ for _c in sorted(set(c for blk in blocks for c in re.findall(r'AS (P1_[A-Z0-9_]+
     _t.append('       COUNT(%s) AS %s,' % (_c, _c[:26]))
 _t.append('       COUNT(CD_PERIMETRE) AS CD_PERIMETRE')
 _t.append('  FROM ENG_CORP_P1_BIS;')
-_t.append('')
-_t.append('-- 6) Deux alimentations successives (comportement cible du ticket) :')
-_t.append('--    chaque appel ne vide QUE son perimetre, l autre est conserve.')
-_t.append('-- BEGIN pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, ''NAT02''); END;')
-_t.append('-- BEGIN pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate, ''HORS_NAT02''); END;')
 _t.append('')
 open('test_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='utf-8').write(NL.join(_t) + NL)
 print('script de teste -> test_P_ALIM_ENG_CORP_P1_BIS.sql')

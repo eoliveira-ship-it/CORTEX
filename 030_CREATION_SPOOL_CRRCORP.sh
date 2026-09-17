@@ -546,18 +546,18 @@ fi
 
 
 
-trace_log "INF" "Lancement du script 030_spool_Extract_CRRCORP_vPACT.sh"
+trace_log "INF" "Lancement du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
 
-sh /app/list/ddr2dv/RUN_KLX/cortex/030_CREATION_SPOOL_CRRCORP_vPACT.sh
+sh $SHL/030_CREATION_SPOOL_CRRCORP_vPACT.sh
 RC=$?
 
 if [ $RC -ne 0 ]
 then
-    ERR $RC "Erreur lors de l'exécution du script 030_spool_Extract_CRRCORP_vPACT.sh"
+    ERR $RC "Erreur lors de l'exécution du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
     exit $RC
 fi
 
-trace_log "INF" "Fin du script 030_spool_Extract_CRRCORP_vPACT.sh"
+trace_log "INF" "Fin du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
 
 
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
