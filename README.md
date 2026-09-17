@@ -117,6 +117,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
+| `CONSULTAS_CLIENTE.sql` | Consultas para levar ao cliente: TRE502 sem devise e tipos de risco sem dados |
 | `TESTES.sql` | Ficheiro unico de testes: estrutura, package, volumetria, round-trip |
 | `testes` | Resultado da 1a execucao dos testes |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
