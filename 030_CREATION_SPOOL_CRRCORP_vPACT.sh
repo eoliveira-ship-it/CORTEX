@@ -194,13 +194,13 @@ numenvoi=`echo "${execution_requete}" | tr -d '\r\n'`
 
 
 
-## RSE_LOT3: SIRL-153 - 29/05/2025 - Remplissage de la table PERIM_ENVOI_CRR_P1
+## SIRL-1224 - Remplissage de la table ENG_CORP_P1_BIS (toutes les entites, un seul appel)
 sqlplus $V30LOGIN <<EOF  >>$V30RACINE/log/$V30ENVOICRRV4ERR
 set serveroutput on size 1000000;
 whenever oserror exit 9;
 whenever sqlerror exit sql.sqlcode;
 
-execute PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS('TOTAL', TO_CHAR(SYSDATE,'YYYYMMDDHH24MI'));
+execute PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS;
 
 spool off;
 
@@ -225,7 +225,7 @@ fi
 
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"
-trace_log "INF" 0 "$DATE_TRT - FIN CREATION FICHIER ENVOI POUR CASA" $nom_shell
+trace_log "INF" 0 "$DATE_TRT - FIN ALIMENTATION ENG_CORP_P1_BIS" $nom_shell
 trace_log "INF" 0 "-----------------------------------------------------------"
 
 

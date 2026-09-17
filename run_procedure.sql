@@ -12,15 +12,11 @@
 SET SERVEROUTPUT ON
 
 DECLARE
-    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou um CD_CONSO_CPT preciso
-    v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');
     v_t0        TIMESTAMP    := SYSTIMESTAMP;
 BEGIN
-    -- Uma chamada so: esvazia a tabela e corre os 8 INSERT
-    -- (NAT02 e Hors NAT02 juntos).
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(
-        p_entite    => v_entite,
-        p_masysdate => v_masysdate);
+    -- Uma chamada so, sem parametros: esvazia a tabela e corre os 8 INSERT
+    -- (todas as entidades, NAT02 e Hors NAT02 juntos).
+    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS;
 
     DBMS_OUTPUT.PUT_LINE('OK - duracao : '||TO_CHAR(SYSTIMESTAMP - v_t0));
 END;

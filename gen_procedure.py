@@ -330,7 +330,7 @@ HEADER_CONV = [
     (r'CD_CONSO_CPT', 'P1_H_0_2'),
     (r"APPLI_SOURCE|'C_DDR'", 'P1_H_0_3'),
     (r"^'M'$", 'P1_H_0_4'),
-    (r'^p_masysdate$', 'P1_H_0_5'),
+    (r'^v_masysdate$', 'P1_H_0_5'),
     (r"^'P1'$", 'P1_H_0_6'),
 ]
 
@@ -359,7 +359,6 @@ def is_sign(expr):
 
 
 W1 = """      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'N'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
@@ -368,7 +367,6 @@ W1 = """      A_EXTRAIRE = 'O'
       AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )"""
 
 W2 = """      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND NVL(C_ENR.MNT_SOLD_K_A,0) >= 1
@@ -376,7 +374,6 @@ W2 = """      A_EXTRAIRE = 'O'
       AND ( C_ENR.CD_TYPE_RISQUE NOT LIKE 'TRE2%' )"""
 
 W3 = """      A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
@@ -386,27 +383,22 @@ W3 = """      A_EXTRAIRE = 'O'
 
 W4 = """      A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE IN ('TRE100')"""
 
 W5 = """      A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND SUBSTR(C_ENR.CD_TYPE_RISQUE,1,4) IN ('TRE2','TRE4','TRE5')"""
 
 W6 = """      A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE IN ('EQU101')"""
 
 W7 = """      A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE IN ('SIG201','INR101')"""
 
 W8 = """      A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE LIKE '%VAR1%'"""
 
 VAR = [
@@ -523,7 +515,7 @@ for num, perim, a, b, desc, where in VAR:
     npar = 0
     ncomp = 0
     pos = 0
-    convertidos = [convert(x['raw']).replace(':MASYSDATE', 'p_masysdate') for x in toks]
+    convertidos = [convert(x['raw']).replace(':MASYSDATE', 'v_masysdate') for x in toks]
     saltar = set()
     for k in range(len(toks) - 1):
         if par_int_dec(convertidos[k], convertidos[k + 1]):
@@ -651,8 +643,7 @@ extra = """-- ------------------------------------------------------------------
 -- ---------------------------------------------------------------------
 -- 1) A AJOUTER DANS LA SPEC DU PACKAGE  pack_alim_tab_envoi_crrv4
 -- ---------------------------------------------------------------------
---   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,
---                                     p_masysdate IN VARCHAR2);
+--   PROCEDURE P_ALIM_ENG_CORP_P1_BIS;
 
 
 -- ---------------------------------------------------------------------
@@ -660,11 +651,14 @@ extra = """-- ------------------------------------------------------------------
 -- ---------------------------------------------------------------------
 """
 
-SIG = ("PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,"
-       + chr(10) + "                                       p_masysdate IN VARCHAR2)")
+SIG = "PROCEDURE P_ALIM_ENG_CORP_P1_BIS"
 
 _vid = [
     "IS",
+    "    -- Horodatage de la charge (P1_H_0_5), le meme pour les 8 INSERT.",
+    "    -- Il reste dans la table a titre d'information : le fichier prend",
+    "    -- le sien du shell (:MASYSDATE du spool).",
+    "    v_masysdate CONSTANT VARCHAR2(12) := TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI');",
     "BEGIN",
     "    ------------------------------------------------------------------",
     "    -- Etape 1 : vider la table, puis la remplir en un seul appel",
@@ -773,11 +767,9 @@ _t.append('SELECT COUNT(*) AS avant FROM ENG_CORP_P1_BIS;')
 _t.append('')
 _t.append('-- 2) Execution')
 _t.append('DECLARE')
-_t.append("    v_entite    VARCHAR2(10) := 'TOTAL';   -- ou un CD_CONSO_CPT precis")
-_t.append("    v_masysdate VARCHAR2(12) := TO_CHAR(SYSDATE,'YYYYMMDDHH24MI');")
 _t.append('    v_t0        TIMESTAMP := SYSTIMESTAMP;')
 _t.append('BEGIN')
-_t.append("    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS(v_entite, v_masysdate);")
+_t.append("    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS;")
 _t.append("    DBMS_OUTPUT.PUT_LINE('OK - duree : '||TO_CHAR(SYSTIMESTAMP - v_t0));")
 _t.append('END;')
 _t.append('/')
@@ -795,7 +787,7 @@ for _i, (_n, _p, _a, _b, _d, _w) in enumerate(VAR):
         _t.append(_u)
     _t.append("    SELECT %d AS variante, '%s' AS perimetre, COUNT(*) AS nb" % (_n, _p))
     _t.append('      FROM ENG_CORP_P1 C_ENR WHERE')
-    _t.append(_w.replace('p_entite', "'TOTAL'"))
+    _t.append(_w)
 _t.append(')')
 _t.append('SELECT a.variante, a.perimetre, a.nb AS attendu FROM attendu a ORDER BY 1;')
 _t.append('')

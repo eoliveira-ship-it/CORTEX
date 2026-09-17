@@ -45,13 +45,21 @@ A procedure roda **numa chamada só**, dentro do shell do spool: esvazia a
 tabela e carrega o NAT02 e o Fora do NAT02 juntos (os 8 INSERTs).
 
 ```sql
-PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS(p_entite, p_masysdate);
+PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS;
 ```
 
 > **Decisão de 2026-09-17.** O ticket falava em duas cargas (NAT02 na M2 BTR,
 > Fora do NAT02 depois dos dados contábeis). Ficou uma chamada só, como no
 > plano do Hugo, e o parâmetro `p_perimetre` foi retirado. A coluna
 > `CD_PERIMETRE` continua na tabela, só como informação (vem do `FLAG_HN`).
+>
+> **Também em 2026-09-17** saíram `p_entite` e `p_masysdate`. No spool
+> antigo eles eram os binds `:ENTITE` (filtro da entidade da vez) e
+> `:MASYSDATE` (horário escrito na linha). A procedure roda uma vez só,
+> antes das entidades, então a entidade era sempre `'TOTAL'`; e o horário do
+> arquivo continua vindo do `:MASYSDATE` do shell, no spool novo. A procedure
+> agora carrega sempre todas as entidades e grava ela mesma o horário da
+> carga em `P1_H_0_5`, só como informação.
 
 ---
 
@@ -239,7 +247,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 | Teste | O que verifica | Último resultado registrado |
 |---|---|---|
 | T1 Estrutura | 667 colunas; as alargadas com a precisão certa | OK (a lista agora tem **16** colunas) |
-| T2 Package | package `VALID`, procedure com 2 parâmetros (eram 3 antes de 2026-09-17), `ALL_ERRORS` vazio | OK |
+| T2 Package | package `VALID`, procedure sem parâmetros (eram 3 antes de 2026-09-17), `ALL_ERRORS` vazio | OK |
 | T3 Volumetria | linhas na tabela = linhas que os 8 `WHERE` do spool devolvem | écart 0 |
 | T4 Round-trip | o valor gravado reproduz o que o spool escreve (196 colunas × 200 engajamentos) | tudo conforme |
 
@@ -254,7 +262,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 |---|---|---|---|
 | 1 | ~~Aceite de que "arquivos idênticos" = **mesmo conteúdo**~~ ✅ **Resolvida em 2026-09-17:** arquivos idênticos = mesmo conteúdo, independente da ordem das linhas (o `MASYSDATE` também é ignorado) | — | — |
 | 2 | Aceite do desvio do plano: **6 SELECTs** em vez de 1 | DSID | Mostrar o item 3 |
-| 3 | ~~**Carga em duas fases.**~~ ✅ **Resolvida em 2026-09-17:** uma chamada só; o parâmetro `p_perimetre` foi retirado da procedure. **Recompilar o package e rodar o `TESTES.sql` de novo** | — | — |
+| 3 | ~~**Carga em duas fases.**~~ ✅ **Resolvida em 2026-09-17:** uma chamada só, sem parâmetros (`p_perimetre`, `p_entite` e `p_masysdate` retirados). **Recompilar o package e rodar o `TESTES.sql` de novo** | — | — |
 | 4 | ~~**Nome do package.**~~ ✅ **Resolvida em 2026-09-15:** mantém-se `PACK_ALIM_TAB_ENVOI_CRRV4_NEW`, como o shell já chama | — | — |
 | 5 | ~~**`TABLESPACE`.**~~ ✅ **Resolvida em 2026-09-15:** `DDR_DATA` é o tablespace correto, confirmado com a equipe. O DDL não muda | — | — |
 | 6 | ~~**`comparar_ficheiros.sh` não ordena**~~ ✅ **Resolvida em 2026-09-15:** o script ordena as linhas (`LC_ALL=C sort`) antes do `diff` | — | — |
@@ -331,7 +339,7 @@ SELECT NAME, TYPE, LINE, POSITION, TEXT
  WHERE NAME LIKE 'PACK_ALIM_TAB_ENVOI_CRRV4%'
  ORDER BY NAME, TYPE, SEQUENCE;
 
--- Parâmetros da procedure. Esperado: p_entite, p_masysdate
+-- Parâmetros da procedure. Esperado: nenhuma linha (a procedure não tem parâmetros)
 SELECT PACKAGE_NAME, ARGUMENT_NAME, POSITION, DATA_TYPE, IN_OUT
   FROM ALL_ARGUMENTS
  WHERE OBJECT_NAME = 'P_ALIM_ENG_CORP_P1_BIS'

@@ -18,7 +18,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 | Teste | Resultado |
 |---|---|
 | T1 Estrutura | 667 colunas, as 15 alargadas conformes — **OK** |
-| T2 Package | spec e body `VALID`, 3 parâmetros, `ALL_ERRORS` vazio — **OK** (desde 2026-09-17 são 2: recompilar e rodar de novo) |
+| T2 Package | spec e body `VALID`, 3 parâmetros, `ALL_ERRORS` vazio — **OK** (desde 2026-09-17 não tem parâmetros: recompilar e rodar de novo) |
 | T3 Volumetria | `NAT02` 122138 esperado / 122138 inserido, **écart 0** |
 | T4 Round-trip | **196 colunas × 200 engajamentos, todas conformes** |
 

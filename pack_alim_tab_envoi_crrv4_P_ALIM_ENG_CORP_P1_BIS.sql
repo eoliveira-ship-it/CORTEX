@@ -72,16 +72,18 @@
 -- ---------------------------------------------------------------------
 -- 1) A AJOUTER DANS LA SPEC DU PACKAGE  pack_alim_tab_envoi_crrv4
 -- ---------------------------------------------------------------------
---   PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,
---                                     p_masysdate IN VARCHAR2);
+--   PROCEDURE P_ALIM_ENG_CORP_P1_BIS;
 
 
 -- ---------------------------------------------------------------------
 -- 2) CORPS DE LA PROCEDURE (a inserer dans le PACKAGE BODY)
 -- ---------------------------------------------------------------------
-PROCEDURE P_ALIM_ENG_CORP_P1_BIS (p_entite    IN VARCHAR2,
-                                       p_masysdate IN VARCHAR2)
+PROCEDURE P_ALIM_ENG_CORP_P1_BIS
 IS
+    -- Horodatage de la charge (P1_H_0_5), le meme pour les 8 INSERT.
+    -- Il reste dans la table a titre d'information : le fichier prend
+    -- le sien du shell (:MASYSDATE du spool).
+    v_masysdate CONSTANT VARCHAR2(12) := TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI');
 BEGIN
     ------------------------------------------------------------------
     -- Etape 1 : vider la table, puis la remplir en un seul appel
@@ -319,7 +321,7 @@ BEGIN
         C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L591 [en-tete conv.]
         NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS P1_H_0_3,  -- L592 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L593 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L594 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L594 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L595 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L597 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L600 [position V44]
@@ -525,7 +527,6 @@ BEGIN
     FROM ENG_CORP_P1 C_ENR
     WHERE
       A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'N'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1
@@ -750,7 +751,7 @@ BEGIN
         C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L1090 [en-tete conv.]
         NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS P1_H_0_3,  -- L1091 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L1092 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L1093 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L1093 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L1094 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L1096 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L1099 [position V44]
@@ -946,7 +947,6 @@ BEGIN
     FROM ENG_CORP_P1 C_ENR
     WHERE
       A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND NVL(C_ENR.MNT_SOLD_K_A,0) >= 1
@@ -1179,7 +1179,7 @@ BEGIN
         C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L1593 [en-tete conv.]
         NVL(C_ENR.APPLI_SOURCE, 'C_BTR')                           AS P1_H_0_3,  -- L1594 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L1595 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L1596 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L1596 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L1597 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L1599 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L1602 [position V44]
@@ -1384,7 +1384,6 @@ BEGIN
     FROM ENG_CORP_P1 C_ENR
     WHERE
       A_EXTRAIRE = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND NVL(C_ENR.CD_ARR_PAIEMENT,'N') = 'Y'
       AND NVL(C_ENR.FLAG_HN,'N')         = 'N'
       AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')
@@ -1520,7 +1519,7 @@ BEGIN
         TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS P1_H_0_2,  -- L2895 [en-tete conv.]
         'C_DDR'                                                    AS P1_H_0_3,  -- L2896 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L2897 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L2898 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L2898 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L2899 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L2903 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L2905 [position V44]
@@ -1628,7 +1627,6 @@ BEGIN
     WHERE
       A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE IN ('TRE100');
 
     ------------------------------------------------------------------
@@ -1843,7 +1841,7 @@ BEGIN
         TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS P1_H_0_2,  -- L3464 [en-tete conv.]
         'C_DDR'                                                    AS P1_H_0_3,  -- L3465 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L3466 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L3467 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L3467 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L3468 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L3472 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L3476 [position V44]
@@ -2035,7 +2033,6 @@ BEGIN
     WHERE
       A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND SUBSTR(C_ENR.CD_TYPE_RISQUE,1,4) IN ('TRE2','TRE4','TRE5');
 
     ------------------------------------------------------------------
@@ -2170,7 +2167,7 @@ BEGIN
         TO_CHAR(C_ENR.CD_CONSO_CPT)                                AS P1_H_0_2,  -- L4027 [en-tete conv.]
         'C_DDR'                                                    AS P1_H_0_3,  -- L4028 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L4029 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L4030 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L4030 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L4031 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L4035 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L4039 [position V44]
@@ -2282,7 +2279,6 @@ BEGIN
     WHERE
       A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE IN ('EQU101');
 
     ------------------------------------------------------------------
@@ -2416,7 +2412,7 @@ BEGIN
         C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L4607 [en-tete conv.]
         'C_DDR'                                                    AS P1_H_0_3,  -- L4608 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L4609 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L4610 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L4610 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L4611 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L4615 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L4619 [position V44]
@@ -2527,7 +2523,6 @@ BEGIN
     WHERE
       A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE IN ('SIG201','INR101');
 
     ------------------------------------------------------------------
@@ -2710,7 +2705,7 @@ BEGIN
         C_ENR.CD_CONSO_CPT                                         AS P1_H_0_2,  -- L5062 [en-tete conv.]
         'C_DDR'                                                    AS P1_H_0_3,  -- L5063 [en-tete conv.]
         'M'                                                        AS P1_H_0_4,  -- L5064 [en-tete conv.]
-        p_masysdate                                                AS P1_H_0_5,  -- L5065 [en-tete conv.]
+        v_masysdate                                                AS P1_H_0_5,  -- L5065 [en-tete conv.]
         'P1'                                                       AS P1_H_0_6,  -- L5066 [en-tete conv.]
         C_ENR.ID_TIERS_CALC                                        AS P1_H_1_1,  -- L5070 [position V44]
         C_ENR.ID_AUTORISATION                                      AS P1_H_1_4,  -- L5074 [position V44]
@@ -2870,7 +2865,6 @@ BEGIN
     WHERE
       A_EXTRAIRE = 'O'
       AND C_ENR.FLAG_HN = 'O'
-      AND (C_ENR.CD_CONSO_CPT = p_entite OR p_entite = 'TOTAL')
       AND C_ENR.CD_TYPE_RISQUE LIKE '%VAR1%';
 
     COMMIT;
