@@ -141,6 +141,7 @@ comparar**.
 | 2 | 122225 | 87 | A base ganhou, pela primeira vez, registros Fora do NAT02, e o spool novo usava o layout da variante 1 para todos | corrigido: 6 SELECTs |
 | 3 | 122225 | 57 | (a) maturidade `P1 3.20` mal formatada nas variantes 4 e 6; (b) 28 campos da variante 8 saindo em branco | corrigido |
 | **4** | **122225** | **0** | — | **conteúdo idêntico** |
+| **5** | **122225** | **0** | Nova rodada depois de tirar os parâmetros da procedure (carga única, sem `p_perimetre`, `p_entite` e `p_masysdate`) | **conteúdo idêntico** |
 
 Na rodada 4 os dois arquivos têm o mesmo tamanho (977.922.225 bytes), as mesmas
 122225 linhas de 8000 bytes e, escondido só o `MASYSDATE`, **as mesmas linhas,
@@ -149,6 +150,11 @@ TRE100, EQU101, SIG201).
 
 A rodada 4 foi repetida com um segundo par de arquivos gerados de forma
 independente (`_v2`). Resultado igual.
+
+A **rodada 5** (arquivos de 17/09/2026, `MASYSDATE` 202609171827 no antigo e
+202609171831 no novo) repetiu a comparação com a procedure já sem
+parâmetros: mesmas 122225 linhas de 8000 bytes, **0 linhas só num dos lados**.
+Os pares `_v2` da rodada 4 foram retirados do repositório.
 
 ### 4.3 O que cada correção da rodada 3 resolveu
 
