@@ -10,7 +10,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 |---|---|---|
 | **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
 | **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | ⬜ não iniciado |
-| **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | ⬜ não iniciado |
+| **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟡 código feito, falta a rodada no DEV2 — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 
 ### Resultado da última execução do `TESTES.sql` (2026-09-01)
@@ -113,6 +113,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas |
+| `comparar_1223.py` | Nao-regressao do SIRL-1223: aplica o alargamento ao ficheiro de antes e compara com o de depois |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |

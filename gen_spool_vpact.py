@@ -286,6 +286,17 @@ def corte(n):
 CORTE = {n: corte(n) for n, _, _, _ in VARIANTES}
 
 
+# SIRL-1223 : campos que mudam de tamanho na notice V45.00. A chave e o offset
+# do campo na regua V44 (a do spool antigo), o valor e (campo, antes, depois).
+# O spool antigo fica como esta: e ele que gera o ficheiro de referencia.
+ALARGAMENTOS = {5215: ('P1 21.65', 5, 50)}
+
+
+def desvio(off):
+    """Quanto os alargamentos empurram um campo que comeca em off."""
+    return sum(d - a for o, (_, a, d) in ALARGAMENTOS.items() if o < off)
+
+
 def bloco(variante, filtro, comentario):
     """Um SELECT sobre a tabela, com a lista de campos DESTA variante."""
     l1, l2 = [], []
@@ -298,7 +309,12 @@ def bloco(variante, filtro, comentario):
         elif col:
             n_col += 1
         alvo = l1 if k <= CORTE[variante] else l2
-        marca = ('-- pos %-5d %s' % (off, col)) if col else ('-- pos %-5d' % off)
+        if off in ALARGAMENTOS:
+            campo, antes, depois = ALARGAMENTOS[off]
+            assert col is None and w == antes, (variante, off, e)
+            e = "RPAD(' ',%d)" % depois
+            col = '%s (SIRL-1223 %d -> %d)' % (campo, antes, depois)
+        marca = ('-- pos %-5d %s' % (off + desvio(off), col)) if col else ('-- pos %-5d' % (off + desvio(off)))
         alvo.append('       %s||   %s' % (e, marca))
     for L_ in (l1, l2):
         L_[-1] = re.sub(r'\|\|(\s+--)', r'  \1', L_[-1])
@@ -381,6 +397,9 @@ CAB = [
     '-- depois. Assim o ficheiro sai na mesma ordem.',
     '--',
     '-- Os restantes paves (C1/C5, P2, M1, P9) ficam exatamente como estavam.',
+    '--',
+    '-- SIRL-1223 : P1 21.65 passa de 5 para 50 (notice V45.00). Os campos',
+    '-- seguintes andam 45 posicoes; os comentarios pos ja o refletem.',
     '--',
     '-- GERADO por gen_spool_vpact.py -- nao editar a mao.',
     '-- =====================================================================',

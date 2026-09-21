@@ -1523,7 +1523,7 @@ BEGIN
           RPAD(' ',1)         ||';'||--P3C 21.42
 		  pack_utilitaire.f_format_taux_15(nvl(C_ENR.ETV_RATIO,0))||';'|| -- P3 21.43 -- bale4
           RPAD(NVL(C_ENR.IND_QRRE,' '),1)         ||';'||--P3C 31.46
-          RPAD(' ',5)         ||';'||--P3C 21.65
+          RPAD(' ',50)         ||';'||--P3C 21.65 -- SIRL-1223 5 -> 50
           RPAD(NVL(C_ENR.IND_NON_APPLI_ASYMETRIE_DEV,' '),1)         ||';'||--P3C 31.47
           RPAD(' ',3)         ||';'||--P3C 12.16
           RPAD(' ',1)         ||';'||--P3C 24.8
@@ -1552,7 +1552,7 @@ BEGIN
           RPAD(' ',19)         ||';'||--P3C 31.52
           RPAD(' ',3)         ||';'||--P3C 31.53
           RPAD(' ',4)         ||';'||--0.9 (P3C)
-		  RPAD(' ',1132); -- BALE4
+		  RPAD(' ',1087); -- BALE4 -- SIRL-1223 1132 -> 1087
       UTL_FILE.PUT_LINE(v_crr_descripteur, v_ligne);
       --13/11/2019 - CDS ATOS (LFD) - Mantis 49880 Correction US 803
 	  -- v_nb_lignes := C_P3%ROWCOUNT + 2;
