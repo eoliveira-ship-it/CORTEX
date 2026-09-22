@@ -10,7 +10,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 |---|---|---|
 | **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
 | **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | ⬜ não iniciado |
-| **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟡 código feito, falta a rodada no DEV2 — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
+| **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟡 P1 validado (rodada 1: idêntico); falta o P3 — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 
 ### Resultado da última execução do `TESTES.sql` (2026-09-01)
