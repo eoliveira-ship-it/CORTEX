@@ -25,7 +25,14 @@ seguintes.
 | Escrever os 643 campos da Notice | os 51 campos novos saem em branco; o ficheiro fica conforme a V45.02 |
 | Manter como hoje | a DSID confirma **por escrito** que lê no formato V44; fica registado que o ficheiro não é o da Notice |
 
-*Resposta provisória do lado KLx: manter como hoje. Falta o acordo da DSID.*
+**Decidido em 2026-09-23 (KLx): usar a Notice.** Os 104 campos criados na V45
+(P1 51, P2 42, M1 12) passam a ser escritos, em branco. Estão todos no fim da
+linha, antes do filler, por isso nada se desloca. Sem o `;` nem sequer mudam um
+byte do ficheiro; só existem de facto quando o separador entrar.
+
+**Decidido também: o `;` vale para o ficheiro todo** — cabeçalho, fillers do
+meio da linha e filler final. O filler final é o último campo, precedido de `;`
+e sem `;` depois dele, como já se faz hoje no ficheiro do P3 (C3RD).
 
 ### 2. Os campos obsoletos saem ou ficam em branco?
 
@@ -45,13 +52,23 @@ perdem um campo cada; se ficam em branco, o tamanho não muda.
 | Sair do ficheiro | menos um campo em cada linha P1 e P2; desloca os seguintes |
 | Ficar em branco | a linha não muda de tamanho |
 
-### 3. Cabeçalho (`00;`) e rodapé (`99;`)
+### 3. O filler do P1 não fecha em 8000
+
+Pergunta redigida em pt-BR e em francês, pronta a enviar:
+**[QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)**.
+
+Resumo: os tamanhos de filler da V45.02 já contam os separadores e dão 8000
+exatos em todos os registos, menos no P1, que dá 8009. A diferença é o
+`P1 621` (8 caracteres + 1 separador), criado na 45.01. O filler do P1 deve
+passar de 1185 para 1176 — a confirmar.
+
+### 4. Cabeçalho (`00;`) e rodapé (`99;`)
 
 O ticket diz "modifications à identifier/valider" para o en-tête e o en-queue,
 sem dizer o quê. Hoje as duas linhas **já** têm `;`. Confirmar que ficam como
 estão.
 
-### 4. Notice do Adapté
+### 5. Notice do Adapté
 
 O `030_spool_Extract_CRRADAP.sql` implementa a notice
 `CRRAV4.4_Adapté_Adapted_V44.02.xlsx`, que **não temos**. Sem ela não dá para
