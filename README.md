@@ -113,6 +113,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas |
+| `VALIDAR_1223_P3.sql` | Gera o ficheiro do pave P3 antes e depois da alteracao, com nome proprio |
 | `comparar_1223.py` | Nao-regressao do SIRL-1223: aplica o alargamento ao ficheiro de antes e compara com o de depois |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
