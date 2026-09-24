@@ -9,7 +9,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 | Ticket | Assunto | Estado |
 |---|---|---|
 | **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
-| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟡 alinhamento do P1 por âncoras: 110 de 116 zonas fecham, 6 a resolver — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
+| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟡 P1 gerado e verificado (663 campos, 8000 por linha); faltam os outros 6 pavés e o Adapté — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟢 P1 e P3 provados (só a mudança pedida) — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 
@@ -113,6 +113,8 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas |
+| `gen_spool_1222.py` | SIRL-1222: gera o pave P1 com `;` entre todos os campos, a partir da Notice |
+| `valida_1222.py` | Confere, sem base de dados, que cada expressao emite o tamanho do campo e que a linha da 8000 |
 | `notice.py` | Le a Notice por pave, achando as colunas pelo cabecalho (elas mudam de letra entre versoes) |
 | `mapa_1222.py` | SIRL-1222: alinha os campos da Notice com os tokens do spool por ancoras, e lista as zonas a resolver |
 | `VALIDAR_1223_P3.sql` | Gera o ficheiro do pave P3 antes e depois da alteracao, com nome proprio |

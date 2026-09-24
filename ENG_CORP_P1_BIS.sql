@@ -684,6 +684,7 @@ CREATE TABLE ENG_CORP_P1_BIS (
     P1_633     NUMBER(18,2)   , -- P1 633      NUM/19 19 dont signe et 2 décimales  Montant du Mark-to-market hor
     P1_633_1   VARCHAR2(3)    , -- P1 633.1    ALPHA/3  Devise du montant du Mark-to-market hors part à syndiquer
     P1_635     VARCHAR2(1)    , -- P1 635      ALPHA/1  Indicateur Facteur de Conversion de Crédit (CCF) modèle i
+    P1_621     VARCHAR2(8)    , -- P1 621      ALPHA/8  Intention de gestion de l'operation (criado na V45.01 - SIRL-1222)
     P1_1001    DATE           , -- P1 1001     DATE/8  Date de réalisation du tirage
     P1_1002    DATE             -- P1 1002     DATE/8  Date d'échéance du tirage
 ) TABLESPACE DDR_DATA
@@ -1357,5 +1358,6 @@ COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_632_1 IS 'P1 632.1 - ALPHA/3 - Devise des e
 COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_633 IS 'P1 633 - NUM/19 - Montant du Mark-to-market hors part à syndiquer';
 COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_633_1 IS 'P1 633.1 - ALPHA/3 - Devise du montant du Mark-to-market hors part à syndiquer';
 COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_635 IS 'P1 635 - ALPHA/1 - Indicateur Facteur de Conversion de Crédit (CCF) modèle interne';
+COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_621 IS 'P1 621 - ALPHA/8 - Intention de gestion de l''operation';
 COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_1001 IS 'P1 1001 - DATE/8 - Date de réalisation du tirage';
 COMMENT ON COLUMN ENG_CORP_P1_BIS.P1_1002 IS 'P1 1002 - DATE/8 - Date d''échéance du tirage';

@@ -119,3 +119,65 @@ mudança. A lista dessas correções faz parte da entrega do chamado.
   que dá 8009; ver [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)).
 - Em aberto: os campos obsoletos (`P1 22.2`, `P2 22.2`, `M1 512`) e a Notice do
   Adapté.
+
+## O spool gerado (24/09)
+
+[`gen_spool_1222.py`](../gen_spool_1222.py) gera o
+`030_spool_Extract_CRRCORP_1222.sql`: os 6 blocos do P1 com `;` entre todos os
+campos. Para cada um dos 663 campos da Notice, a expressão sai de uma regra:
+
+| Regra | O que é | Variante 1 |
+|---|---|---|
+| EXATO | um token do spool tem as fronteiras do campo: copia-se a expressão vPACT | 201 |
+| BRANCO | o campo cai dentro de um filler: `RPAD(' ', tamanho)` | 402 |
+| NOVO | campo criado na V45: lê-se a coluna da tabela, que está a NULL | 51 |
+| REGRA | os 6 casos escritos à mão | 6 |
+| EMENDA | vários tokens cobrem o campo exatamente: concatenam-se | 2 |
+| FILLER | o filler final, o que falta para os 8000 | 1 |
+
+Nas outras variantes muda só a distribuição (mais BRANCO, menos EXATO). **Zero
+campos sem regra nas seis.**
+
+Os 6 casos à mão, cada um com a sua razão, estão no dicionário `REGRAS` do
+gerador: os quatro dos compostos TRE201/TRE401 (o spool escreve montante e
+devise juntos num `CASE` de 22; a tabela guarda-os em duas colunas), o
+`P1 21.65` (a régua de hoje tem 5, o vPACT já escreve 50) e o `P1 30.22` (o `N`
+do netting passa para o `30.23`).
+
+### Três colunas, e não duas
+
+Uma expressão SQL não passa de 4000 caracteres, por isso a linha é montada em
+colunas que o SQL*Plus escreve lado a lado. **Com duas não cabe:** a linha tem
+8000 e as fronteiras de campo saltam de 3960 para 4061, porque o filler
+`P1 25.99` tem 100 caracteres — nenhuma fronteira cai no 4000 exato. Com três
+sobra folga: **2669, 2671 e 2660**.
+
+O `;` vai **escrito nas expressões** (`||';'||`), como no ficheiro do P3, e o
+spool leva `SET COLSEP ''`. Assim o separador não depende de um parâmetro do
+SQL*Plus nem cai no meio de um campo, e não há `;` no fim da linha.
+
+### Verificação sem base de dados
+
+[`valida_1222.py`](../valida_1222.py) lê o spool gerado e, campo a campo, mede a
+largura da expressão (`RPAD(x,n)` → n, `'ABC'` → 3, as `F_FORMAT_*` pelo que o
+`pack_utilitaire` escreve, as colunas pelo tamanho no DDL) e compara com o
+tamanho que a Notice dá ao campo. Confirma também que só o último campo da linha
+não leva `;` e soma as larguras por coluna.
+
+```
+PAVE P1 - perimetre NAT02 (variantes 1-3)   campos 663  colunas [2669, 2671, 2660]  total 8000
+PAVE P1 - Hors NAT02, variante 4            campos 663  colunas [2669, 2671, 2660]  total 8000
+...
+erros: 0
+```
+
+### Mudança no DDL
+
+A tabela ganhou a coluna **`P1_621 VARCHAR2(8)`**, que faltava: o campo foi
+criado na V45.01, depois da Notice que gerou o DDL.
+
+### O que isto quebra nas ferramentas
+
+As posições fixas deixam de valer para o P1: o código do pavé já não está nos
+bytes 39-40. O `.bat` que divide o ficheiro por pavé e o `comparar_ficheiros.sh`
+(que faz o censo por `cut -c39-40`) têm de passar a separar por campo.
