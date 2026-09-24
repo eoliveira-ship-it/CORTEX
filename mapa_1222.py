@@ -1,23 +1,42 @@
-"""SIRL-1222: alinhamento campo a campo do pave P1, por ancoras.
+"""SIRL-1222: o layout do pave P1 e o da notice? Medicao por ancoras.
 
 Para pôr ';' entre campos e preciso saber onde cada campo da notice comeca. O
-spool nao diz: junta campos seguidos num RPAD(' ', soma) so. Duas maneiras de
-descobrir, e a segunda e a que vale:
+spool nao diz: junta campos seguidos num RPAD(' ', soma) so -- ha 153 pedacos do
+SELECT do P1 que cobrem mais de um campo, o maior com 49 campos em 354
+caracteres.
 
-  1. soma acumulada da notice. Nao serve sozinha: a largura da notice (5675) e
-     a do spool (5698) nao batem, e o desvio acumula-se ao longo da linha.
-  2. ANCORAS. 120 tokens do spool trazem o comentario '--P1 x.y', que diz o
-     campo. Entre duas ancoras consecutivas, comparo a soma das larguras dos
-     tokens com a soma dos tamanhos dos campos da notice. Se der o mesmo
-     numero, aquela zona esta alinhada e os campos podem ser cortados sem
-     duvida. Se nao der, a zona fica marcada: e ali que ha trabalho a mao.
+COMO SE MEDE
+------------
+120 tokens do spool trazem o comentario '--P1 x.y', que diz o campo. Para cada
+ancora calcula-se
 
-Resultado: 110 das 116 zonas do P1 fecham exatamente. Sao 6 zonas a resolver,
-nao 611 campos.
+    desvio = posicao no spool - posicao na regua da notice
+
+e olha-se para onde o desvio MUDA. Um desvio constante quer dizer que o spool e
+a notice concordam, mesmo que o spool escreva 49 campos num RPAD so. Cada
+degrau e uma divergencia real, e e ai que ha trabalho.
+
+Nao se comparam somas entre ancoras: o token da ancora pode ser um filler grande
+que cobre o campo da ancora E os seguintes (o '--P1 3.56' esta num RPAD(' ',185)
+que vale 20 campos), e isso produzia zonas falsas.
+
+BOLHAS
+------
+Um degrau que desaparece na ancora seguinte nao e desalinhamento: e o comentario
+colado no pedaco errado. Exemplo: o 'P1 4.2' (19 caracteres, posicao 459) esta
+escrito como RPAD(' ',1) + RPAD(' ',16) + RPAD(' ',2) e o comentario esta no
+ultimo pedaco, 17 caracteres depois do inicio do campo. Estas ancoras marcam-se
+como BOLHA e nao contam.
+
+RESULTADO (2026-09-24)
+----------------------
+Nas seis variantes, um unico degrau verdadeiro: -1 a partir do bloco 30.x, que
+e o 'N' do netting escrito um byte antes do campo indicador da notice (ver
+docs/SIRL-1222-ALINHAMENTO.md). Tirando esse byte, o layout do P1 E o da notice,
+o que permite gerar o formato com ';' a partir da notice.
 
 Uso:  python mapa_1222.py
 """
-import collections
 import io
 import re
 import sys
@@ -35,72 +54,68 @@ FIM = CAMPOS[-1]                     # o filler final, P1 99.99
 
 
 def regua():
-    """Os campos que o ficheiro escreve hoje: notice V45.02 menos os criados
-    na V45, sem o filler final, e com o P1 21.65 em 5 -- o spool de origem e o
-    de antes do SIRL-1223."""
-    r = []
+    """Os campos que o ficheiro escreve hoje: notice V45.02 menos os criados na
+    V45, sem o filler final, e com o P1 21.65 em 5 -- o spool de origem e o de
+    antes do SIRL-1223."""
+    r, off = [], 0
     for c in CAMPOS:
         if c['novo_v45'] or c is FIM:
             continue
-        r.append({'ref': c['ref'],
-                  'len': 5 if c['ref'] == 'P1 21.65' else c['len'],
-                  'filler': c['filler']})
+        ln = 5 if c['ref'] == 'P1 21.65' else c['len']
+        r.append({'ref': c['ref'], 'len': ln, 'start': off, 'filler': c['filler']})
+        off += ln
     return r
 
 
 REGUA = regua()
+POS = {c['ref']: c['start'] for c in REGUA}
 ORDEM = {c['ref']: i for i, c in enumerate(REGUA)}
-TAM = {c['ref']: c['len'] for c in REGUA}
 
 
 def ancoras(var):
-    """Tokens com comentario '--P1 x.y' que casa com um campo da regua, em
-    ordem crescente na notice. Uma ancora fora de ordem e descartada: sem isso
-    inventam-se zonas que nao existem."""
+    """[(indice_token, offset, largura, campo, desvio)] das ancoras que casam
+    com um campo da regua, em ordem crescente na notice."""
     out, ultimo = [], -1
     for i, (off, w, t) in enumerate(G.TOKENS[var]):
         ref = (t.get('ref') or '').strip()
         j = ORDEM.get(ref)
         if j is None or j <= ultimo:
             continue
-        out.append((i, off, w, ref, j))
+        out.append((i, off, w, ref, off - POS[ref]))
         ultimo = j
     return out
 
 
-def zonas(var):
-    """[(campo_ini, campo_fim, n_tokens, n_campos, larg_spool, larg_notice)]
-    das zonas cuja largura NAO bate. As que batem ficam de fora."""
-    toks = G.TOKENS[var]
+def degraus(var):
+    """[(campo, desvio_antes, desvio_depois, bolha)] -- onde o desvio muda."""
     anc = ancoras(var)
-    fora = []
-    for k in range(len(anc) - 1):
-        i1, _, _, r1, j1 = anc[k]
-        i2, _, _, r2, j2 = anc[k + 1]
-        larg = sum(w for _, w, _ in toks[i1 + 1:i2])
-        nsum = sum(TAM[c['ref']] for c in REGUA[j1 + 1:j2])
-        if larg != nsum:
-            fora.append((r1, r2, i2 - i1 - 1, j2 - j1 - 1, larg, nsum))
-    return anc, fora
+    out = []
+    fecha = -1
+    for k in range(1, len(anc)):
+        d0, d1 = anc[k - 1][4], anc[k][4]
+        if d0 == d1:
+            continue
+        # bolha: o desvio volta ao valor anterior na ancora seguinte. O degrau
+        # de volta faz parte da mesma bolha e tambem nao conta.
+        bolha = k == fecha or (k + 1 < len(anc) and anc[k + 1][4] == d0)
+        if bolha and k != fecha:
+            fecha = k + 1
+        out.append((anc[k][3], d0, d1, bolha))
+    return anc, out
 
 
 if __name__ == '__main__':
-    print('notice V45.02, pave P1 : %d campos (dos quais %d criados na V45)'
+    print('notice V45.02, pave P1 : %d campos (%d criados na V45)'
           % (len(CAMPOS), sum(1 for c in CAMPOS if c['novo_v45'])))
     print('regua de hoje          : %d campos, %d caracteres'
           % (len(REGUA), sum(c['len'] for c in REGUA)))
-    print('filler final           : %d (a confirmar com a DSID: 1176)' % FIM['len'])
-    print()
-    print('%-9s %7s %8s %8s %9s' % ('variante', 'tokens', 'ancoras', 'zonas ok', 'zonas fora'))
-    guardado = {}
-    for v in VARIANTES:
-        anc, fora = zonas(v)
-        guardado[v] = fora
-        print('%-9d %7d %8d %8d %9d'
-              % (v, len(G.TOKENS[v]), len(anc), len(anc) - 1 - len(fora), len(fora)))
+    print('filler final           : %d na notice (premissa em vigor: 1176)' % FIM['len'])
     print()
     for v in VARIANTES:
-        print('--- variante %d: zonas a resolver' % v)
-        for r1, r2, nt, nc, ls, ln in guardado[v]:
-            print('   entre %-12s e %-12s : %2d tokens (%5d) para %3d campos (%5d)  delta %+d'
-                  % (r1, r2, nt, ls, nc, ln, ls - ln))
+        anc, deg = degraus(v)
+        reais = [d for d in deg if not d[3]]
+        print('variante %d: %3d ancoras, %d degraus reais, %d bolhas'
+              % (v, len(anc), len(reais), len(deg) - len(reais)))
+        for ref, d0, d1, bolha in deg:
+            print('   %-12s desvio %+d -> %+d   %s'
+                  % (ref, d0, d1, 'BOLHA (comentario no pedaco errado)' if bolha else 'DEGRAU REAL'))

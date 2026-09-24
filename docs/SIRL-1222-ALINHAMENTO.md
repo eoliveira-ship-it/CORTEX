@@ -10,37 +10,50 @@ Este documento registra como o alinhamento foi feito e o que ele encontrou.
 Script: [`mapa_1222.py`](../mapa_1222.py), leitor da Notice:
 [`notice.py`](../notice.py).
 
-## O método: âncoras, não soma acumulada
+## O método: âncoras e desvio acumulado
 
 Somar a coluna LONGUEUR da Notice **não funciona sozinho**: a régua dá 5675
-caracteres e o spool escreve 5698, e o desvio vai-se acumulando ao longo da
-linha. A coluna `POSITION` da Notice, que resolveria isto, está vazia nos 1503
-campos.
+caracteres e o spool escreve 5698, e o desvio vai-se acumulando. A coluna
+`POSITION` da Notice, que resolveria isto, está vazia nos 1503 campos.
 
 O que funciona são as **âncoras**: 120 pedaços do spool trazem o comentário
-`--P1 x.y`, que diz qual campo está a ser escrito. Entre duas âncoras
-consecutivas, compara-se a soma das larguras do spool com a soma dos tamanhos
-da Notice. Se der o mesmo número, a zona está alinhada e os campos podem ser
-cortados sem dúvida; se não der, a zona fica marcada.
+`--P1 x.y`, que diz qual campo está a ser escrito. Para cada âncora calcula-se
 
-| Variante | Tokens | Âncoras | Zonas alinhadas | Zonas a resolver |
-|---|---|---|---|---|
-| 1 | 385 | 117 | 110 | 6 |
-| 4 | 493 | 115 | 110 | 4 |
-| 5 | 414 | 124 | 119 | 4 |
-| 6 | 520 | 128 | 119 | 8 |
-| 7 | 373 | 101 | 92 | 8 |
-| 8 | 482 | 117 | 108 | 8 |
+```
+desvio = posição no spool − posição na régua da Notice
+```
 
-**O problema não são 611 campos, são 6 zonas**, e elas repetem-se entre as
-variantes.
+e olha-se para onde o desvio **muda**. Desvio constante quer dizer que o spool e
+a Notice concordam, mesmo que o spool escreva 49 campos num `RPAD` só. Cada
+degrau é uma divergência real.
 
-| Zona | Delta | Diagnóstico |
-|---|---|---|
-| `P1 4.x` / `5.x` (TRE201, TRE401) | +17 ou +18 | o spool escreve 22 num token onde a Notice tem dois campos: montante 19 + devise 3 |
-| `P1 22.37` → `P1 22.63` | −169 | 18 campos que a Notice põe aqui e o spool escreve noutro ponto da linha |
-| zona longa até `P1 31.17` | **−1** | resolvido — ver abaixo |
-| `P1 31.17` / `31.18` / `31.22` | +5 | os `LPAD(...,5,'0')` e o `RPAD('+',1)`: o spool escreve 6 onde a Notice diz 5 |
+**Duas tentativas que não servem, e porquê:**
+
+1. *Somar as larguras entre duas âncoras.* Foi a primeira versão e dava 6 zonas
+   divergentes no P1. Eram falsas: o token da âncora pode ser um filler grande
+   que cobre o campo da âncora **e** os seguintes — o `--P1 3.56` está num
+   `RPAD(' ',185)` que vale 20 campos. O método por desvio não tem esse problema.
+2. *Confiar em todas as âncoras.* O comentário pode estar colado no pedaço
+   errado. O `P1 4.2` tem 19 caracteres e começa na posição 459; o spool
+   escreve-o como `RPAD(' ',1) || RPAD(' ',16) || RPAD(' ',2)` e o comentário
+   está no último pedaço, 17 caracteres depois do início do campo. Isso produz um
+   degrau de +17 que desaparece na âncora seguinte. O script marca esses casos
+   como **bolha** e não os conta.
+
+## O resultado: um único desvio em toda a linha
+
+| Variante | Âncoras | Degraus reais | Bolhas |
+|---|---|---|---|
+| 1 | 117 | **1** | 2 |
+| 4 | 115 | **1** | 0 |
+| 5 | 124 | **1** | 2 |
+| 6 | 128 | **1** | 0 |
+| 7 | 101 | **1** | 2 |
+| 8 | 117 | **1** | 2 |
+
+Nas seis variantes, o degrau é o mesmo: **−1 a partir do bloco 30.x**. Tirando
+esse byte, **o layout do P1 é o da Notice**. É isso que permite gerar o formato
+com `;` a partir da Notice, em vez de o desenhar à mão campo a campo.
 
 ## A zona do −1: o bloco 30.x (derivados / netting) — RESOLVIDO
 
