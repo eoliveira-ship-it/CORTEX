@@ -10,11 +10,12 @@
 --                filler) NAO leva ";" depois. Os 51 campos criados na
 --                V45 sao escritos, em branco, lendo as colunas da tabela.
 --
--- TRES COLUNAS   uma expressao SQL nao passa de 4000. Com duas colunas a
---                linha nao cabe: as fronteiras de campo saltam de 3960
---                para 4061 (o filler P1 25.99 tem 100). Com tres sobra
---                folga e o corte cai em fronteira de campo.
---                SET COLSEP "" : o ";" vai escrito nas expressoes.
+-- DUAS COLUNAS  a linha e montada em colunas que o SQL*Plus escreve
+--                lado a lado, com um espaco entre elas (o COLSEP, que nao
+--                se desliga). 4000 + 1 + 3999 = 8000, como nos outros
+--                paves. O corte cai dentro do filler P1 25.99, em branco:
+--                39 na coluna 1, o espaco do COLSEP, 60 na coluna 2.
+--                O CAST fixa a largura de cada coluna.
 --
 -- Os restantes paves (P2, M1, P9, C1, F1, F2) ficam como estavam: o P1 e
 -- o piloto, para validar a convencao antes de a repetir sete vezes.
@@ -146,7 +147,6 @@ set trimspool OFF
 --SET linesize 5099   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
 --SET linesize 5699   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
 SET linesize 8000   --8000  mais lignedetail1 fera 4000 et lignedetail2 fera 3999
-SET COLSEP ''   -- SIRL-1222 : o ';' vai escrito nas expressoes
 --Fin EMM
 
 
@@ -632,6 +632,7 @@ select
 -- PAVE P1 - perimetre NAT02 (variantes 1-3) - com separador ;
 ------------------------------------------------------------------------------------------------------------------------
 select
+     CAST(
        to_char(P1_H_0_1, 'YYYYMMDD')||';'||   -- 0.1 (P1)     EXATO
        RPAD(NVL(P1_H_0_2,' '), 5)||';'||   -- 0.2 (P1)     EXATO
        RPAD(NVL(P1_H_0_3,'C_BTR'), 12)||';'||   -- 0.3 (P1)     EXATO
@@ -907,8 +908,7 @@ select
        RPAD(' ', 40)||';'||   -- P1 22.4      BRANCO
        RPAD(nvl(P1_22_5, 'ND'),2)||';'||   -- P1 22.5      EXATO
        RPAD(nvl(P1_22_52,' '),10)||';'||   -- P1 22.52     EXATO
-       RPAD(nvl(P1_22_6,' '),2,' ')||';'     -- P1 22.6      EXATO
-     as lignedetail1,
+       RPAD(nvl(P1_22_6,' '),2,' ')||';'||   -- P1 22.6      EXATO
        RPAD(nvl(P1_22_53,' '),2)||';'||   -- P1 22.53     EXATO
        CASE WHEN P1_22_54 IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(P1_22_54,21)||'FR',' '),46) END||';'||   -- P1 22.54     EXATO
        CASE WHEN P1_22_55 = 'C3' THEN '999' ELSE RPAD(upper(nvl(P1_22_55,' ')),3) END||';'||   -- P1 22.55     EXATO
@@ -1033,7 +1033,10 @@ select
        RPAD(' ', 3)||';'||   -- P1 25.6      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.7      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.8      BRANCO
-       RPAD(' ', 100)||';'||   -- P1 25.99     BRANCO
+       RPAD(' ', 39)     -- P1 25.99     CORTE-A
+     AS VARCHAR2(4000)) as lignedetail1,
+     CAST(
+       RPAD(' ', 60)||';'||   -- P1 25.99     CORTE-B
        RPAD(NVL(P1_26_1,' '),1,' ')||';'||   -- P1 26.1      EXATO
        RPAD(NVL(P1_22_11, ' '), 1)||';'||   -- P1 22.11     EXATO
        RPAD(NVL(P1_26_3, ' '), 3)||';'||   -- P1 26.3      EXATO
@@ -1157,8 +1160,7 @@ select
        RPAD(' ', 19)||';'||   -- P1 50.5      BRANCO
        RPAD(NVL(P1_50_8, ' '), 12)||';'||   -- P1 50.8      EXATO
        RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)||';'||   -- P1 50.9      EXATO
-       RPAD(' ', 12)||';'     -- P1 50.14     BRANCO
-     as lignedetail2,
+       RPAD(' ', 12)||';'||   -- P1 50.14     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.15     BRANCO
        RPAD(' ', 12)||';'||   -- P1 50.16     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.17     BRANCO
@@ -1297,7 +1299,7 @@ select
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
-     as lignedetail3
+     AS VARCHAR2(3999)) as lignedetail2
   from ENG_CORP_P1_BIS
  where CD_PERIMETRE = 'NAT02'
    and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')
@@ -2119,6 +2121,7 @@ WHERE (C_ENR.cd_conso_cpt = :ENTITE
 -- PAVE P1 - Hors NAT02, variante 4 - com separador ;
 ------------------------------------------------------------------------------------------------------------------------
 select
+     CAST(
        RPAD(TO_CHAR(P1_H_0_1,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P1)     EXATO
        RPAD(P1_H_0_2,5,' ')||';'||   -- 0.2 (P1)     EXATO
        RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P1)     EXATO
@@ -2394,8 +2397,7 @@ select
        RPAD(' ', 40)||';'||   -- P1 22.4      BRANCO
        RPAD(P1_22_5,2,' ')||';'||   -- P1 22.5      EXATO
        RPAD(NVL(P1_22_52, ' '),10,' ')||';'||   -- P1 22.52     EXATO
-       RPAD(nvl(P1_22_6,' '),2,' ')||';'     -- P1 22.6      EXATO
-     as lignedetail1,
+       RPAD(nvl(P1_22_6,' '),2,' ')||';'||   -- P1 22.6      EXATO
        RPAD(NVL(P1_22_53, ' '),2,' ')||';'||   -- P1 22.53     EXATO
        CASE WHEN P1_22_54 IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(P1_22_54,21)||'FR',' '),46) END||';'||   -- P1 22.54     EXATO
        RPAD(upper(NVL(P1_22_55, ' ')),3,' ')||';'||   -- P1 22.55     EXATO
@@ -2520,7 +2522,10 @@ select
        RPAD(' ', 3)||';'||   -- P1 25.6      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.7      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.8      BRANCO
-       RPAD(' ', 100)||';'||   -- P1 25.99     BRANCO
+       RPAD(' ', 39)     -- P1 25.99     CORTE-A
+     AS VARCHAR2(4000)) as lignedetail1,
+     CAST(
+       RPAD(' ', 60)||';'||   -- P1 25.99     CORTE-B
        RPAD(NVL(P1_26_1,' '),1,' ')||';'||   -- P1 26.1      EXATO
        RPAD(NVL(P1_22_11, ' '), 1)||';'||   -- P1 22.11     EXATO
        RPAD(NVL(P1_26_3, ' '), 3)||';'||   -- P1 26.3      EXATO
@@ -2644,8 +2649,7 @@ select
        RPAD(' ', 19)||';'||   -- P1 50.5      BRANCO
        RPAD(NVL(P1_50_8, ' '), 12)||';'||   -- P1 50.8      EXATO
        RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)||';'||   -- P1 50.9      EXATO
-       RPAD(' ', 12)||';'     -- P1 50.14     BRANCO
-     as lignedetail2,
+       RPAD(' ', 12)||';'||   -- P1 50.14     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.15     BRANCO
        RPAD(' ', 12)||';'||   -- P1 50.16     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.17     BRANCO
@@ -2784,7 +2788,7 @@ select
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
-     as lignedetail3
+     AS VARCHAR2(3999)) as lignedetail2
   from ENG_CORP_P1_BIS
  where NO_VARIANTE = 4
    and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')
@@ -2794,6 +2798,7 @@ select
 -- PAVE P1 - Hors NAT02, variante 5 - com separador ;
 ------------------------------------------------------------------------------------------------------------------------
 select
+     CAST(
        RPAD(TO_CHAR(P1_H_0_1,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P1)     EXATO
        RPAD(P1_H_0_2,5,' ')||';'||   -- 0.2 (P1)     EXATO
        RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P1)     EXATO
@@ -3069,8 +3074,7 @@ select
        RPAD(' ', 40)||';'||   -- P1 22.4      BRANCO
        RPAD('ND',2)||';'||   -- P1 22.5      EXATO
        RPAD(NVL(P1_22_52,' '),10)||';'||   -- P1 22.52     EXATO
-       RPAD(nvl(P1_22_6,' '),2,' ')||';'     -- P1 22.6      EXATO
-     as lignedetail1,
+       RPAD(nvl(P1_22_6,' '),2,' ')||';'||   -- P1 22.6      EXATO
        RPAD(NVL(P1_22_53,' '),2)||';'||   -- P1 22.53     EXATO
        CASE WHEN P1_22_54 IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(P1_22_54,21)||'FR',' '),46) END||';'||   -- P1 22.54     EXATO
        RPAD(upper(NVL(P1_22_55,' ')),3)||';'||   -- P1 22.55     EXATO
@@ -3195,7 +3199,10 @@ select
        RPAD(' ', 3)||';'||   -- P1 25.6      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.7      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.8      BRANCO
-       RPAD(' ', 100)||';'||   -- P1 25.99     BRANCO
+       RPAD(' ', 39)     -- P1 25.99     CORTE-A
+     AS VARCHAR2(4000)) as lignedetail1,
+     CAST(
+       RPAD(' ', 60)||';'||   -- P1 25.99     CORTE-B
        RPAD(NVL(P1_26_1,' '),1,' ')||';'||   -- P1 26.1      EXATO
        RPAD(NVL(P1_22_11, ' '), 1)||';'||   -- P1 22.11     EXATO
        RPAD(NVL(P1_26_3, ' '), 3)||';'||   -- P1 26.3      EXATO
@@ -3319,8 +3326,7 @@ select
        RPAD(' ', 19)||';'||   -- P1 50.5      BRANCO
        RPAD(NVL(P1_50_8, ' '), 12)||';'||   -- P1 50.8      EXATO
        RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)||';'||   -- P1 50.9      EXATO
-       RPAD(' ', 12)||';'     -- P1 50.14     BRANCO
-     as lignedetail2,
+       RPAD(' ', 12)||';'||   -- P1 50.14     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.15     BRANCO
        RPAD(' ', 12)||';'||   -- P1 50.16     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.17     BRANCO
@@ -3459,7 +3465,7 @@ select
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
-     as lignedetail3
+     AS VARCHAR2(3999)) as lignedetail2
   from ENG_CORP_P1_BIS
  where NO_VARIANTE = 5
    and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')
@@ -3469,6 +3475,7 @@ select
 -- PAVE P1 - Hors NAT02, variante 6 - com separador ;
 ------------------------------------------------------------------------------------------------------------------------
 select
+     CAST(
        RPAD(TO_CHAR(P1_H_0_1,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P1)     EXATO
        RPAD(P1_H_0_2,5,' ')||';'||   -- 0.2 (P1)     EXATO
        RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P1)     EXATO
@@ -3744,8 +3751,7 @@ select
        RPAD(' ', 40)||';'||   -- P1 22.4      BRANCO
        RPAD('ND',2)||';'||   -- P1 22.5      EXATO
        RPAD(' ', 10)||';'||   -- P1 22.52     BRANCO
-       RPAD(' ', 2)||';'     -- P1 22.6      BRANCO
-     as lignedetail1,
+       RPAD(' ', 2)||';'||   -- P1 22.6      BRANCO
        RPAD(' ', 2)||';'||   -- P1 22.53     BRANCO
        RPAD(' ', 46)||';'||   -- P1 22.54     BRANCO
        RPAD(' ', 3)||';'||   -- P1 22.55     BRANCO
@@ -3870,7 +3876,10 @@ select
        RPAD(' ', 3)||';'||   -- P1 25.6      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.7      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.8      BRANCO
-       RPAD(' ', 100)||';'||   -- P1 25.99     BRANCO
+       RPAD(' ', 39)     -- P1 25.99     CORTE-A
+     AS VARCHAR2(4000)) as lignedetail1,
+     CAST(
+       RPAD(' ', 60)||';'||   -- P1 25.99     CORTE-B
        RPAD(NVL(P1_26_1,' '),1,' ')||';'||   -- P1 26.1      EXATO
        RPAD(NVL(P1_22_11, ' '), 1)||';'||   -- P1 22.11     EXATO
        RPAD(NVL(P1_26_3, ' '), 3)||';'||   -- P1 26.3      EXATO
@@ -3994,8 +4003,7 @@ select
        RPAD(' ', 19)||';'||   -- P1 50.5      BRANCO
        RPAD(NVL(P1_50_8, ' '), 12)||';'||   -- P1 50.8      EXATO
        RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)||';'||   -- P1 50.9      EXATO
-       RPAD(' ', 12)||';'     -- P1 50.14     BRANCO
-     as lignedetail2,
+       RPAD(' ', 12)||';'||   -- P1 50.14     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.15     BRANCO
        RPAD(' ', 12)||';'||   -- P1 50.16     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.17     BRANCO
@@ -4134,7 +4142,7 @@ select
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
-     as lignedetail3
+     AS VARCHAR2(3999)) as lignedetail2
   from ENG_CORP_P1_BIS
  where NO_VARIANTE = 6
    and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')
@@ -4144,6 +4152,7 @@ select
 -- PAVE P1 - Hors NAT02, variante 7 - com separador ;
 ------------------------------------------------------------------------------------------------------------------------
 select
+     CAST(
        RPAD(TO_CHAR(P1_H_0_1,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P1)     EXATO
        RPAD(NVL(P1_H_0_2,' '),5,' ')||';'||   -- 0.2 (P1)     EXATO
        RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P1)     EXATO
@@ -4419,8 +4428,7 @@ select
        RPAD(' ', 40)||';'||   -- P1 22.4      BRANCO
        RPAD('ND',2)||';'||   -- P1 22.5      EXATO
        RPAD(NVL(P1_22_52 ,' '),10,' ')||';'||   -- P1 22.52     EXATO
-       RPAD(nvl(P1_22_6,' '),2,' ')||';'     -- P1 22.6      EXATO
-     as lignedetail1,
+       RPAD(nvl(P1_22_6,' '),2,' ')||';'||   -- P1 22.6      EXATO
        RPAD(NVL(P1_22_53,' '),2,' ')||';'||   -- P1 22.53     EXATO
        CASE WHEN P1_22_54 IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(P1_22_54,21)||'FR',' '),46) END||';'||   -- P1 22.54     EXATO
        RPAD(upper(NVL(P1_22_55,' ')),3,' ')||';'||   -- P1 22.55     EXATO
@@ -4545,7 +4553,10 @@ select
        RPAD(' ', 3)||';'||   -- P1 25.6      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.7      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.8      BRANCO
-       RPAD(' ', 100)||';'||   -- P1 25.99     BRANCO
+       RPAD(' ', 39)     -- P1 25.99     CORTE-A
+     AS VARCHAR2(4000)) as lignedetail1,
+     CAST(
+       RPAD(' ', 60)||';'||   -- P1 25.99     CORTE-B
        RPAD(NVL(P1_26_1,' '),1,' ')||';'||   -- P1 26.1      EXATO
        RPAD(NVL(P1_22_11, ' '), 1)||';'||   -- P1 22.11     EXATO
        RPAD(NVL(P1_26_3, ' '), 3)||';'||   -- P1 26.3      EXATO
@@ -4669,8 +4680,7 @@ select
        RPAD(' ', 19)||';'||   -- P1 50.5      BRANCO
        RPAD(NVL(P1_50_8, ' '), 12)||';'||   -- P1 50.8      EXATO
        RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)||';'||   -- P1 50.9      EXATO
-       RPAD(' ', 12)||';'     -- P1 50.14     BRANCO
-     as lignedetail2,
+       RPAD(' ', 12)||';'||   -- P1 50.14     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.15     BRANCO
        RPAD(' ', 12)||';'||   -- P1 50.16     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.17     BRANCO
@@ -4809,7 +4819,7 @@ select
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
-     as lignedetail3
+     AS VARCHAR2(3999)) as lignedetail2
   from ENG_CORP_P1_BIS
  where NO_VARIANTE = 7
    and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')
@@ -4819,6 +4829,7 @@ select
 -- PAVE P1 - Hors NAT02, variante 8 - com separador ;
 ------------------------------------------------------------------------------------------------------------------------
 select
+     CAST(
        RPAD(TO_CHAR(P1_H_0_1,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P1)     EXATO
        RPAD(NVL(P1_H_0_2,' '),5,' ')||';'||   -- 0.2 (P1)     EXATO
        RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P1)     EXATO
@@ -5094,8 +5105,7 @@ select
        RPAD(' ', 40)||';'||   -- P1 22.4      BRANCO
        RPAD('ND',2)||';'||   -- P1 22.5      EXATO
        RPAD(NVL(P1_22_52,' '),10,' ')||';'||   -- P1 22.52     EXATO
-       RPAD(nvl(P1_22_6,' '),2,' ')||';'     -- P1 22.6      EXATO
-     as lignedetail1,
+       RPAD(nvl(P1_22_6,' '),2,' ')||';'||   -- P1 22.6      EXATO
        RPAD(NVL(P1_22_53,' '),2,' ')||';'||   -- P1 22.53     EXATO
        CASE WHEN P1_22_54 IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(P1_22_54,21)||'FR',' '),46) END||';'||   -- P1 22.54     EXATO
        RPAD(upper(NVL(P1_22_55,' ')),3,' ')||';'||   -- P1 22.55     EXATO
@@ -5220,7 +5230,10 @@ select
        RPAD(' ', 3)||';'||   -- P1 25.6      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.7      BRANCO
        RPAD(' ', 6)||';'||   -- P1 25.8      BRANCO
-       RPAD(' ', 100)||';'||   -- P1 25.99     BRANCO
+       RPAD(' ', 39)     -- P1 25.99     CORTE-A
+     AS VARCHAR2(4000)) as lignedetail1,
+     CAST(
+       RPAD(' ', 60)||';'||   -- P1 25.99     CORTE-B
        RPAD(NVL(P1_26_1,' '),1,' ')||';'||   -- P1 26.1      EXATO
        RPAD(NVL(P1_22_11, ' '), 1)||';'||   -- P1 22.11     EXATO
        RPAD(NVL(P1_26_3, ' '), 3)||';'||   -- P1 26.3      EXATO
@@ -5344,8 +5357,7 @@ select
        RPAD(' ', 19)||';'||   -- P1 50.5      BRANCO
        RPAD(NVL(P1_50_8, ' '), 12)||';'||   -- P1 50.8      EXATO
        RPAD(pack_utilitaire.f_format_montant_bis2(P1_50_9),19)||';'||   -- P1 50.9      EXATO
-       RPAD(' ', 12)||';'     -- P1 50.14     BRANCO
-     as lignedetail2,
+       RPAD(' ', 12)||';'||   -- P1 50.14     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.15     BRANCO
        RPAD(' ', 12)||';'||   -- P1 50.16     BRANCO
        RPAD(' ', 19)||';'||   -- P1 50.17     BRANCO
@@ -5484,7 +5496,7 @@ select
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
-     as lignedetail3
+     AS VARCHAR2(3999)) as lignedetail2
   from ENG_CORP_P1_BIS
  where NO_VARIANTE = 8
    and (P1_H_0_2 = :ENTITE or :ENTITE = 'TOTAL')

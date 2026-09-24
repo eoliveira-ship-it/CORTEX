@@ -144,17 +144,26 @@ devise juntos num `CASE` de 22; a tabela guarda-os em duas colunas), o
 `P1 21.65` (a régua de hoje tem 5, o vPACT já escreve 50) e o `P1 30.22` (o `N`
 do netting passa para o `30.23`).
 
-### Três colunas, e não duas
+### Duas colunas, e o espaço do COLSEP
 
 Uma expressão SQL não passa de 4000 caracteres, por isso a linha é montada em
-colunas que o SQL*Plus escreve lado a lado. **Com duas não cabe:** a linha tem
-8000 e as fronteiras de campo saltam de 3960 para 4061, porque o filler
-`P1 25.99` tem 100 caracteres — nenhuma fronteira cai no 4000 exato. Com três
-sobra folga: **2669, 2671 e 2660**.
+colunas que o SQL*Plus escreve lado a lado. **Duas, não três** — a primeira
+tentativa, com três, saiu errada no DEV2 (ver abaixo).
 
-O `;` vai **escrito nas expressões** (`||';'||`), como no ficheiro do P3, e o
-spool leva `SET COLSEP ''`. Assim o separador não depende de um parâmetro do
-SQL*Plus nem cai no meio de um campo, e não há `;` no fim da linha.
+O desenho é o dos outros pavés: **4000 + 1 + 3999 = 8000**, onde o 1 é o espaço
+que o SQL*Plus mete entre as colunas (o COLSEP). Nenhuma fronteira de campo cai
+no 4000, por isso o corte é **dentro do filler `P1 25.99`** (100 caracteres,
+bytes 3962–4061, em branco nas seis variantes): 39 no fim da coluna 1, o espaço
+do COLSEP, 60 no início da coluna 2. O espaço do COLSEP é um branco desse
+filler, não um caractere a mais.
+
+As duas colunas levam `CAST(... AS VARCHAR2(4000))` e `VARCHAR2(3999)`. Sem
+isso o SQL*Plus dá a cada coluna a largura do **tipo declarado**, que é 4000
+porque uma função como a `f_format_montant` devolve `VARCHAR2` sem tamanho.
+
+O `;` vai **escrito nas expressões** (`||';'||`), como no ficheiro do P3. Assim
+não depende de nenhum parâmetro do SQL*Plus nem cai no meio de um campo, e não
+há `;` no fim da linha.
 
 ### Verificação sem base de dados
 
@@ -215,3 +224,30 @@ não mudaram: 663 campos, 8000 caracteres, `valida_1222.py` com 0 erros.
 
 O `.dat` dessa corrida ficou incompleto (tem os pavés até ao F2 e a linha `ORA-`
 no fim) e não serve para comparação. É preciso correr outra vez.
+
+## Segunda corrida no DEV2 (25/09) — o P1 saiu em três linhas
+
+O spool correu até ao fim, mas o ficheiro veio com **798 495 linhas** em vez de
+554 045: exatamente 2 × 122 225 a mais, ou seja **cada registo do P1 saiu em
+três linhas** de 8000, uma por coluna.
+
+Duas coisas, ambas do SQL*Plus:
+
+1. **`SET COLSEP ''` foi ignorado.** A prova está nos outros pavés: eles contam
+   com o espaço do COLSEP para fechar os 8000 (4000 + 1 + 3999) e saíram
+   **byte a byte iguais** ao ficheiro de referência de 22/09. Se o COLSEP tivesse
+   ficado vazio, tinham deslizado um byte.
+2. **A largura de cada coluna é a do tipo declarado, não a dos dados.** Uma
+   função como a `f_format_montant` devolve `VARCHAR2` sem tamanho, o que dá 4000
+   a qualquer coluna que a contenha. Três colunas de 4000 mais dois COLSEP dão
+   12 002, muito acima do `linesize` de 8000 — então o SQL*Plus pôs cada coluna
+   na sua linha, e o `trimspool off` encheu cada uma até 8000.
+
+Correção: **duas colunas** de 4000 e 3999 com o corte dentro do filler
+`P1 25.99`, `CAST` a fixar a largura de cada uma, e o `SET COLSEP ''` retirado
+do spool (a linha do P1 passa a usar o mesmo espaço de COLSEP que todos os
+outros pavés).
+
+Os dados do P1 dessa corrida servem para validar o conteúdo: as três linhas de
+cada registo, cortadas em 4000 / 3999 e juntas com um espaço no meio, dão a
+linha de 8000 que se esperava.

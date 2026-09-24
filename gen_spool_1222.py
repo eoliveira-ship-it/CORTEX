@@ -33,18 +33,28 @@ TAMANHO DA LINHA
 8000. A notice diz 1185 para o filler, o que daria 8009; ver
 docs/QUESTAO-FILLER-P1.md. Premissa em vigor: 1176.
 
-TRES COLUNAS, E NAO DUAS
-------------------------
+DUAS COLUNAS, COMO NOS OUTROS PAVES
+-----------------------------------
 Uma expressao SQL nao passa de 4000 caracteres, por isso a linha e montada em
-colunas que o SQL*Plus escreve lado a lado. Com DUAS nao da: a linha tem 8000 e
-as fronteiras de campo saltam de 3960 para 4061, porque o filler P1 25.99 tem
-100 caracteres -- nenhuma fronteira cai no 4000 exato. Com TRES sobra folga
-(cerca de 2670 em cada) e o corte cai sempre numa fronteira de campo.
+colunas que o SQL*Plus escreve lado a lado, com UM espaco entre elas (o COLSEP).
+Esse espaco nao se desliga: na corrida de 25/09 o SET COLSEP com valor vazio foi
+ignorado -- os outros paves, que contam com ele, sairam iguais ao ficheiro de
+referencia, e as tres colunas do P1 nao couberam nos 8000 (cada uma saiu na sua
+linha, porque o SQL*Plus da a cada coluna a largura do TIPO declarado, 4000).
 
-O separador vai ESCRITO nas expressoes (||';'||), como no ficheiro do P3, e o
-spool leva SET COLSEP '' para o SQL*Plus nao meter nada entre as colunas. Assim
-o ';' nunca depende de um parametro do SQL*Plus nem cai no meio de um campo, e
-nao ha ';' no fim da linha.
+Entao repete-se o desenho dos outros paves: 4000 + 1 (o COLSEP) + 3999 = 8000.
+Nenhuma fronteira de campo cai no 4000, por isso o corte e DENTRO do filler
+P1 25.99 (100 caracteres, em branco nas seis variantes): 39 no fim da coluna 1,
+o espaco do COLSEP, 60 no inicio da coluna 2. O espaco do COLSEP e um branco
+desse filler, nao um caractere a mais.
+
+As duas colunas levam CAST para VARCHAR2 do tamanho exato, senao o SQL*Plus
+da-lhes 4000 (uma funcao como a f_format_montant devolve VARCHAR2 sem tamanho)
+e a linha parte-se em duas.
+
+O ';' vai ESCRITO nas expressoes (||';'||), como no ficheiro do P3. Assim nunca
+depende de um parametro do SQL*Plus nem cai no meio de um campo, e nao ha ';' no
+fim da linha.
 
 Uso:  python gen_spool_1222.py
 """
@@ -180,53 +190,83 @@ def expressao(c, var):
 
 
 # --------------------------------------------------------------- as colunas
-def cortes(n=COLUNAS):
-    """Indice do ULTIMO campo de cada coluna. Corta-se sempre em fronteira de
-    campo, a primeira que passa LINHA/n."""
-    alvo = LINHA / float(n)
-    fim, acc = [], 0
-    for k, c in enumerate(REGUA):
-        acc += c['len'] + 1
-        if len(fim) < n - 1 and acc >= alvo:
-            fim.append(k)
-            acc = 0
-    fim.append(len(REGUA) - 1)
-    return fim
+# A linha e montada em colunas que o SQL*Plus escreve lado a lado, com UM espaco
+# entre elas: o COLSEP. Nao se desliga -- na corrida de 25/09 o 'SET COLSEP' com
+# valor vazio foi ignorado (os outros paves, que contam com esse espaco, sairam
+# iguais ao ficheiro de referencia) e as tres colunas do P1, largas 4000 pelo
+# tipo declarado, nao couberam nos 8000: cada uma saiu na sua linha.
+#
+# Por isso repete-se o desenho dos outros paves: 4000 + 1 (o COLSEP) + 3999.
+# O corte cai DENTRO do filler P1 25.99 (100 caracteres, bytes 3962..4061, em
+# branco nas seis variantes): 39 no fim da coluna 1, o espaco do COLSEP, 60 no
+# inicio da coluna 2. O byte do COLSEP e um branco do filler, nao um a mais.
+#
+# As duas colunas levam CAST para VARCHAR2 do tamanho exato. Sem isso o SQL*Plus
+# da-lhes a largura do tipo declarado -- 4000, porque uma funcao como a
+# f_format_montant devolve VARCHAR2 sem tamanho -- e a linha passa dos 8000.
+CORTE = 400                  # indice do campo partido
+CORTE_REF = 'P1 25.99'
+CORTE_A, CORTE_B = 39, 60    # 39 + 1 (COLSEP) + 60 = 100
+LARGURAS = (4000, 3999)
 
 
-def larguras(fim):
-    """Largura de cada coluna. O ultimo campo da linha nao leva ';' depois."""
-    out, ini = [], 0
-    for f in fim:
-        w = sum(REGUA[i]['len'] for i in range(ini, f + 1)) + (f - ini + 1)
-        if f == len(REGUA) - 1:
-            w -= 1
-        out.append(w)
-        ini = f + 1
-    return out
+def confere_corte():
+    """O corte e uma premissa sobre a regua: verifica-se, nao se assume."""
+    c = REGUA[CORTE]
+    if c['ref'] != CORTE_REF or c['len'] != CORTE_A + 1 + CORTE_B:
+        raise SystemExit('o campo %d nao e o %s de %d: e %s de %d'
+                         % (CORTE, CORTE_REF, CORTE_A + 1 + CORTE_B,
+                            c['ref'], c['len']))
+    for v in VARIANTES:
+        if expressao(c, v)[1] != 'BRANCO':
+            raise SystemExit('%s nao esta em branco na variante %d' % (c['ref'], v))
+    ini = sum(REGUA[i]['len'] + 1 for i in range(CORTE))
+    if ini + CORTE_A != LARGURAS[0]:
+        raise SystemExit('coluna 1 daria %d, esperava %d' % (ini + CORTE_A, LARGURAS[0]))
+    resto = CORTE_B + 1 + sum(REGUA[i]['len'] + 1 for i in range(CORTE + 1, len(REGUA))) - 1
+    if resto != LARGURAS[1]:
+        raise SystemExit('coluna 2 daria %d, esperava %d' % (resto, LARGURAS[1]))
 
 
-def bloco(var, filtro, comentario, fim):
+def bloco(var, filtro, comentario):
     """Um SELECT sobre a tabela, com os 663 campos separados por ';'."""
-    partes, ini, n_regra = [], 0, collections.Counter()
-    for n, f in enumerate(fim):
+    n_regra = collections.Counter()
+    corte = REGUA[CORTE]
+
+    def linha(e, ref, regra, sep=True):
+        return ('       %s%s||   -- %-12s %s'
+                % (e, ('||' + Q + ';' + Q) if sep else '', ref, regra))
+
+    corpos = []
+    for col in (0, 1):
         corpo = []
-        for i in range(ini, f + 1):
+        if col == 0:
+            faixa = range(0, CORTE)
+        else:
+            # o resto do filler partido, e o ';' que fecha o campo
+            corpo.append(linha("RPAD(' ', %d)" % CORTE_B, corte['ref'], 'CORTE-B'))
+            faixa = range(CORTE + 1, len(REGUA))
+        for i in faixa:
             c = REGUA[i]
             e, regra = expressao(c, var)
-            n_regra[regra] += 1
             if e is None:
                 raise SystemExit('campo sem regra: %s (variante %d)' % (c['ref'], var))
-            ultimo = (i == len(REGUA) - 1)
-            sep = '' if ultimo else '||' + Q + ';' + Q
-            corpo.append('       %s%s||   -- %-12s %s' % (e, sep, c['ref'], regra))
-        corpo[-1] = re.sub(r'\|\|(\s+--)', r'  \1', corpo[-1])
-        partes.append(NL.join(corpo) + NL + '     as lignedetail%d%s'
-                      % (n + 1, ',' if n + 1 < len(fim) else ''))
-        ini = f + 1
+            n_regra[regra] += 1
+            corpo.append(linha(e, c['ref'], regra, sep=i != len(REGUA) - 1))
+        if col == 0:
+            # a primeira parte do filler partido: sem ';', o campo continua na
+            # coluna 2. O espaco que o SQL*Plus mete entre as colunas e o byte
+            # do meio desse filler.
+            n_regra['CORTE'] += 1
+            corpo.append(linha("RPAD(' ', %d)" % CORTE_A, corte['ref'],
+                               'CORTE-A', sep=False))
+        corpo[-1] = corpo[-1].replace('||   --', '     --', 1)
+        corpos.append('     CAST(' + NL + NL.join(corpo) + NL
+                      + '     AS VARCHAR2(%d)) as lignedetail%d%s'
+                      % (LARGURAS[col], col + 1, ',' if col == 0 else ''))
     risca = '-' * 120
     txt = (risca + NL + '-- ' + comentario + NL + risca + NL
-           + 'select' + NL + NL.join(partes) + NL
+           + 'select' + NL + NL.join(corpos) + NL
            + '  from ' + TAB + NL
            + ' where ' + filtro + NL
            + '   and (P1_H_0_2 = :ENTITE or :ENTITE = ' + Q + 'TOTAL' + Q + ')' + NL
@@ -247,11 +287,12 @@ CAB = [
     '--                filler) NAO leva ";" depois. Os 51 campos criados na',
     '--                V45 sao escritos, em branco, lendo as colunas da tabela.',
     '--',
-    '-- TRES COLUNAS   uma expressao SQL nao passa de 4000. Com duas colunas a',
-    '--                linha nao cabe: as fronteiras de campo saltam de 3960',
-    '--                para 4061 (o filler P1 25.99 tem 100). Com tres sobra',
-    '--                folga e o corte cai em fronteira de campo.',
-    '--                SET COLSEP "" : o ";" vai escrito nas expressoes.',
+    '-- DUAS COLUNAS  a linha e montada em colunas que o SQL*Plus escreve',
+    '--                lado a lado, com um espaco entre elas (o COLSEP, que nao',
+    '--                se desliga). 4000 + 1 + 3999 = 8000, como nos outros',
+    '--                paves. O corte cai dentro do filler P1 25.99, em branco:',
+    '--                39 na coluna 1, o espaco do COLSEP, 60 na coluna 2.',
+    '--                O CAST fixa a largura de cada coluna.',
     '--',
     '-- Os restantes paves (P2, M1, P9, C1, F1, F2) ficam como estavam: o P1 e',
     '-- o piloto, para validar a convencao antes de a repetir sete vezes.',
@@ -263,7 +304,7 @@ CAB = [
 
 def escreve():
     orig = open(FONTE, encoding='latin-1').read().split(NL)
-    fim = cortes()
+    confere_corte()
     blocos = []
     for i, ln in enumerate(orig):
         if ln.startswith('-- PAVE P1'):
@@ -282,7 +323,7 @@ def escreve():
     while i < len(orig):
         if k < len(blocos) and i == blocos[k][0]:
             var = VARIANTES[k]
-            txt, n = bloco(var, filtros[var], nomes[var], fim)
+            txt, n = bloco(var, filtros[var], nomes[var])
             contas[var] = n
             novo.append(txt.rstrip(NL))
             i = blocos[k][1] + 1
@@ -290,12 +331,10 @@ def escreve():
             continue
         ln = orig[i]
         novo.append(ln)
-        if ln.startswith('SET linesize'):
-            novo.append("SET COLSEP ''   -- SIRL-1222 : o ';' vai escrito nas expressoes")
         i += 1
     open(SAIDA, 'w', encoding='latin-1', errors='replace').write(
         NL.join(CAB) + NL + NL.join(novo) + NL)
-    return fim, contas
+    return contas
 
 
 if __name__ == '__main__':
@@ -307,10 +346,12 @@ if __name__ == '__main__':
     print('  separadores  : %d' % (len(REGUA) - 1))
     print('  filler final : %d   (a notice diz %d)' % (REGUA[-1]['len'], FIM['len']))
     print('  total        : %d' % (dados + len(REGUA) - 1 + REGUA[-1]['len']))
-    fim, contas = escreve()
+    contas = escreve()
     print()
-    print('  colunas      : %s   (limite 4000 por expressao SQL)' % larguras(fim))
-    print('  cortes em    : %s' % ', '.join(REGUA[i]['ref'] for i in fim))
+    print('  colunas      : %d + 1 (COLSEP) + %d   (limite 4000 por expressao SQL)'
+          % LARGURAS)
+    print('  corte dentro : %s (%d + 1 + %d)'
+          % (REGUA[CORTE]['ref'], CORTE_A, CORTE_B))
     print()
     for v in VARIANTES:
         print('variante %d: %s'

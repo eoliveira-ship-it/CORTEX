@@ -26,6 +26,11 @@ sys.stdout = _o
 
 SPOOL = '030_spool_Extract_CRRCORP_1222.sql'
 LINHA = 8000
+# As duas colunas que o SQL*Plus escreve lado a lado, com o espaco do COLSEP
+# entre elas: 4000 + 1 + 3999 = 8000. O byte do COLSEP e um branco do filler
+# P1 25.99, que fica partido entre as duas colunas (CORTE-A / CORTE-B).
+LARGURAS = [4000, 3999]
+COLSEP = 1
 LIMITE_SQL = 4000
 CAMPOS = {c['ref']: c for c in notice.carrega()['P1']}
 
@@ -54,7 +59,7 @@ def blocos(txt):
                             break
                     expr = expr.rstrip('|').strip()
                     atual.append((expr, campo, regra, sep))
-                elif re.match(r'^\s+as lignedetail\d', ln):
+                elif re.search(r'as lignedetail\d', ln):
                     cols.append(atual)
                     atual = []
                 i += 1
@@ -158,6 +163,7 @@ def main():
     erros = 0
     for com, cols in bl:
         total, larg_col, n = 0, [], 0
+        corte = {}
         for k, col in enumerate(cols):
             wc = 0
             for expr, campo, regra, sep in col:
@@ -172,6 +178,10 @@ def main():
                     esperado = w          # o filler final e calculado, nao vem da notice
                 if campo == 'P1 21.65':
                     esperado = 50         # SIRL-1223
+                if regra.startswith('CORTE'):
+                    # campo partido entre as colunas: confere-se a soma no fim
+                    corte[campo] = corte.get(campo, 0) + w
+                    esperado = None
                 if esperado is not None and w != esperado:
                     print('  X %-12s notice %-5s spool %-5s  %s'
                           % (campo, esperado, w, expr[:60]))
@@ -183,10 +193,20 @@ def main():
         if ultimo[3]:
             print('  X o ultimo campo da linha leva ";" -- nao devia: %s' % ultimo[1])
             erros += 1
+        for campo, w in corte.items():
+            # CORTE-A + o espaco do COLSEP + CORTE-B tem de dar o campo inteiro
+            if w + COLSEP != CAMPOS[campo]['len']:
+                print('  X %-12s partido em %d + %d, a notice da %d'
+                      % (campo, w, COLSEP, CAMPOS[campo]['len']))
+                erros += 1
         acima = [w for w in larg_col if w > LIMITE_SQL]
         print('%-62s campos %3d  colunas %s  total %d%s'
-              % (com[:62], n, larg_col, total,
+              % (com[:62], n, larg_col, total + COLSEP * (len(cols) - 1),
                  '   ACIMA DE 4000!' if acima else ''))
+        total += COLSEP * (len(cols) - 1)
+        if larg_col != LARGURAS:
+            print('  X colunas %s, esperava %s' % (larg_col, LARGURAS))
+            erros += 1
         if total != LINHA:
             print('  X total %d, esperado %d' % (total, LINHA))
             erros += 1
