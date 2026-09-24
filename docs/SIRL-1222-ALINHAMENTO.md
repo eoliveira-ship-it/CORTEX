@@ -181,3 +181,37 @@ criado na V45.01, depois da Notice que gerou o DDL.
 As posições fixas deixam de valer para o P1: o código do pavé já não está nos
 bytes 39-40. O `.bat` que divide o ficheiro por pavé e o `comparar_ficheiros.sh`
 (que faz o censo por `cut -c39-40`) têm de passar a separar por campo.
+
+## Primeira corrida no DEV2 (24/09, 23:39) — ORA-01847
+
+O spool parou no primeiro bloco do P1, com
+
+```
+ERROR at line 635:
+ORA-01847: day of month must be between 1 and last day of month
+       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
+                       *
+```
+
+Causa: os campos criados na V45 eram todos escritos como `RPAD(NVL(coluna,' '),
+n)`, mas 19 dessas colunas não são `VARCHAR2` — são `DATE` (4) ou `NUMBER` (15).
+Num `NVL(DATE, ' ')` o Oracle converte o branco para data e estoura; num
+`NVL(NUMBER, ' ')` daria ORA-01722. A coluna está a NULL, mas o erro é de
+conversão, não de valor: acontece sempre.
+
+Correção no gerador (`expr_novo`), conforme o tipo da coluna no DDL:
+
+| Tipo | Tam | Expressão |
+|---|---|---|
+| VARCHAR2 | n | `RPAD(NVL(col,' '), n)` |
+| DATE | 8 | `RPAD(NVL(TO_CHAR(col,'YYYYMMDD'),' '), 8)` |
+| NUMBER | 19 | `CASE WHEN col IS NULL THEN RPAD(' ',19) ELSE pack_utilitaire.f_format_montant(col) END` |
+| NUMBER | 15 | `CASE WHEN col IS NULL THEN RPAD(' ',15) ELSE pack_utilitaire.f_format_taux_15(col) END` |
+| NUMBER | outro | `LPAD(NVL(TO_CHAR(col),' '), n)` |
+
+O formato do montante e da taxa é o que o ficheiro já usa, e fica em branco
+quando não há valor — a mesma convenção dos compostos TRE201/TRE401. As larguras
+não mudaram: 663 campos, 8000 caracteres, `valida_1222.py` com 0 erros.
+
+O `.dat` dessa corrida ficou incompleto (tem os pavés até ao F2 e a linha `ORA-`
+no fim) e não serve para comparação. É preciso correr outra vez.

@@ -1245,55 +1245,55 @@ select
        RPAD(' ', 20)||';'||   -- P1 31.51     BRANCO
        RPAD(' ', 19)||';'||   -- P1 31.52     BRANCO
        RPAD(' ', 3)||';'||   -- P1 31.53     BRANCO
-       RPAD(NVL(P1_1001,' '), 8)||';'||   -- P1 1001      NOVO
-       RPAD(NVL(P1_1002,' '), 8)||';'||   -- P1 1002      NOVO
+       RPAD(NVL(TO_CHAR(P1_1001,'YYYYMMDD'),' '), 8)||';'||   -- P1 1001      NOVO
+       RPAD(NVL(TO_CHAR(P1_1002,'YYYYMMDD'),' '), 8)||';'||   -- P1 1002      NOVO
        RPAD(NVL(P1_22_222,' '), 1)||';'||   -- P1 22.222    NOVO
        RPAD(NVL(P1_24_22_1,' '), 1)||';'||   -- P1 24.22.1   NOVO
        RPAD(NVL(P1_600,' '), 1)||';'||   -- P1 600       NOVO
        RPAD(NVL(P1_601,' '), 1)||';'||   -- P1 601       NOVO
        RPAD(NVL(P1_602,' '), 1)||';'||   -- P1 602       NOVO
-       RPAD(NVL(P1_603,' '), 19)||';'||   -- P1 603       NOVO
+       CASE WHEN P1_603 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_603) END||';'||   -- P1 603       NOVO
        RPAD(NVL(P1_603_1,' '), 3)||';'||   -- P1 603.1     NOVO
-       RPAD(NVL(P1_604,' '), 19)||';'||   -- P1 604       NOVO
+       CASE WHEN P1_604 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_604) END||';'||   -- P1 604       NOVO
        RPAD(NVL(P1_604_1,' '), 3)||';'||   -- P1 604.1     NOVO
-       RPAD(NVL(P1_605,' '), 19)||';'||   -- P1 605       NOVO
+       CASE WHEN P1_605 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_605) END||';'||   -- P1 605       NOVO
        RPAD(NVL(P1_605_1,' '), 3)||';'||   -- P1 605.1     NOVO
        RPAD(NVL(P1_606,' '), 40)||';'||   -- P1 606       NOVO
        RPAD(NVL(P1_607,' '), 1)||';'||   -- P1 607       NOVO
-       RPAD(NVL(P1_608,' '), 19)||';'||   -- P1 608       NOVO
+       CASE WHEN P1_608 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_608) END||';'||   -- P1 608       NOVO
        RPAD(NVL(P1_608_1,' '), 3)||';'||   -- P1 608.1     NOVO
-       RPAD(NVL(P1_609,' '), 8)||';'||   -- P1 609       NOVO
-       RPAD(NVL(P1_610,' '), 19)||';'||   -- P1 610       NOVO
+       RPAD(NVL(TO_CHAR(P1_609,'YYYYMMDD'),' '), 8)||';'||   -- P1 609       NOVO
+       CASE WHEN P1_610 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_610) END||';'||   -- P1 610       NOVO
        RPAD(NVL(P1_610_1,' '), 3)||';'||   -- P1 610.1     NOVO
-       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
-       RPAD(NVL(P1_612,' '), 19)||';'||   -- P1 612       NOVO
+       RPAD(NVL(TO_CHAR(P1_611,'YYYYMMDD'),' '), 8)||';'||   -- P1 611       NOVO
+       CASE WHEN P1_612 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_612) END||';'||   -- P1 612       NOVO
        RPAD(NVL(P1_612_1,' '), 3)||';'||   -- P1 612.1     NOVO
        RPAD(NVL(P1_613,' '), 1)||';'||   -- P1 613       NOVO
-       RPAD(NVL(P1_614,' '), 19)||';'||   -- P1 614       NOVO
+       CASE WHEN P1_614 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_614) END||';'||   -- P1 614       NOVO
        RPAD(NVL(P1_614_1,' '), 3)||';'||   -- P1 614.1     NOVO
-       RPAD(NVL(P1_615,' '), 6)||';'||   -- P1 615       NOVO
+       LPAD(NVL(TO_CHAR(P1_615),' '), 6)||';'||   -- P1 615       NOVO
        RPAD(NVL(P1_616,' '), 1)||';'||   -- P1 616       NOVO
        RPAD(NVL(P1_617,' '), 1)||';'||   -- P1 617       NOVO
        RPAD(NVL(P1_618,' '), 1)||';'||   -- P1 618       NOVO
-       RPAD(NVL(P1_619,' '), 19)||';'||   -- P1 619       NOVO
+       CASE WHEN P1_619 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_619) END||';'||   -- P1 619       NOVO
        RPAD(NVL(P1_620,' '), 1)||';'||   -- P1 620       NOVO
        RPAD(NVL(P1_635,' '), 1)||';'||   -- P1 635       NOVO
        RPAD(NVL(P1_622,' '), 1)||';'||   -- P1 622       NOVO
        RPAD(NVL(P1_623,' '), 40)||';'||   -- P1 623       NOVO
-       RPAD(NVL(P1_624,' '), 15)||';'||   -- P1 624       NOVO
+       CASE WHEN P1_624 IS NULL THEN RPAD(' ', 15) ELSE pack_utilitaire.f_format_taux_15(P1_624) END||';'||   -- P1 624       NOVO
        RPAD(NVL(P1_625,' '), 2)||';'||   -- P1 625       NOVO
        RPAD(NVL(P1_626,' '), 1)||';'||   -- P1 626       NOVO
        RPAD(NVL(P1_627,' '), 1)||';'||   -- P1 627       NOVO
-       RPAD(NVL(P1_628,' '), 19)||';'||   -- P1 628       NOVO
+       CASE WHEN P1_628 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_628) END||';'||   -- P1 628       NOVO
        RPAD(NVL(P1_628_1,' '), 3)||';'||   -- P1 628.1     NOVO
        RPAD(NVL(P1_629,' '), 1)||';'||   -- P1 629       NOVO
-       RPAD(NVL(P1_630,' '), 19)||';'||   -- P1 630       NOVO
+       CASE WHEN P1_630 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_630) END||';'||   -- P1 630       NOVO
        RPAD(NVL(P1_630_1,' '), 3)||';'||   -- P1 630.1     NOVO
-       RPAD(NVL(P1_631,' '), 19)||';'||   -- P1 631       NOVO
+       CASE WHEN P1_631 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_631) END||';'||   -- P1 631       NOVO
        RPAD(NVL(P1_631_1,' '), 3)||';'||   -- P1 631.1     NOVO
-       RPAD(NVL(P1_632,' '), 19)||';'||   -- P1 632       NOVO
+       CASE WHEN P1_632 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_632) END||';'||   -- P1 632       NOVO
        RPAD(NVL(P1_632_1,' '), 3)||';'||   -- P1 632.1     NOVO
-       RPAD(NVL(P1_633,' '), 19)||';'||   -- P1 633       NOVO
+       CASE WHEN P1_633 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_633) END||';'||   -- P1 633       NOVO
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
@@ -2732,55 +2732,55 @@ select
        RPAD(' ', 20)||';'||   -- P1 31.51     BRANCO
        RPAD(' ', 19)||';'||   -- P1 31.52     BRANCO
        RPAD(' ', 3)||';'||   -- P1 31.53     BRANCO
-       RPAD(NVL(P1_1001,' '), 8)||';'||   -- P1 1001      NOVO
-       RPAD(NVL(P1_1002,' '), 8)||';'||   -- P1 1002      NOVO
+       RPAD(NVL(TO_CHAR(P1_1001,'YYYYMMDD'),' '), 8)||';'||   -- P1 1001      NOVO
+       RPAD(NVL(TO_CHAR(P1_1002,'YYYYMMDD'),' '), 8)||';'||   -- P1 1002      NOVO
        RPAD(NVL(P1_22_222,' '), 1)||';'||   -- P1 22.222    NOVO
        RPAD(NVL(P1_24_22_1,' '), 1)||';'||   -- P1 24.22.1   NOVO
        RPAD(NVL(P1_600,' '), 1)||';'||   -- P1 600       NOVO
        RPAD(NVL(P1_601,' '), 1)||';'||   -- P1 601       NOVO
        RPAD(NVL(P1_602,' '), 1)||';'||   -- P1 602       NOVO
-       RPAD(NVL(P1_603,' '), 19)||';'||   -- P1 603       NOVO
+       CASE WHEN P1_603 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_603) END||';'||   -- P1 603       NOVO
        RPAD(NVL(P1_603_1,' '), 3)||';'||   -- P1 603.1     NOVO
-       RPAD(NVL(P1_604,' '), 19)||';'||   -- P1 604       NOVO
+       CASE WHEN P1_604 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_604) END||';'||   -- P1 604       NOVO
        RPAD(NVL(P1_604_1,' '), 3)||';'||   -- P1 604.1     NOVO
-       RPAD(NVL(P1_605,' '), 19)||';'||   -- P1 605       NOVO
+       CASE WHEN P1_605 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_605) END||';'||   -- P1 605       NOVO
        RPAD(NVL(P1_605_1,' '), 3)||';'||   -- P1 605.1     NOVO
        RPAD(NVL(P1_606,' '), 40)||';'||   -- P1 606       NOVO
        RPAD(NVL(P1_607,' '), 1)||';'||   -- P1 607       NOVO
-       RPAD(NVL(P1_608,' '), 19)||';'||   -- P1 608       NOVO
+       CASE WHEN P1_608 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_608) END||';'||   -- P1 608       NOVO
        RPAD(NVL(P1_608_1,' '), 3)||';'||   -- P1 608.1     NOVO
-       RPAD(NVL(P1_609,' '), 8)||';'||   -- P1 609       NOVO
-       RPAD(NVL(P1_610,' '), 19)||';'||   -- P1 610       NOVO
+       RPAD(NVL(TO_CHAR(P1_609,'YYYYMMDD'),' '), 8)||';'||   -- P1 609       NOVO
+       CASE WHEN P1_610 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_610) END||';'||   -- P1 610       NOVO
        RPAD(NVL(P1_610_1,' '), 3)||';'||   -- P1 610.1     NOVO
-       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
-       RPAD(NVL(P1_612,' '), 19)||';'||   -- P1 612       NOVO
+       RPAD(NVL(TO_CHAR(P1_611,'YYYYMMDD'),' '), 8)||';'||   -- P1 611       NOVO
+       CASE WHEN P1_612 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_612) END||';'||   -- P1 612       NOVO
        RPAD(NVL(P1_612_1,' '), 3)||';'||   -- P1 612.1     NOVO
        RPAD(NVL(P1_613,' '), 1)||';'||   -- P1 613       NOVO
-       RPAD(NVL(P1_614,' '), 19)||';'||   -- P1 614       NOVO
+       CASE WHEN P1_614 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_614) END||';'||   -- P1 614       NOVO
        RPAD(NVL(P1_614_1,' '), 3)||';'||   -- P1 614.1     NOVO
-       RPAD(NVL(P1_615,' '), 6)||';'||   -- P1 615       NOVO
+       LPAD(NVL(TO_CHAR(P1_615),' '), 6)||';'||   -- P1 615       NOVO
        RPAD(NVL(P1_616,' '), 1)||';'||   -- P1 616       NOVO
        RPAD(NVL(P1_617,' '), 1)||';'||   -- P1 617       NOVO
        RPAD(NVL(P1_618,' '), 1)||';'||   -- P1 618       NOVO
-       RPAD(NVL(P1_619,' '), 19)||';'||   -- P1 619       NOVO
+       CASE WHEN P1_619 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_619) END||';'||   -- P1 619       NOVO
        RPAD(NVL(P1_620,' '), 1)||';'||   -- P1 620       NOVO
        RPAD(NVL(P1_635,' '), 1)||';'||   -- P1 635       NOVO
        RPAD(NVL(P1_622,' '), 1)||';'||   -- P1 622       NOVO
        RPAD(NVL(P1_623,' '), 40)||';'||   -- P1 623       NOVO
-       RPAD(NVL(P1_624,' '), 15)||';'||   -- P1 624       NOVO
+       CASE WHEN P1_624 IS NULL THEN RPAD(' ', 15) ELSE pack_utilitaire.f_format_taux_15(P1_624) END||';'||   -- P1 624       NOVO
        RPAD(NVL(P1_625,' '), 2)||';'||   -- P1 625       NOVO
        RPAD(NVL(P1_626,' '), 1)||';'||   -- P1 626       NOVO
        RPAD(NVL(P1_627,' '), 1)||';'||   -- P1 627       NOVO
-       RPAD(NVL(P1_628,' '), 19)||';'||   -- P1 628       NOVO
+       CASE WHEN P1_628 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_628) END||';'||   -- P1 628       NOVO
        RPAD(NVL(P1_628_1,' '), 3)||';'||   -- P1 628.1     NOVO
        RPAD(NVL(P1_629,' '), 1)||';'||   -- P1 629       NOVO
-       RPAD(NVL(P1_630,' '), 19)||';'||   -- P1 630       NOVO
+       CASE WHEN P1_630 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_630) END||';'||   -- P1 630       NOVO
        RPAD(NVL(P1_630_1,' '), 3)||';'||   -- P1 630.1     NOVO
-       RPAD(NVL(P1_631,' '), 19)||';'||   -- P1 631       NOVO
+       CASE WHEN P1_631 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_631) END||';'||   -- P1 631       NOVO
        RPAD(NVL(P1_631_1,' '), 3)||';'||   -- P1 631.1     NOVO
-       RPAD(NVL(P1_632,' '), 19)||';'||   -- P1 632       NOVO
+       CASE WHEN P1_632 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_632) END||';'||   -- P1 632       NOVO
        RPAD(NVL(P1_632_1,' '), 3)||';'||   -- P1 632.1     NOVO
-       RPAD(NVL(P1_633,' '), 19)||';'||   -- P1 633       NOVO
+       CASE WHEN P1_633 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_633) END||';'||   -- P1 633       NOVO
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
@@ -3407,55 +3407,55 @@ select
        RPAD(' ', 20)||';'||   -- P1 31.51     BRANCO
        RPAD(' ', 19)||';'||   -- P1 31.52     BRANCO
        RPAD(' ', 3)||';'||   -- P1 31.53     BRANCO
-       RPAD(NVL(P1_1001,' '), 8)||';'||   -- P1 1001      NOVO
-       RPAD(NVL(P1_1002,' '), 8)||';'||   -- P1 1002      NOVO
+       RPAD(NVL(TO_CHAR(P1_1001,'YYYYMMDD'),' '), 8)||';'||   -- P1 1001      NOVO
+       RPAD(NVL(TO_CHAR(P1_1002,'YYYYMMDD'),' '), 8)||';'||   -- P1 1002      NOVO
        RPAD(NVL(P1_22_222,' '), 1)||';'||   -- P1 22.222    NOVO
        RPAD(NVL(P1_24_22_1,' '), 1)||';'||   -- P1 24.22.1   NOVO
        RPAD(NVL(P1_600,' '), 1)||';'||   -- P1 600       NOVO
        RPAD(NVL(P1_601,' '), 1)||';'||   -- P1 601       NOVO
        RPAD(NVL(P1_602,' '), 1)||';'||   -- P1 602       NOVO
-       RPAD(NVL(P1_603,' '), 19)||';'||   -- P1 603       NOVO
+       CASE WHEN P1_603 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_603) END||';'||   -- P1 603       NOVO
        RPAD(NVL(P1_603_1,' '), 3)||';'||   -- P1 603.1     NOVO
-       RPAD(NVL(P1_604,' '), 19)||';'||   -- P1 604       NOVO
+       CASE WHEN P1_604 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_604) END||';'||   -- P1 604       NOVO
        RPAD(NVL(P1_604_1,' '), 3)||';'||   -- P1 604.1     NOVO
-       RPAD(NVL(P1_605,' '), 19)||';'||   -- P1 605       NOVO
+       CASE WHEN P1_605 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_605) END||';'||   -- P1 605       NOVO
        RPAD(NVL(P1_605_1,' '), 3)||';'||   -- P1 605.1     NOVO
        RPAD(NVL(P1_606,' '), 40)||';'||   -- P1 606       NOVO
        RPAD(NVL(P1_607,' '), 1)||';'||   -- P1 607       NOVO
-       RPAD(NVL(P1_608,' '), 19)||';'||   -- P1 608       NOVO
+       CASE WHEN P1_608 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_608) END||';'||   -- P1 608       NOVO
        RPAD(NVL(P1_608_1,' '), 3)||';'||   -- P1 608.1     NOVO
-       RPAD(NVL(P1_609,' '), 8)||';'||   -- P1 609       NOVO
-       RPAD(NVL(P1_610,' '), 19)||';'||   -- P1 610       NOVO
+       RPAD(NVL(TO_CHAR(P1_609,'YYYYMMDD'),' '), 8)||';'||   -- P1 609       NOVO
+       CASE WHEN P1_610 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_610) END||';'||   -- P1 610       NOVO
        RPAD(NVL(P1_610_1,' '), 3)||';'||   -- P1 610.1     NOVO
-       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
-       RPAD(NVL(P1_612,' '), 19)||';'||   -- P1 612       NOVO
+       RPAD(NVL(TO_CHAR(P1_611,'YYYYMMDD'),' '), 8)||';'||   -- P1 611       NOVO
+       CASE WHEN P1_612 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_612) END||';'||   -- P1 612       NOVO
        RPAD(NVL(P1_612_1,' '), 3)||';'||   -- P1 612.1     NOVO
        RPAD(NVL(P1_613,' '), 1)||';'||   -- P1 613       NOVO
-       RPAD(NVL(P1_614,' '), 19)||';'||   -- P1 614       NOVO
+       CASE WHEN P1_614 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_614) END||';'||   -- P1 614       NOVO
        RPAD(NVL(P1_614_1,' '), 3)||';'||   -- P1 614.1     NOVO
-       RPAD(NVL(P1_615,' '), 6)||';'||   -- P1 615       NOVO
+       LPAD(NVL(TO_CHAR(P1_615),' '), 6)||';'||   -- P1 615       NOVO
        RPAD(NVL(P1_616,' '), 1)||';'||   -- P1 616       NOVO
        RPAD(NVL(P1_617,' '), 1)||';'||   -- P1 617       NOVO
        RPAD(NVL(P1_618,' '), 1)||';'||   -- P1 618       NOVO
-       RPAD(NVL(P1_619,' '), 19)||';'||   -- P1 619       NOVO
+       CASE WHEN P1_619 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_619) END||';'||   -- P1 619       NOVO
        RPAD(NVL(P1_620,' '), 1)||';'||   -- P1 620       NOVO
        RPAD(NVL(P1_635,' '), 1)||';'||   -- P1 635       NOVO
        RPAD(NVL(P1_622,' '), 1)||';'||   -- P1 622       NOVO
        RPAD(NVL(P1_623,' '), 40)||';'||   -- P1 623       NOVO
-       RPAD(NVL(P1_624,' '), 15)||';'||   -- P1 624       NOVO
+       CASE WHEN P1_624 IS NULL THEN RPAD(' ', 15) ELSE pack_utilitaire.f_format_taux_15(P1_624) END||';'||   -- P1 624       NOVO
        RPAD(NVL(P1_625,' '), 2)||';'||   -- P1 625       NOVO
        RPAD(NVL(P1_626,' '), 1)||';'||   -- P1 626       NOVO
        RPAD(NVL(P1_627,' '), 1)||';'||   -- P1 627       NOVO
-       RPAD(NVL(P1_628,' '), 19)||';'||   -- P1 628       NOVO
+       CASE WHEN P1_628 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_628) END||';'||   -- P1 628       NOVO
        RPAD(NVL(P1_628_1,' '), 3)||';'||   -- P1 628.1     NOVO
        RPAD(NVL(P1_629,' '), 1)||';'||   -- P1 629       NOVO
-       RPAD(NVL(P1_630,' '), 19)||';'||   -- P1 630       NOVO
+       CASE WHEN P1_630 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_630) END||';'||   -- P1 630       NOVO
        RPAD(NVL(P1_630_1,' '), 3)||';'||   -- P1 630.1     NOVO
-       RPAD(NVL(P1_631,' '), 19)||';'||   -- P1 631       NOVO
+       CASE WHEN P1_631 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_631) END||';'||   -- P1 631       NOVO
        RPAD(NVL(P1_631_1,' '), 3)||';'||   -- P1 631.1     NOVO
-       RPAD(NVL(P1_632,' '), 19)||';'||   -- P1 632       NOVO
+       CASE WHEN P1_632 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_632) END||';'||   -- P1 632       NOVO
        RPAD(NVL(P1_632_1,' '), 3)||';'||   -- P1 632.1     NOVO
-       RPAD(NVL(P1_633,' '), 19)||';'||   -- P1 633       NOVO
+       CASE WHEN P1_633 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_633) END||';'||   -- P1 633       NOVO
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
@@ -4082,55 +4082,55 @@ select
        RPAD(' ', 20)||';'||   -- P1 31.51     BRANCO
        RPAD(' ', 19)||';'||   -- P1 31.52     BRANCO
        RPAD(' ', 3)||';'||   -- P1 31.53     BRANCO
-       RPAD(NVL(P1_1001,' '), 8)||';'||   -- P1 1001      NOVO
-       RPAD(NVL(P1_1002,' '), 8)||';'||   -- P1 1002      NOVO
+       RPAD(NVL(TO_CHAR(P1_1001,'YYYYMMDD'),' '), 8)||';'||   -- P1 1001      NOVO
+       RPAD(NVL(TO_CHAR(P1_1002,'YYYYMMDD'),' '), 8)||';'||   -- P1 1002      NOVO
        RPAD(NVL(P1_22_222,' '), 1)||';'||   -- P1 22.222    NOVO
        RPAD(NVL(P1_24_22_1,' '), 1)||';'||   -- P1 24.22.1   NOVO
        RPAD(NVL(P1_600,' '), 1)||';'||   -- P1 600       NOVO
        RPAD(NVL(P1_601,' '), 1)||';'||   -- P1 601       NOVO
        RPAD(NVL(P1_602,' '), 1)||';'||   -- P1 602       NOVO
-       RPAD(NVL(P1_603,' '), 19)||';'||   -- P1 603       NOVO
+       CASE WHEN P1_603 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_603) END||';'||   -- P1 603       NOVO
        RPAD(NVL(P1_603_1,' '), 3)||';'||   -- P1 603.1     NOVO
-       RPAD(NVL(P1_604,' '), 19)||';'||   -- P1 604       NOVO
+       CASE WHEN P1_604 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_604) END||';'||   -- P1 604       NOVO
        RPAD(NVL(P1_604_1,' '), 3)||';'||   -- P1 604.1     NOVO
-       RPAD(NVL(P1_605,' '), 19)||';'||   -- P1 605       NOVO
+       CASE WHEN P1_605 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_605) END||';'||   -- P1 605       NOVO
        RPAD(NVL(P1_605_1,' '), 3)||';'||   -- P1 605.1     NOVO
        RPAD(NVL(P1_606,' '), 40)||';'||   -- P1 606       NOVO
        RPAD(NVL(P1_607,' '), 1)||';'||   -- P1 607       NOVO
-       RPAD(NVL(P1_608,' '), 19)||';'||   -- P1 608       NOVO
+       CASE WHEN P1_608 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_608) END||';'||   -- P1 608       NOVO
        RPAD(NVL(P1_608_1,' '), 3)||';'||   -- P1 608.1     NOVO
-       RPAD(NVL(P1_609,' '), 8)||';'||   -- P1 609       NOVO
-       RPAD(NVL(P1_610,' '), 19)||';'||   -- P1 610       NOVO
+       RPAD(NVL(TO_CHAR(P1_609,'YYYYMMDD'),' '), 8)||';'||   -- P1 609       NOVO
+       CASE WHEN P1_610 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_610) END||';'||   -- P1 610       NOVO
        RPAD(NVL(P1_610_1,' '), 3)||';'||   -- P1 610.1     NOVO
-       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
-       RPAD(NVL(P1_612,' '), 19)||';'||   -- P1 612       NOVO
+       RPAD(NVL(TO_CHAR(P1_611,'YYYYMMDD'),' '), 8)||';'||   -- P1 611       NOVO
+       CASE WHEN P1_612 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_612) END||';'||   -- P1 612       NOVO
        RPAD(NVL(P1_612_1,' '), 3)||';'||   -- P1 612.1     NOVO
        RPAD(NVL(P1_613,' '), 1)||';'||   -- P1 613       NOVO
-       RPAD(NVL(P1_614,' '), 19)||';'||   -- P1 614       NOVO
+       CASE WHEN P1_614 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_614) END||';'||   -- P1 614       NOVO
        RPAD(NVL(P1_614_1,' '), 3)||';'||   -- P1 614.1     NOVO
-       RPAD(NVL(P1_615,' '), 6)||';'||   -- P1 615       NOVO
+       LPAD(NVL(TO_CHAR(P1_615),' '), 6)||';'||   -- P1 615       NOVO
        RPAD(NVL(P1_616,' '), 1)||';'||   -- P1 616       NOVO
        RPAD(NVL(P1_617,' '), 1)||';'||   -- P1 617       NOVO
        RPAD(NVL(P1_618,' '), 1)||';'||   -- P1 618       NOVO
-       RPAD(NVL(P1_619,' '), 19)||';'||   -- P1 619       NOVO
+       CASE WHEN P1_619 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_619) END||';'||   -- P1 619       NOVO
        RPAD(NVL(P1_620,' '), 1)||';'||   -- P1 620       NOVO
        RPAD(NVL(P1_635,' '), 1)||';'||   -- P1 635       NOVO
        RPAD(NVL(P1_622,' '), 1)||';'||   -- P1 622       NOVO
        RPAD(NVL(P1_623,' '), 40)||';'||   -- P1 623       NOVO
-       RPAD(NVL(P1_624,' '), 15)||';'||   -- P1 624       NOVO
+       CASE WHEN P1_624 IS NULL THEN RPAD(' ', 15) ELSE pack_utilitaire.f_format_taux_15(P1_624) END||';'||   -- P1 624       NOVO
        RPAD(NVL(P1_625,' '), 2)||';'||   -- P1 625       NOVO
        RPAD(NVL(P1_626,' '), 1)||';'||   -- P1 626       NOVO
        RPAD(NVL(P1_627,' '), 1)||';'||   -- P1 627       NOVO
-       RPAD(NVL(P1_628,' '), 19)||';'||   -- P1 628       NOVO
+       CASE WHEN P1_628 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_628) END||';'||   -- P1 628       NOVO
        RPAD(NVL(P1_628_1,' '), 3)||';'||   -- P1 628.1     NOVO
        RPAD(NVL(P1_629,' '), 1)||';'||   -- P1 629       NOVO
-       RPAD(NVL(P1_630,' '), 19)||';'||   -- P1 630       NOVO
+       CASE WHEN P1_630 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_630) END||';'||   -- P1 630       NOVO
        RPAD(NVL(P1_630_1,' '), 3)||';'||   -- P1 630.1     NOVO
-       RPAD(NVL(P1_631,' '), 19)||';'||   -- P1 631       NOVO
+       CASE WHEN P1_631 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_631) END||';'||   -- P1 631       NOVO
        RPAD(NVL(P1_631_1,' '), 3)||';'||   -- P1 631.1     NOVO
-       RPAD(NVL(P1_632,' '), 19)||';'||   -- P1 632       NOVO
+       CASE WHEN P1_632 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_632) END||';'||   -- P1 632       NOVO
        RPAD(NVL(P1_632_1,' '), 3)||';'||   -- P1 632.1     NOVO
-       RPAD(NVL(P1_633,' '), 19)||';'||   -- P1 633       NOVO
+       CASE WHEN P1_633 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_633) END||';'||   -- P1 633       NOVO
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
@@ -4757,55 +4757,55 @@ select
        RPAD(' ', 20)||';'||   -- P1 31.51     BRANCO
        RPAD(' ', 19)||';'||   -- P1 31.52     BRANCO
        RPAD(' ', 3)||';'||   -- P1 31.53     BRANCO
-       RPAD(NVL(P1_1001,' '), 8)||';'||   -- P1 1001      NOVO
-       RPAD(NVL(P1_1002,' '), 8)||';'||   -- P1 1002      NOVO
+       RPAD(NVL(TO_CHAR(P1_1001,'YYYYMMDD'),' '), 8)||';'||   -- P1 1001      NOVO
+       RPAD(NVL(TO_CHAR(P1_1002,'YYYYMMDD'),' '), 8)||';'||   -- P1 1002      NOVO
        RPAD(NVL(P1_22_222,' '), 1)||';'||   -- P1 22.222    NOVO
        RPAD(NVL(P1_24_22_1,' '), 1)||';'||   -- P1 24.22.1   NOVO
        RPAD(NVL(P1_600,' '), 1)||';'||   -- P1 600       NOVO
        RPAD(NVL(P1_601,' '), 1)||';'||   -- P1 601       NOVO
        RPAD(NVL(P1_602,' '), 1)||';'||   -- P1 602       NOVO
-       RPAD(NVL(P1_603,' '), 19)||';'||   -- P1 603       NOVO
+       CASE WHEN P1_603 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_603) END||';'||   -- P1 603       NOVO
        RPAD(NVL(P1_603_1,' '), 3)||';'||   -- P1 603.1     NOVO
-       RPAD(NVL(P1_604,' '), 19)||';'||   -- P1 604       NOVO
+       CASE WHEN P1_604 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_604) END||';'||   -- P1 604       NOVO
        RPAD(NVL(P1_604_1,' '), 3)||';'||   -- P1 604.1     NOVO
-       RPAD(NVL(P1_605,' '), 19)||';'||   -- P1 605       NOVO
+       CASE WHEN P1_605 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_605) END||';'||   -- P1 605       NOVO
        RPAD(NVL(P1_605_1,' '), 3)||';'||   -- P1 605.1     NOVO
        RPAD(NVL(P1_606,' '), 40)||';'||   -- P1 606       NOVO
        RPAD(NVL(P1_607,' '), 1)||';'||   -- P1 607       NOVO
-       RPAD(NVL(P1_608,' '), 19)||';'||   -- P1 608       NOVO
+       CASE WHEN P1_608 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_608) END||';'||   -- P1 608       NOVO
        RPAD(NVL(P1_608_1,' '), 3)||';'||   -- P1 608.1     NOVO
-       RPAD(NVL(P1_609,' '), 8)||';'||   -- P1 609       NOVO
-       RPAD(NVL(P1_610,' '), 19)||';'||   -- P1 610       NOVO
+       RPAD(NVL(TO_CHAR(P1_609,'YYYYMMDD'),' '), 8)||';'||   -- P1 609       NOVO
+       CASE WHEN P1_610 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_610) END||';'||   -- P1 610       NOVO
        RPAD(NVL(P1_610_1,' '), 3)||';'||   -- P1 610.1     NOVO
-       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
-       RPAD(NVL(P1_612,' '), 19)||';'||   -- P1 612       NOVO
+       RPAD(NVL(TO_CHAR(P1_611,'YYYYMMDD'),' '), 8)||';'||   -- P1 611       NOVO
+       CASE WHEN P1_612 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_612) END||';'||   -- P1 612       NOVO
        RPAD(NVL(P1_612_1,' '), 3)||';'||   -- P1 612.1     NOVO
        RPAD(NVL(P1_613,' '), 1)||';'||   -- P1 613       NOVO
-       RPAD(NVL(P1_614,' '), 19)||';'||   -- P1 614       NOVO
+       CASE WHEN P1_614 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_614) END||';'||   -- P1 614       NOVO
        RPAD(NVL(P1_614_1,' '), 3)||';'||   -- P1 614.1     NOVO
-       RPAD(NVL(P1_615,' '), 6)||';'||   -- P1 615       NOVO
+       LPAD(NVL(TO_CHAR(P1_615),' '), 6)||';'||   -- P1 615       NOVO
        RPAD(NVL(P1_616,' '), 1)||';'||   -- P1 616       NOVO
        RPAD(NVL(P1_617,' '), 1)||';'||   -- P1 617       NOVO
        RPAD(NVL(P1_618,' '), 1)||';'||   -- P1 618       NOVO
-       RPAD(NVL(P1_619,' '), 19)||';'||   -- P1 619       NOVO
+       CASE WHEN P1_619 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_619) END||';'||   -- P1 619       NOVO
        RPAD(NVL(P1_620,' '), 1)||';'||   -- P1 620       NOVO
        RPAD(NVL(P1_635,' '), 1)||';'||   -- P1 635       NOVO
        RPAD(NVL(P1_622,' '), 1)||';'||   -- P1 622       NOVO
        RPAD(NVL(P1_623,' '), 40)||';'||   -- P1 623       NOVO
-       RPAD(NVL(P1_624,' '), 15)||';'||   -- P1 624       NOVO
+       CASE WHEN P1_624 IS NULL THEN RPAD(' ', 15) ELSE pack_utilitaire.f_format_taux_15(P1_624) END||';'||   -- P1 624       NOVO
        RPAD(NVL(P1_625,' '), 2)||';'||   -- P1 625       NOVO
        RPAD(NVL(P1_626,' '), 1)||';'||   -- P1 626       NOVO
        RPAD(NVL(P1_627,' '), 1)||';'||   -- P1 627       NOVO
-       RPAD(NVL(P1_628,' '), 19)||';'||   -- P1 628       NOVO
+       CASE WHEN P1_628 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_628) END||';'||   -- P1 628       NOVO
        RPAD(NVL(P1_628_1,' '), 3)||';'||   -- P1 628.1     NOVO
        RPAD(NVL(P1_629,' '), 1)||';'||   -- P1 629       NOVO
-       RPAD(NVL(P1_630,' '), 19)||';'||   -- P1 630       NOVO
+       CASE WHEN P1_630 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_630) END||';'||   -- P1 630       NOVO
        RPAD(NVL(P1_630_1,' '), 3)||';'||   -- P1 630.1     NOVO
-       RPAD(NVL(P1_631,' '), 19)||';'||   -- P1 631       NOVO
+       CASE WHEN P1_631 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_631) END||';'||   -- P1 631       NOVO
        RPAD(NVL(P1_631_1,' '), 3)||';'||   -- P1 631.1     NOVO
-       RPAD(NVL(P1_632,' '), 19)||';'||   -- P1 632       NOVO
+       CASE WHEN P1_632 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_632) END||';'||   -- P1 632       NOVO
        RPAD(NVL(P1_632_1,' '), 3)||';'||   -- P1 632.1     NOVO
-       RPAD(NVL(P1_633,' '), 19)||';'||   -- P1 633       NOVO
+       CASE WHEN P1_633 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_633) END||';'||   -- P1 633       NOVO
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER
@@ -5432,55 +5432,55 @@ select
        RPAD(' ', 20)||';'||   -- P1 31.51     BRANCO
        RPAD(' ', 19)||';'||   -- P1 31.52     BRANCO
        RPAD(' ', 3)||';'||   -- P1 31.53     BRANCO
-       RPAD(NVL(P1_1001,' '), 8)||';'||   -- P1 1001      NOVO
-       RPAD(NVL(P1_1002,' '), 8)||';'||   -- P1 1002      NOVO
+       RPAD(NVL(TO_CHAR(P1_1001,'YYYYMMDD'),' '), 8)||';'||   -- P1 1001      NOVO
+       RPAD(NVL(TO_CHAR(P1_1002,'YYYYMMDD'),' '), 8)||';'||   -- P1 1002      NOVO
        RPAD(NVL(P1_22_222,' '), 1)||';'||   -- P1 22.222    NOVO
        RPAD(NVL(P1_24_22_1,' '), 1)||';'||   -- P1 24.22.1   NOVO
        RPAD(NVL(P1_600,' '), 1)||';'||   -- P1 600       NOVO
        RPAD(NVL(P1_601,' '), 1)||';'||   -- P1 601       NOVO
        RPAD(NVL(P1_602,' '), 1)||';'||   -- P1 602       NOVO
-       RPAD(NVL(P1_603,' '), 19)||';'||   -- P1 603       NOVO
+       CASE WHEN P1_603 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_603) END||';'||   -- P1 603       NOVO
        RPAD(NVL(P1_603_1,' '), 3)||';'||   -- P1 603.1     NOVO
-       RPAD(NVL(P1_604,' '), 19)||';'||   -- P1 604       NOVO
+       CASE WHEN P1_604 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_604) END||';'||   -- P1 604       NOVO
        RPAD(NVL(P1_604_1,' '), 3)||';'||   -- P1 604.1     NOVO
-       RPAD(NVL(P1_605,' '), 19)||';'||   -- P1 605       NOVO
+       CASE WHEN P1_605 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_605) END||';'||   -- P1 605       NOVO
        RPAD(NVL(P1_605_1,' '), 3)||';'||   -- P1 605.1     NOVO
        RPAD(NVL(P1_606,' '), 40)||';'||   -- P1 606       NOVO
        RPAD(NVL(P1_607,' '), 1)||';'||   -- P1 607       NOVO
-       RPAD(NVL(P1_608,' '), 19)||';'||   -- P1 608       NOVO
+       CASE WHEN P1_608 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_608) END||';'||   -- P1 608       NOVO
        RPAD(NVL(P1_608_1,' '), 3)||';'||   -- P1 608.1     NOVO
-       RPAD(NVL(P1_609,' '), 8)||';'||   -- P1 609       NOVO
-       RPAD(NVL(P1_610,' '), 19)||';'||   -- P1 610       NOVO
+       RPAD(NVL(TO_CHAR(P1_609,'YYYYMMDD'),' '), 8)||';'||   -- P1 609       NOVO
+       CASE WHEN P1_610 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_610) END||';'||   -- P1 610       NOVO
        RPAD(NVL(P1_610_1,' '), 3)||';'||   -- P1 610.1     NOVO
-       RPAD(NVL(P1_611,' '), 8)||';'||   -- P1 611       NOVO
-       RPAD(NVL(P1_612,' '), 19)||';'||   -- P1 612       NOVO
+       RPAD(NVL(TO_CHAR(P1_611,'YYYYMMDD'),' '), 8)||';'||   -- P1 611       NOVO
+       CASE WHEN P1_612 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_612) END||';'||   -- P1 612       NOVO
        RPAD(NVL(P1_612_1,' '), 3)||';'||   -- P1 612.1     NOVO
        RPAD(NVL(P1_613,' '), 1)||';'||   -- P1 613       NOVO
-       RPAD(NVL(P1_614,' '), 19)||';'||   -- P1 614       NOVO
+       CASE WHEN P1_614 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_614) END||';'||   -- P1 614       NOVO
        RPAD(NVL(P1_614_1,' '), 3)||';'||   -- P1 614.1     NOVO
-       RPAD(NVL(P1_615,' '), 6)||';'||   -- P1 615       NOVO
+       LPAD(NVL(TO_CHAR(P1_615),' '), 6)||';'||   -- P1 615       NOVO
        RPAD(NVL(P1_616,' '), 1)||';'||   -- P1 616       NOVO
        RPAD(NVL(P1_617,' '), 1)||';'||   -- P1 617       NOVO
        RPAD(NVL(P1_618,' '), 1)||';'||   -- P1 618       NOVO
-       RPAD(NVL(P1_619,' '), 19)||';'||   -- P1 619       NOVO
+       CASE WHEN P1_619 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_619) END||';'||   -- P1 619       NOVO
        RPAD(NVL(P1_620,' '), 1)||';'||   -- P1 620       NOVO
        RPAD(NVL(P1_635,' '), 1)||';'||   -- P1 635       NOVO
        RPAD(NVL(P1_622,' '), 1)||';'||   -- P1 622       NOVO
        RPAD(NVL(P1_623,' '), 40)||';'||   -- P1 623       NOVO
-       RPAD(NVL(P1_624,' '), 15)||';'||   -- P1 624       NOVO
+       CASE WHEN P1_624 IS NULL THEN RPAD(' ', 15) ELSE pack_utilitaire.f_format_taux_15(P1_624) END||';'||   -- P1 624       NOVO
        RPAD(NVL(P1_625,' '), 2)||';'||   -- P1 625       NOVO
        RPAD(NVL(P1_626,' '), 1)||';'||   -- P1 626       NOVO
        RPAD(NVL(P1_627,' '), 1)||';'||   -- P1 627       NOVO
-       RPAD(NVL(P1_628,' '), 19)||';'||   -- P1 628       NOVO
+       CASE WHEN P1_628 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_628) END||';'||   -- P1 628       NOVO
        RPAD(NVL(P1_628_1,' '), 3)||';'||   -- P1 628.1     NOVO
        RPAD(NVL(P1_629,' '), 1)||';'||   -- P1 629       NOVO
-       RPAD(NVL(P1_630,' '), 19)||';'||   -- P1 630       NOVO
+       CASE WHEN P1_630 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_630) END||';'||   -- P1 630       NOVO
        RPAD(NVL(P1_630_1,' '), 3)||';'||   -- P1 630.1     NOVO
-       RPAD(NVL(P1_631,' '), 19)||';'||   -- P1 631       NOVO
+       CASE WHEN P1_631 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_631) END||';'||   -- P1 631       NOVO
        RPAD(NVL(P1_631_1,' '), 3)||';'||   -- P1 631.1     NOVO
-       RPAD(NVL(P1_632,' '), 19)||';'||   -- P1 632       NOVO
+       CASE WHEN P1_632 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_632) END||';'||   -- P1 632       NOVO
        RPAD(NVL(P1_632_1,' '), 3)||';'||   -- P1 632.1     NOVO
-       RPAD(NVL(P1_633,' '), 19)||';'||   -- P1 633       NOVO
+       CASE WHEN P1_633 IS NULL THEN RPAD(' ', 19) ELSE pack_utilitaire.f_format_montant(P1_633) END||';'||   -- P1 633       NOVO
        RPAD(NVL(P1_633_1,' '), 3)||';'||   -- P1 633.1     NOVO
        RPAD(NVL(P1_621,' '), 8)||';'||   -- P1 621       NOVO
        RPAD(' ', 1176)     -- P1 99.99     FILLER

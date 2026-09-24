@@ -74,6 +74,12 @@ CAMPOS = notice.carrega()['P1']
 FIM = CAMPOS[-1]                     # o filler final, P1 99.99
 COLS = G.COLS                        # colunas que existem na ENG_CORP_P1_BIS
 
+# Tipo de cada coluna no DDL. Um NVL(coluna, ' ') numa coluna DATE ou NUMBER faz
+# o Oracle converter o branco em data/numero e estoura -- foi o ORA-01847 da
+# primeira corrida no DEV2 (campo P1 611, DATE). Os campos NOVO passam a ser
+# escritos conforme o tipo da coluna.
+TIPOS = dict(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s+(VARCHAR2|DATE|NUMBER)', G.DDL, re.M))
+
 # o desvio de 1 caractere comeca no campo indicador de netting
 INICIO_DESVIO = M.ORDEM['P1 30.23']
 
@@ -121,6 +127,26 @@ def e_filler(raw):
     return re.match(r"^RPAD\(''\s*,\d+\)\|*$", re.sub(r'\s+', '', raw)) is not None
 
 
+def expr_novo(col, n):
+    """Campo criado na V45, escrito conforme o tipo da coluna. Hoje a coluna esta
+    sempre a NULL e o campo sai em branco; o dia em que a DSID pedir para
+    preencher, muda so a procedure."""
+    t = TIPOS.get(col, 'VARCHAR2')
+    if t == 'DATE':
+        return "RPAD(NVL(TO_CHAR(%s,'YYYYMMDD'),' '), %d)" % (col, n)
+    if t == 'NUMBER':
+        # o formato do montante/taxa e o mesmo que o ficheiro ja usa; em branco
+        # quando nao ha valor, como nos compostos TRE201/TRE401
+        if n == 19:
+            return ("CASE WHEN %s IS NULL THEN RPAD(' ', 19)"
+                    " ELSE pack_utilitaire.f_format_montant(%s) END" % (col, col))
+        if n == 15:
+            return ("CASE WHEN %s IS NULL THEN RPAD(' ', 15)"
+                    " ELSE pack_utilitaire.f_format_taux_15(%s) END" % (col, col))
+        return "LPAD(NVL(TO_CHAR(%s),' '), %d)" % (col, n)
+    return "RPAD(NVL(%s,' '), %d)" % (col, n)
+
+
 def expressao(c, var):
     """(expressao, regra) para um campo da notice, nesta variante."""
     if c['fim']:
@@ -130,7 +156,7 @@ def expressao(c, var):
     if c['novo_v45']:
         col = 'P1_' + c['ref'].split(' ', 1)[1].replace('.', '_')
         if col in COLS:
-            return "RPAD(NVL(%s,' '), %d)" % (col, c['len']), 'NOVO'
+            return expr_novo(col, c['len']), 'NOVO'
         return "RPAD(' ', %d)" % c['len'], 'NOVO-SEM-COLUNA'
     a = c['pos_velho']
     if a is None:
