@@ -55,48 +55,48 @@ Nas seis variantes, o degrau é o mesmo: **−1 a partir do bloco 30.x**. Tirand
 esse byte, **o layout do P1 é o da Notice**. É isso que permite gerar o formato
 com `;` a partir da Notice, em vez de o desenhar à mão campo a campo.
 
-## A zona do −1: o bloco 30.x (derivados / netting) — RESOLVIDO
+## A zona do −1: era o espaço do COLSEP — CORRIGIDO (25/09)
 
-O −1 era o mais importante, porque contamina 110 campos de uma só vez.
+**Esta secção foi reescrita.** A primeira versão dizia que o spool estava 1 byte
+desalinhado da Notice a partir do `P1 30.23` **até ao fim da linha**, e que isso
+contaminava 110 campos. Está errado. A medição no ficheiro real mostrou outra
+coisa, e mais simples.
 
-A Notice define, no fim do bloco 30:
+O que faltava na conta era o **espaço do COLSEP**. O spool antigo escreve a linha
+em duas colunas que o SQL*Plus põe lado a lado com um espaço entre elas:
+4000 + 1 + 3999 = 8000. Esse espaço é um dos 8000 bytes do registo — cai dentro
+do campo `P1 30.24` (bytes 3984–4008), que é todo branco, por isso não se vê.
 
-| Campo | Tam | Nome |
-|---|---|---|
-| `P1 30.22` | 25 | Référence du contrat cadre |
-| `P1 30.23` | **1** | **Indicateur accord de netting contractuel** |
-| `P1 30.24` | 25 | Référence du contrat de netting contractuel |
-| `P1 30.25` | **1** | **Indicateur accord de netting comptable** |
-| `P1 30.26` | 25 | Référence du contrat de netting comptable |
+Quem soma as larguras dos campos do spool está num espaço sem esse byte, e é daí
+que vinha o «−1»: a partir do byte 4001 as duas contagens afastam-se uma casa.
+Não é desalinhamento — é o COLSEP.
 
-Isto é: referência, indicador, referência, indicador, referência.
+**Com o COLSEP na conta, o layout do P1 é o da Notice, byte a byte, do início ao
+fim.** Sobra uma única anomalia real:
 
-O spool escreve, na mesma faixa:
+| Campo | Tam | Notice | ficheiro de 22/09 |
+|---|---|---|---|
+| `P1 30.22` Référence du contrat cadre | 25 | 3958–3982 | 24 brancos + **`N`** no 3982 |
+| `P1 30.23` Indicateur accord de netting | 1 | 3983 | branco |
+| `P1 30.24` Référence du contrat de netting | 25 | 3984–4008 | brancos (o COLSEP é um deles) |
+| `P1 30.25` Indicateur accord de netting comptable | 1 | 4009 | **`N`** no 4009 — certo |
+| `P1 30.26` | 25 | 4010–4034 | brancos |
 
-```
-RPAD(' ',190) || RPAD(' ',6) || 'N' || RPAD(' ',18) || RPAD(' ',7) || 'N' || RPAD(' ',25) || RPAD(' ',1)
-```
+Isto é: o **primeiro** indicador de netting é escrito no último byte do campo
+anterior, um byte antes do sítio. O segundo está no sítio certo. E isto só
+acontece em **cinco das seis variantes**: a variante 8 já escreve o `N` no 3983,
+onde a Notice o põe.
 
-Isto é: indicador, referência, indicador, referência. Os dois `N` estão
-confirmados no ficheiro real, nos bytes **3982** (em 122180 das 122225 linhas)
-e **4009**.
-
-**O total do bloco bate: 249 caracteres nos dois.** O que não bate é a posição
-dos `N`: o spool põe cada `N` no **último byte do campo de referência
-anterior**, um byte antes do campo indicador que a Notice define. Como todo o
-resto do bloco é branco, isto é invisível hoje — um `N` deslocado um byte dentro
-de um mar de brancos não se vê. É esse byte que desalinha os 110 campos
-seguintes.
-
-Com `;` a ambiguidade desaparece por construção: cada campo é escrito separado e
-o `N` vai para o `30.23` e o `30.25`. Não há decisão de significado a tomar: os
-nomes dos campos são explícitos.
+Como é invisível (um `N` deslocado um byte num mar de brancos), passou. Com `;`
+a ambiguidade desaparece por construção, e os três campos vão escritos à mão no
+gerador — `P1 30.22` e `P1 30.24` em branco, `P1 30.23` com o `'N'` — para as
+seis variantes ficarem iguais.
 
 ## Consequência para a validação
 
-**O ficheiro novo não vai ser "o ficheiro velho mais os `;`".** Nesta zona vai
-ter 1 branco a mais, porque a Notice pede 197 caracteres onde o spool escreve
-196. As outras zonas ainda em aberto podem trazer correções do mesmo tipo.
+**O ficheiro novo não vai ser "o ficheiro velho mais os `;`".** Há uma correção
+de conteúdo: o `N` do primeiro indicador de netting passa do byte 3982 para o
+3983.
 
 Portanto a validação do SIRL-1222 não pode ser *"tirar os `;` e ver se fica
 igual ao ficheiro de referência"*. Tem de ser:
@@ -251,3 +251,39 @@ outros pavés).
 Os dados do P1 dessa corrida servem para validar o conteúdo: as três linhas de
 cada registo, cortadas em 4000 / 3999 e juntas com um espaço no meio, dão a
 linha de 8000 que se esperava.
+
+## Prova do conteúdo (25/09) — 122 225 registos
+
+Os dados da corrida de 25/09 servem para validar o conteúdo, mesmo tendo saído
+em três linhas por registo: colando as três partes (2669 + os bytes 4000–6670 da
+primeira linha + 2660 da segunda) obtém-se a linha de 8000 que se esperava. Nos
+registos testados, **os 662 `;` caem exatamente nas 662 posições que a Notice
+prevê** e nenhum valor de campo contém `;`.
+
+Depois reconstrói-se, a partir dos 611 campos comuns, a linha no formato antigo
+— que, como se viu acima, é simplesmente os campos um atrás do outro — e
+compara-se com a linha do ficheiro de referência de 22/09, emparelhada pelos
+primeiros 3900 bytes. Resultado nos 122 225 registos, todos emparelhados:
+
+```
+perfis de diferença (bytes 1-based):
+  (3982, 3983)   122180 registos     <- o N do netting, variantes 1,4,5,6,7
+  (3983, 3984)       45 registos     <- variante 8, corrigido no gerador
+```
+
+**Fora desses dois bytes, os 5720 caracteres de dados são iguais byte a byte.**
+Não há mais nenhuma diferença em toda a linha do P1.
+
+Os 45 registos da variante 8 eram um erro do gerador, e não do desenho: como a
+variante 8 já escrevia o `N` no sítio certo, a posição lida do spool punha-o no
+`P1 30.24`. Resolvido com as regras à mão do bloco 30.x.
+
+### A lista de correções para a DSID
+
+1. **`P1 30.23`** — o `N` do indicador de netting contratual passa do byte 3982
+   (último byte do `P1 30.22`) para o 3983, o campo que a Notice define.
+   122 180 linhas. A variante 8 não muda.
+2. **Os 51 campos criados na V45**, escritos em branco no fim da linha, e o
+   filler final reduzido a 1176 (ver [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)).
+
+Mais nada.

@@ -1073,8 +1073,8 @@ select
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
        RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     EXATO
-       RPAD(' ', 25)||';'||   -- P1 30.24     BRANCO
+       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
        RPAD(' ', 1)||';'||   -- P1 30.27     BRANCO
@@ -2562,8 +2562,8 @@ select
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
        RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     EXATO
-       RPAD(' ', 25)||';'||   -- P1 30.24     BRANCO
+       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
        RPAD(' ', 1)||';'||   -- P1 30.27     BRANCO
@@ -3239,8 +3239,8 @@ select
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
        RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     EXATO
-       RPAD(' ', 25)||';'||   -- P1 30.24     BRANCO
+       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
        RPAD(' ', 1)||';'||   -- P1 30.27     BRANCO
@@ -3916,8 +3916,8 @@ select
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
        RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     EXATO
-       RPAD(' ', 25)||';'||   -- P1 30.24     BRANCO
+       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
        RPAD(' ', 1)||';'||   -- P1 30.27     BRANCO
@@ -4593,8 +4593,8 @@ select
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
        RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     EXATO
-       RPAD(' ', 25)||';'||   -- P1 30.24     BRANCO
+       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
        RPAD(' ', 1)||';'||   -- P1 30.27     BRANCO
@@ -5270,8 +5270,8 @@ select
        CASE WHEN P1_30_20 IS NULL THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(P1_30_20) END||';'||   -- P1 30.20     EXATO
        RPAD(NVL(P1_30_21,' '), 7, ' ')||';'||   -- P1 30.21     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       RPAD(' ', 1)||';'||   -- P1 30.23     BRANCO
-       'N'||RPAD (' ', 17)||RPAD (' ', 7)||';'||   -- P1 30.24     EMENDA
+       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
        RPAD(NVL(P1_30_27,' '), 1, ' ')||';'||   -- P1 30.27     EXATO

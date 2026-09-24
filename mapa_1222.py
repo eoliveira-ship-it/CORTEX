@@ -28,12 +28,20 @@ escrito como RPAD(' ',1) + RPAD(' ',16) + RPAD(' ',2) e o comentario esta no
 ultimo pedaco, 17 caracteres depois do inicio do campo. Estas ancoras marcam-se
 como BOLHA e nao contam.
 
-RESULTADO (2026-09-24)
-----------------------
-Nas seis variantes, um unico degrau verdadeiro: -1 a partir do bloco 30.x, que
-e o 'N' do netting escrito um byte antes do campo indicador da notice (ver
-docs/SIRL-1222-ALINHAMENTO.md). Tirando esse byte, o layout do P1 E o da notice,
-o que permite gerar o formato com ';' a partir da notice.
+RESULTADO (2026-09-24), com a correcao de 25/09
+-----------------------------------------------
+Nas seis variantes, um unico degrau: -1 a partir do bloco 30.x. A medicao no
+ficheiro real mostrou que esse degrau NAO e desalinhamento: e o espaco do COLSEP,
+o byte que o SQL*Plus mete entre as duas colunas e que cai dentro do filler do
+P1 30.24. Contado esse byte, o layout do P1 E o da notice do inicio ao fim, e
+sobra uma unica anomalia: em cinco das seis variantes o 'N' do primeiro
+indicador de netting vai no ultimo byte do P1 30.22, um byte antes do campo
+indicador (ver docs/SIRL-1222-ALINHAMENTO.md).
+
+Por isso a regua deste modulo (com o -1) continua a servir para ir buscar a
+expressao de cada campo ao spool -- e a regua do espaco SEM o COLSEP -- mas nao
+descreve as posicoes no ficheiro. Os campos P1 30.22, 30.23 e 30.24, que e onde o
+COLSEP cai, vao escritos a mao no gen_spool_1222.py.
 
 Uso:  python mapa_1222.py
 """

@@ -107,9 +107,14 @@ REGRAS = {
     'P1 4.15':  "CASE WHEN P1_4_15 IS NULL THEN RPAD(' ', 3) ELSE RPAD(P1_4_15, 3) END",
     # A regua de hoje tem o 21.65 com 5; o vPACT ja o escreve com 50 (SIRL-1223)
     'P1 21.65': "RPAD(' ', 50)",
-    # Reference du contrat cadre: o spool punha aqui, no ultimo byte, o 'N' do
-    # netting. O 'N' passa para o P1 30.23, que e o campo indicador.
+    # Reference du contrat cadre: em cinco das seis variantes o spool punha aqui,
+    # no ultimo byte (3982), o 'N' do netting. O 'N' passa para o P1 30.23, que e
+    # o campo indicador -- e onde a variante 8 ja o escrevia. Os tres campos vao
+    # escritos a mao porque e aqui que cai o espaco do COLSEP do spool antigo, e
+    # a posicao lida do spool nao serve para os separar.
     'P1 30.22': "RPAD(' ', 25)",
+    'P1 30.23': "'N'",
+    'P1 30.24': "RPAD(' ', 25)",
 }
 
 
