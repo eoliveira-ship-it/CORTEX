@@ -20,6 +20,11 @@
 -- Os restantes paves (P2, M1, P9, C1, F1, F2) ficam como estavam: o P1 e
 -- o piloto, para validar a convencao antes de a repetir sete vezes.
 --
+-- VERSAO 2026-09-25a : bloco 30.x (netting) escrito a mao nas 6 variantes,
+--                      para o N do indicador ficar no P1 30.23 tambem na
+--                      variante 8. Confirmar no servidor com:
+--                          grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql
+--
 -- GERADO por gen_spool_1222.py -- nao editar a mao.
 -- =====================================================================
 -- =====================================================================
