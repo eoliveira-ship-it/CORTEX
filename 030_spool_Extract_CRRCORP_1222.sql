@@ -17,15 +17,17 @@
 --                39 na coluna 1, o espaco do COLSEP, 60 na coluna 2.
 --                O CAST fixa a largura de cada coluna.
 --
--- Os restantes paves (P2, M1, P9, C1, F1, F2) ficam como estavam: o P1 e
--- o piloto, para validar a convencao antes de a repetir sete vezes.
+-- Os outros seis paves (P2, M1, C1, F1, F2, P9) levam o ";" pelo
+-- gen_spool_paves.py, que corre depois deste sobre o mesmo ficheiro.
 --
--- VERSAO 2026-09-25a : bloco 30.x (netting) escrito a mao nas 6 variantes,
---                      para o N do indicador ficar no P1 30.23 tambem na
---                      variante 8. Confirmar no servidor com:
+-- VERSAO 2026-09-25b : os SETE paves com ";" entre todos os campos. O P1
+--                      com o netting no P1 30.23 nas 6 variantes; os outros
+--                      seis com as 7 correcoes de largura (3 no M1, 4 no
+--                      C1) e os campos criados na V45 em branco.
+--                      Confirmar no servidor com:
 --                          grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql
 --
--- GERADO por gen_spool_1222.py -- nao editar a mao.
+-- GERADO por gen_spool_1222.py e gen_spool_paves.py -- nao editar a mao.
 -- =====================================================================
 -- =====================================================================
 -- 030_spool_Extract_CRRCORP_vPACT.sql          (SIRL-1224)
