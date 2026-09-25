@@ -9,7 +9,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 | Ticket | Assunto | Estado |
 |---|---|---|
 | **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
-| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟡 **os 7 pavés validados no DEV2** (554045 linhas; P1 com as 122180+45 linhas esperadas, e P2/M1/F1/F2/P9 reconstruídos byte a byte contra a referência de 22/09). O C1 falha em 2121 linhas por um literal de 6 brancos achatado a 1 — **corrigido**, falta a corrida que o confirme. Nenhuma correção de largura de campo: as 7 que se apontaram eram erro do medidor. Falta o Adapté — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
+| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟢 **`CRRCORP` validado no DEV2** (corrida `00023`, 554045 linhas): os seis pavés reconstroem byte a byte contra a referência de 22/09 — nenhuma linha sem par — e o P1 dá as 122180 `(3982,3983)` + 45 idênticas esperadas. Só o cabeçalho difere, na data e no nº de envio. Falta o Adapté — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟢 P1 e P3 provados (só a mudança pedida) — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 

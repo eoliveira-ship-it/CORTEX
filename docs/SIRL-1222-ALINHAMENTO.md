@@ -601,7 +601,34 @@ Vinha da mesma medição errada, e escondia o resultado: com a tabela vazia — 
 campo com a largura da Notice — o M1 reconstrói nas 65 559 linhas e o C1 em 38 735.
 Ficou `ANTIGO = {}`.
 
-### O que falta
+### A terceira corrida (25/09, 21:25) — os sete pavés fechados
 
-Uma terceira corrida no DEV2 com o `C1 4.35` corrigido. O esperado: os seis pavés
-sem uma linha de diferença, e o P1 com o `(3982, 3983)` de sempre.
+Envio `00023`, 554 045 linhas, 8000 octetos cada. `comparar_1222.py`:
+
+```
+problemas: nenhum
+outros paves: 431820 linhas novas, 431820 na referencia
+  so no novo: {'00': 1, '99': 1}          <- cabecalho e rodape
+P1: 122225 linhas, sem par 0, chave ambigua 0
+  (3982, 3983)   122180
+  IDENTICO           45
+```
+
+**Nenhuma linha de dados fica sem par, nos seis pavés.** O P1 dá o
+`(3982, 3983)` esperado em 122 180 linhas e a variante 8 idêntica em 45.
+
+Do cabeçalho e do rodapé: o rodapé é byte a byte igual; o cabeçalho difere em 9
+octetos, a data de geração (24, 26-31) e o número de envio, `00016` -> `00023`
+(89-90). Os dois mudam de corrida para corrida.
+
+No campo que causou tudo isto, medido nas 40 856 linhas C1:
+
+| `C1 4.35` (octetos 383-388) | linhas |
+|---|---|
+| seis brancos — `NB_SALARIE` a NULL | 2 121 |
+| valor com o `LPAD` a zeros à esquerda | 10 824 |
+| valor de seis dígitos | 27 911 |
+
+As 2 121 são exactamente as que antes escreviam `00000 `.
+
+O `CRRCORP.dat` está fechado. Falta o Adapté.
