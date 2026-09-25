@@ -30,7 +30,7 @@ for t in toks:
 
 # amostras reais
 linhas = []
-with open(S, 'r', encoding='latin-1') as f:
+with open(S, 'r', encoding='cp1252') as f:
     for i, l in enumerate(f):
         linhas.append(l.rstrip('\r\n'))
         if i >= 400:

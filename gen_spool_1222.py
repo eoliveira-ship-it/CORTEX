@@ -313,7 +313,7 @@ CAB = [
 
 
 def escreve():
-    orig = open(FONTE, encoding='latin-1').read().split(NL)
+    orig = open(FONTE, encoding='cp1252').read().split(NL)
     confere_corte()
     blocos = []
     for i, ln in enumerate(orig):
@@ -342,7 +342,7 @@ def escreve():
         ln = orig[i]
         novo.append(ln)
         i += 1
-    open(SAIDA, 'w', encoding='latin-1', errors='replace').write(
+    open(SAIDA, 'w', encoding='cp1252', errors='replace').write(
         NL.join(CAB) + NL + NL.join(novo) + NL)
     return contas
 

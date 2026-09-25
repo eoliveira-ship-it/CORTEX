@@ -2,7 +2,7 @@ import re, sys
 sys.path.insert(0, '.')
 from conv_spool import convert
 
-lines = open('030_spool_Extract_CRRCORP.sql', encoding='utf-8', errors='replace').read().split('\n')
+lines = open('030_spool_Extract_CRRCORP.sql', encoding='cp1252').read().split('\n')
 
 
 def strip_line(l, in_block):
@@ -122,7 +122,7 @@ def tokenize(a, b):
 
 
 DDL_TYPES = dict(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s+([A-Z0-9_]+(?:\([0-9, ]+\))?)',
-                            open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read(),
+                            open('ENG_CORP_P1_BIS.sql', encoding='cp1252').read(),
                             re.M))
 
 
@@ -199,7 +199,7 @@ def fit_type(expr, col):
 
 
 DDL_COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s',
-                          open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read(),
+                          open('ENG_CORP_P1_BIS.sql', encoding='cp1252').read(),
                           re.M))
 
 
@@ -220,7 +220,7 @@ WIDTH = _ns['width']
 
 ORIG_TIPOS = {}
 try:
-    for _l in open('tipos', encoding='utf-8', errors='replace'):
+    for _l in open('tipos', encoding='cp1252'):
         _p = _l.rstrip(chr(10)).split(chr(9))
         if len(_p) >= 2 and _p[0].strip():
             ORIG_TIPOS[_p[0].strip().upper()] = _p[1].strip()
@@ -675,7 +675,7 @@ body = SIG + chr(10) + chr(10).join(_vid) + chr(10)
 body += chr(10).join(blocks) + chr(10)
 body += "    COMMIT;" + chr(10) + "END P_ALIM_ENG_CORP_P1_BIS;" + chr(10)
 
-open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='utf-8').write(hdr + extra + body)
+open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='cp1252').write(hdr + extra + body)
 
 inv = ['# Posicoes do spool ainda por mapear', '',
        'Geradas por `gen_procedure.py`. Cada linha e uma posicao do spool cuja',
@@ -712,7 +712,7 @@ print('duplicados __D restantes:',
 # Toute valeur litterale 'xxx' affectee a une colonne NUMBER/DATE est
 # signalee ici (sinon Oracle rend ORA-00932 a la compilation).
 # ---------------------------------------------------------------------
-_txt = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+_txt = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 _susp = []
 for _line in _txt.split(chr(10)):
     _m = re.match(r"\s+(.*?)\s+AS (P1_[A-Z0-9_]+),?\s+--", _line)
@@ -802,5 +802,5 @@ for _c in sorted(set(c for blk in blocks for c in re.findall(r'AS (P1_[A-Z0-9_]+
 _t.append('       COUNT(CD_PERIMETRE) AS CD_PERIMETRE')
 _t.append('  FROM ENG_CORP_P1_BIS;')
 _t.append('')
-open('test_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='utf-8').write(NL.join(_t) + NL)
+open('test_P_ALIM_ENG_CORP_P1_BIS.sql', 'w', encoding='cp1252').write(NL.join(_t) + NL)
 print('script de teste -> test_P_ALIM_ENG_CORP_P1_BIS.sql')

@@ -68,7 +68,7 @@ def blocos(txt):
     return out
 
 
-DDL = open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+DDL = open('ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 TAMANHO_COLUNA = {m[0]: int(m[1]) for m in
                   re.findall(r'^\s+(P1_[A-Z0-9_]+)\s+VARCHAR2\((\d+)\)', DDL, re.M)}
 
@@ -156,7 +156,7 @@ def largura(expr):
 
 
 def main():
-    txt = open(SPOOL, encoding='latin-1').read()
+    txt = open(SPOOL, encoding='cp1252').read()
     bl = blocos(txt)
     if not bl:
         raise SystemExit('nenhum bloco P1 encontrado em %s' % SPOOL)

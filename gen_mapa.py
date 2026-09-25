@@ -57,7 +57,7 @@ def col_de(ref):
 
 amostras = []
 if os.path.exists(REAL):
-    with open(REAL, 'r', encoding='latin-1') as f:
+    with open(REAL, 'r', encoding='cp1252') as f:
         for i, l in enumerate(f):
             amostras.append(l.rstrip('\r\n'))
             if i >= N_AMOSTRA:

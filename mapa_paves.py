@@ -65,7 +65,7 @@ def acha_blocos(lines):
 
 def carrega_fonte(caminho=FONTE):
     """Aponta o tokenize do align_v44 a este ficheiro. Devolve (linhas, blocos)."""
-    A.lines = open(caminho, encoding='latin-1').read().split(chr(10))
+    A.lines = open(caminho, encoding='cp1252').read().split(chr(10))
     return A.lines, acha_blocos(A.lines)
 
 

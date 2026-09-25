@@ -195,7 +195,10 @@ def escreve():
             trocas.append((a, b, novo))
     for a, b, novo in sorted(trocas, reverse=True):
         saida[a - 1:b] = novo
-    open(SAIDA, 'w', encoding='latin-1', newline='\n').write('\n'.join(saida))
+    # cp1252 e fim de linha do Windows, como o ficheiro que este vai substituir:
+    # todos os .sql e .sh do repo estao em CRLF, e e assim que o spool vPACT que
+    # gerou o ficheiro de referencia esta escrito.
+    open(SAIDA, 'w', encoding='cp1252').write('\n'.join(saida))
     print('partiu de %s, escreveu %s (%d linhas)' % (alvo, SAIDA, len(saida)))
 
 

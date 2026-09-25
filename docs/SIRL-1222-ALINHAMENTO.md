@@ -425,3 +425,32 @@ expressão com valor se perdeu pelo caminho.
 Falta a corrida no DEV2 e o `comparar_1222.py` sobre o `.dat`, que é o que dá a
 prova por conteúdo. Um dos blocos do P9 guardava o filler antigo na própria linha
 do `as lignedetail1` — é o género de armadilha que só o ficheiro apanha.
+
+## Encode dos ficheiros entregues (25/09)
+
+Os `.sql` e os `.sh` são **Windows-1252 (cp1252)**, com fim de linha CRLF, como o
+`030_spool_Extract_CRRCORP_vPACT.sql` que geraram o ficheiro de referência. Tudo o
+que lê ou escreve estes ficheiros passou a declarar `cp1252` — antes dizia
+`latin-1` (que dá os mesmos octetos só enquanto não houver nada entre 0x80 e 0x9F:
+o `€`, o `–`, o `’` e as aspas curvas caem exactamente nessa faixa) ou, pior,
+`utf-8`.
+
+Dois ficheiros estavam de facto em UTF-8 e foram convertidos, com o texto igual:
+
+| ficheiro | antes | depois |
+|---|---|---|
+| `ENG_CORP_P1_BIS.sql` | 146 444 octetos, UTF-8 (é×1386, à×155, ê×81, `«»`, `–`) | 144 641, cp1252 |
+| `030_CREATION_SPOOL_CRRCORP.sh` | 22 127, UTF-8 | 22 126, cp1252 |
+
+Quatro ficheiros **não** foram tocados porque o que têm não é UTF-8 limpo, é
+*mojibake* de origem — a sequência `U+00EF U+00BF U+00BD`, que é o `ï¿½` de um
+`U+FFFD` gravado há muito: `PACK_UTL_FILE_ENVOI_C3RD2.sql` (48 ocorrências),
+`pack_alim_tab_envoi_crrv4.sql` (157), `030_spool_Extract_CRRADAP.sql` e
+`030_CREATION_SPOOL_CRRADAP.sh`. Os acentos originais já não estão lá, e converter
+o encode não os traz de volta. Se algum desses comentários fizer falta, tem de vir
+do repositório de origem.
+
+A prova de que a troca não mexeu em nada: com `cp1252` em vez de `latin-1`, o
+`030_spool_Extract_CRRCORP_1222.sql` sai com o mesmo MD5
+(`378028c23bb3a09f5c3e44978978c4e8`, antes de se corrigir o fim de linha para
+CRLF).

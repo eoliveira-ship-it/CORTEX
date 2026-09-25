@@ -37,7 +37,7 @@ exec(src, ns)
 sys.stdout = _o
 tokenize, width, v44 = ns['tokenize'], ns['width'], ns['v44']
 
-DDL = open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+DDL = open('ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s', DDL, re.M))
 N_COLS = len(re.findall(r'^\s+([A-Z][A-Z0-9_]*)\s+(?:NUMBER|DATE|VARCHAR2)', DDL, re.M))
 ALVO = {'P1_21_30', 'P1_21_43', 'P1_21_60', 'P1_3_20', 'P1_18_1', 'P1_18_10',
@@ -49,7 +49,7 @@ ALARGADAS = sorted(
     for m in re.finditer(r'^\s+(P1_[A-Z0-9_]+)\s+(NUMBER\(\d+,\s*\d+\))', DDL, re.M)
     if m.group(1) in ALVO)
 
-proc = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+proc = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 bloco1 = proc.split('-- INSERT #1')[1].split('-- INSERT #2')[0]
 ALIMENTADAS = set(re.findall(r'AS (P1_[A-Z0-9_]+)', bloco1))
 
@@ -93,7 +93,7 @@ casos = NL.join(
 # teste que reutilizasse as constantes do gerador nunca daria por isso.
 FIM_DOS_BLOCOS = [(1, 1068), (2, 1575), (3, 2069), (4, 3449),
                   (5, 4010), (6, 4593), (7, 5049), (8, 5628)]
-LIN = open('030_spool_Extract_CRRCORP.sql', encoding='latin-1').read().split(NL)
+LIN = open('030_spool_Extract_CRRCORP.sql', encoding='cp1252').read().split(NL)
 
 
 def where_do_spool(fim):

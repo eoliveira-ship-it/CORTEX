@@ -553,7 +553,7 @@ RC=$?
 
 if [ $RC -ne 0 ]
 then
-    ERR $RC "Erreur lors de l'exÃ©cution du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
+    ERR $RC "Erreur lors de l'exécution du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
     exit $RC
 fi
 

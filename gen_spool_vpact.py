@@ -52,9 +52,9 @@ exec(src, ns)
 sys.stdout = _o
 tokenize, width, v44 = ns['tokenize'], ns['width'], ns['v44']
 
-DDL = open('ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+DDL = open('ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s', DDL, re.M))
-proc = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='utf-8').read()
+proc = open('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 
 
 def alimentadas(n):
@@ -333,7 +333,7 @@ def bloco(variante, filtro, comentario):
             + ' order by NO_VARIANTE;' + NL)
 
 # ------------------------------------------------------------- montagem final
-orig = open(FONTE, encoding='latin-1').read().split(NL)
+orig = open(FONTE, encoding='cp1252').read().split(NL)
 
 # blocos P1 a substituir (1-based, inclusive) : do 'select' ao ';' do WHERE
 BLOCOS = [(590, 1081), (1089, 1586), (1592, 2082),
@@ -406,7 +406,7 @@ CAB = [
 ]
 # escreve-se em latin-1, como o original: assim tudo o que nao e o pave P1
 # fica byte a byte igual e um diff entre os dois spools mostra so o que mudou.
-open(SAIDA, 'w', encoding='latin-1', errors='replace').write(
+open(SAIDA, 'w', encoding='cp1252', errors='replace').write(
     NL.join(CAB) + NL + NL.join(novo) + NL)
 # O TESTES.sql compara, campo a campo, a expressao ORIGINAL do spool com a
 # expressao vPACT. Escreve-se aqui a lista para o gen_testes.py a ler: assim o
