@@ -287,3 +287,48 @@ variante 8 já escrevia o `N` no sítio certo, a posição lida do spool punha-o
    filler final reduzido a 1176 (ver [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)).
 
 Mais nada.
+
+## O P1 validado (25/09) — ficheiro gerado no DEV2
+
+Terceira corrida, com o spool corrigido (duas colunas, `CAST`, bloco 30.x à
+mão). Ferramenta: [`comparar_1222.py`](../comparar_1222.py).
+
+```
+linhas: 554045 (referência: 554045)
+censo por pavé: F1 122474 | F2 122474 | P1 122225 | P9 76374 | M1 65559
+                C1 40856 | P2 4081 | cabeçalho 1 | rodapé 1
+P1: campos novos nos bytes 6332..6824, filler final 6825..8000 (1176)
+problemas: nenhum
+
+outros pavés: 431820 linhas — só o cabeçalho difere, na data de geração
+
+P1: 122225 linhas, todas emparelhadas
+  (3982, 3983)   122180 linhas
+  IDENTICO           45 linhas
+```
+
+O que isto prova, ponto por ponto:
+
+- **554 045 linhas**, o mesmo número do ficheiro de referência, e todas com 8000
+  caracteres. Nenhuma acaba em `;`.
+- **O censo por pavé não mudou.** O código do pavé já não está nos bytes 39–40 do
+  P1, por isso a contagem passa a ser pelo campo `0.6`.
+- **No P1, 662 `;` por linha, todos nas 662 posições que a Notice prevê.** Nenhum
+  valor de campo contém `;`.
+- **A cauda está em branco nas 122 225 linhas**: os 51 campos criados na V45
+  (bytes 6332–6824) e o filler final (6825–8000, 1176 caracteres), com `;` antes
+  dele e nenhum depois.
+- **Os outros seis pavés não foram tocados**: 431 820 linhas iguais byte a byte.
+  A única diferença é a data de geração no cabeçalho, que muda a cada corrida.
+- **No P1, uma única diferença de conteúdo**, e é a que o chamado pede.
+
+### A lista de correções, para a DSID
+
+| | O que muda | Linhas |
+|---|---|---|
+| 1 | O `N` do indicador de netting contratual passa do byte 3982 (último byte do `P1 30.22`, *Référence du contrat cadre*) para o byte 3983, o campo `P1 30.23` que a Notice define | 122 180 |
+| 2 | Os 51 campos criados na V45 escritos em branco no fim da linha, e o filler final reduzido de 1185 para 1176 ([QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)) | todas |
+
+Nas 45 linhas da variante 8 o `N` já estava no `P1 30.23`: essas ficam idênticas.
+Fora isto, os 5720 caracteres de dados são iguais byte a byte ao ficheiro de
+22/09.
