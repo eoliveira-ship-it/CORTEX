@@ -1,0 +1,27 @@
+{
+  // Os .sql e os .sh deste projeto sao Windows-1252 (cp1252), como o spool que
+  // gerou o ficheiro de referencia. O VS Code tem de os ABRIR assim: se os abrir
+  // como UTF-8, os octetos acentuados nao sao UTF-8 valido, ele poe U+FFFD (o
+  // losango) no lugar -- e se depois se gravar, o losango fica gravado e a letra
+  // acentuada perde-se de vez.
+  //
+  // O caso concreto: o translate(upper(NOM_TIERS), ...) do C1, que tira os acentos
+  // ao nome do tiers. A lista de origem sao 14 letras acentuadas
+  // (C0 C2 C7 C9 C8 CA CB CE DD D4 D6 D9 DB DC = AACEEEEIIOOUUU). Gravadas por
+  // cima com losangos, o nome do tiers passa a sair com acentos no ficheiro.
+  "files.encoding": "windows1252",
+
+  // Sem isto o VS Code adivinha o encode ficheiro a ficheiro e a definicao acima
+  // deixa de mandar.
+  "files.autoGuessEncoding": false,
+
+  // O resto do repo e UTF-8: a documentacao leva setas, sinais de menos
+  // tipograficos e emoji, que nao cabem em cp1252.
+  "[markdown]": { "files.encoding": "utf8" },
+  "[python]": { "files.encoding": "utf8" },
+  "[json]": { "files.encoding": "utf8" },
+  "[jsonc]": { "files.encoding": "utf8" },
+
+  "files.trimTrailingWhitespace": false,
+  "files.insertFinalNewline": false
+}
