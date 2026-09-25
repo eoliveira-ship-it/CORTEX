@@ -332,3 +332,96 @@ O que isto prova, ponto por ponto:
 Nas 45 linhas da variante 8 o `N` já estava no `P1 30.23`: essas ficam idênticas.
 Fora isto, os 5720 caracteres de dados são iguais byte a byte ao ficheiro de
 22/09.
+
+## Os outros seis pavés (25/09)
+
+O P1 foi o piloto porque é o maior e porque o SIRL-1224 já o tinha passado a ler
+da `ENG_CORP_P1_BIS`, campo a campo. Os outros seis mantêm os seus SELECT: o `;`
+entra por corte dos tokens que lá estão (`gen_spool_paves.py`).
+
+### A conta fecha em todos
+
+| pavé | campos | dados | separadores | filler da Notice | sobra | total |
+|---|---|---|---|---|---|---|
+| P2 | 398 | 7603 | 397 | 4018 | 3621 | 8000 |
+| M1 | 158 | 7843 | 157 | 6037 | 5880 | 8000 |
+| C1 | 98 | 7903 | 97 | 6915 | 6818 | 8000 |
+| F1 | 73 | 7928 | 72 | 7098 | 7026 | 8000 |
+| F2 | 46 | 7955 | 45 | 7412 | 7367 | 8000 |
+| P9 | 39 | 7962 | 38 | 7475 | 7437 | 8000 |
+| P1 | 663 | 7347 | 662 | 1185 | 523 | **8009** |
+
+O P1 era o único que não fechava — a dúvida do filler 1185/1176
+([QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)) é só dele. Nos outros seis o filler
+final absorve os separadores e ainda sobram milhares de brancos.
+
+### Ao contrário do P1, o filler final quase todo não está escrito
+
+Vem do `SET linesize 8000` com `trimspool OFF`, que enche a linha de brancos. Por
+isso os separadores não empurram nada: encolhe-se só o `RPAD(' ')` que fecha a
+coluna 1, e a coluna 2 fica byte a byte como estava. Os campos com os separadores
+dão 588 (F2), 902 (F1), 525 (P9), 1085 (C1), 1963 (M1) e **3982 (P2)** — todos
+dentro dos 4000 da coluna 1. O P2 é o apertado, com 18 octetos de margem.
+
+### Como se soube que cada campo cai no lugar certo
+
+Não por sobreposição de posições: basta um campo escrito mais estreito para tudo
+o que vem depois ficar fora do sítio, e um emparelhador guloso acusa então todo o
+resto (no P2 dava 162 divergências falsas). O `casa_paves.py` faz alinhamento
+global por programação dinâmica, minimizando o número de anomalias.
+
+Três medições tiveram de ser corrigidas antes, senão a régua mentia:
+
+- `( CASE ... END)` aberto com um espaço, que o medidor do `align_v44.py` só
+  reconhecia como `(CASE` — vale 12 no C1;
+- a máscara `'YYYYMMDDHH24MISS'`, 14, do C1;
+- a `F_FORMAT_MONTANT_BIS3`, 19, que faltava na lista — era ela sozinha que fazia
+  o P2 parecer 19 octetos curto.
+
+Depois disto o C1 mede 981 octetos de dados, que é **exactamente** o último
+octeto não branco medido nas 40 856 linhas C1 do ficheiro de referência de 22/09.
+O M1 mede 1661 e o ficheiro acaba no 1580, onde a régua o põe — e não no 1583,
+que é onde estaria se os três códigos abaixo tivessem 2 octetos.
+
+### As 7 correções, para a DSID
+
+São as únicas divergências entre o spool e a Notice V45.02 nos seis pavés, e todas
+do mesmo género: o spool escreve o campo mais estreito do que a Notice manda. Sem
+separador isso passava despercebido (o campo seguinte encostava-se); com `;` pelo
+meio, deixa de passar.
+
+| pavé | campo | Notice | spool | o que se faz |
+|---|---|---|---|---|
+| M1 | `M1 7.6` *cd_pays_recours* | 2 | 1 | `RPAD(NVL(...), 2)` |
+| M1 | `M1 8.31` *cd_bourse_cotation* | 2 | 1 | `RPAD(NVL(...), 2)` |
+| M1 | `M1 9.1` *cd_pays_local_garant* | 2 | 1 | `RPAD(NVL(...), 2)` |
+| C1 | `C1 4.9` | 2 | 1 | `RPAD(' ', 2)` |
+| C1 | `C1 4.99` | 2 | 1 | `RPAD(' ', 2)` |
+| C1 | `C1 8.12` | 5 | 1 | `RPAD(' ', 5)` |
+| C1 | `C1 8.14` | 2 | 1 | `RPAD(' ', 2)` |
+
+Os quatro do C1 estavam escritos como o literal `' '` e continuam em branco, só
+com a largura certa. Os três do M1 guardam o valor da coluna e passam a ser
+preenchidos à direita até 2.
+
+Além disto, e como no P1: os campos criados na V45 vão em branco (42 no P2, 12 no
+M1, nenhum nos outros quatro), todos no fim da linha.
+
+### O cabeçalho e o rodapé já vinham com `;`
+
+Estão escritos no shell (`030_CREATION_SPOOL_CRRCORP_vPACT.sh`), e já são
+separados por `;`: 15 campos no cabeçalho e 3 no rodapé, o que a Notice prevê.
+Não há nada a fazer — **fica uma pergunta**: o cabeçalho declara `44` como versão
+técnica (`CRRC;44;`). Se o ficheiro passa a ser V45, a DSID confirma se esse
+código muda para `45`.
+
+### O que está conferido, e o que não está
+
+Conferido sem base de dados (`valida_paves.py`, 0 erros nos seis pavés): cada
+campo emite o tamanho que a Notice manda, o `;` está entre todos, a coluna 1 fecha
+exactamente 4000, a cauda (coluna 2, FROM e WHERE) ficou byte a byte, e nenhuma
+expressão com valor se perdeu pelo caminho.
+
+Falta a corrida no DEV2 e o `comparar_1222.py` sobre o `.dat`, que é o que dá a
+prova por conteúdo. Um dos blocos do P9 guardava o filler antigo na própria linha
+do `as lignedetail1` — é o género de armadilha que só o ficheiro apanha.

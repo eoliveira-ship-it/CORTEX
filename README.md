@@ -9,7 +9,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 | Ticket | Assunto | Estado |
 |---|---|---|
 | **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
-| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟡 **P1 validado no DEV2** (554045 linhas, 662 `;` por linha nas posições da Notice, outros pavés iguais byte a byte, uma só correção de conteúdo); faltam os outros 6 pavés e o Adapté — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
+| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟡 **P1 validado no DEV2** (554045 linhas, 662 `;` por linha nas posições da Notice) + **os outros 6 pavés gerados e conferidos estaticamente** (F2, F1, P9, P2, M1, C1 — 7 correções de largura ao todo, cabeçalho e rodapé já vinham com `;`); falta a corrida no DEV2 e o Adapté — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟢 P1 e P3 provados (só a mudança pedida) — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 
@@ -118,6 +118,10 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `valida_1222.py` | Confere, sem base de dados, que cada expressao emite o tamanho do campo e que a linha da 8000 |
 | `notice.py` | Le a Notice por pave, achando as colunas pelo cabecalho (elas mudam de letra entre versoes) |
 | `mapa_1222.py` | SIRL-1222: alinha os campos da Notice com os tokens do spool por ancoras, e lista as zonas a resolver |
+| `mapa_paves.py` | SIRL-1222: acha os blocos dos outros seis paves pela tabela do FROM e mede a largura de cada token |
+| `casa_paves.py` | SIRL-1222: alinha, por programacao dinamica, os campos da Notice com os tokens de cada pave, e lista as divergencias |
+| `gen_spool_paves.py` | SIRL-1222: gera os outros seis paves (F2, F1, P9, P2, M1, C1) com `;` entre os campos |
+| `valida_paves.py` | Confere os seis paves gerados: larguras da Notice, `;` no lugar, coluna 1 a fechar 4000, cauda intacta e nenhuma expressao perdida |
 | `VALIDAR_1223_P3.sql` | Gera o ficheiro do pave P3 antes e depois da alteracao, com nome proprio |
 | `comparar_1223.py` | Nao-regressao do SIRL-1223: aplica o alargamento ao ficheiro de antes e compara com o de depois |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
