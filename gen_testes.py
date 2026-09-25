@@ -259,7 +259,7 @@ a("   AND ( NVL(C_ENR.MNT_CRD,0) - NVL(C_ENR.MNT_VR,0) >= 1 OR NVL(C_ENR.MNT_VR,
 a("   AND C_ENR.CD_TYPE_RISQUE NOT IN ('TRE100','SIG201','EQU101','VAR104')")
 a("   AND ROWNUM <= %d;" % N_LINHAS)
 
-open('TESTES.sql', 'w', encoding='utf-8').write(NL.join(S) + NL)
+open('TESTES.sql', 'w', encoding='cp1252').write(NL.join(S) + NL)
 print('colunas na tabela      : %d' % N_COLS)
 print('colunas alargadas      : %d' % len(ALARGADAS))
 print('colunas no round-trip  : %d' % len(pares))
