@@ -10,8 +10,7 @@ O que faz:
   2. em cada pave: o numero de ';' que a notice preve e todos nas posicoes dela,
      e a cauda (campos criados na V45 e filler final) em branco;
   3. reconstroi cada linha no formato ANTIGO -- os campos um atras do outro, sem
-     separador, e os sete campos corrigidos encolhidos ao tamanho que o spool
-     escrevia -- e compara com a referencia:
+     separador, cada um com a largura da notice -- e compara com a referencia:
        - nos seis paves a reconstrucao tem de dar a linha da referencia byte a
          byte, e a prova e a igualdade dos MD5 como multiconjunto (a ordem das
          linhas muda de corrida para corrida);
@@ -39,7 +38,6 @@ import notice
 b, o = io.StringIO(), sys.stdout
 sys.stdout = b
 import gen_spool_1222 as g           # noqa: E402  (a regua do P1, com o filler 1176)
-import gen_spool_paves as GP         # noqa: E402  (as REGRAS dos outros paves)
 sys.stdout = o
 
 if len(sys.argv) != 3:
@@ -47,9 +45,14 @@ if len(sys.argv) != 3:
 NOVO, REF = sys.argv[1], sys.argv[2]
 L, CHAVE, LINHA = 8001, 3900, 8000
 
-# Largura com que o spool ANTIGO escrevia os campos que se corrigiram. Todos
-# escreviam 1 -- ver docs/SIRL-1222-ALINHAMENTO.md, "As 7 correcoes".
-ANTIGO = {ref: 1 for pave in GP.REGRAS for ref in GP.REGRAS[pave]}
+# Largura com que o spool ANTIGO escrevia cada campo: a da notice, em todos.
+#
+# Aqui estava uma tabela que encolhia a 1 os sete campos das GP.REGRAS, na ideia
+# de que o spool os escrevia com um octeto. Estava errada, e a corrida de 25/09
+# provou-o: sem encolher nada, o M1 reconstroi byte a byte nas 65 559 linhas e o
+# C1 em 38 735 das 40 856. O alinhamento campo a campo sobre o ficheiro de
+# referencia confirma -- nenhum dos sete sai da largura da notice.
+ANTIGO = {}
 
 PAVES = ('P1', 'P2', 'M1', 'C1', 'F1', 'F2', 'P9')
 CODIGO = (43, 45)          # onde esta o codigo do pave na linha nova (campo 0.6)

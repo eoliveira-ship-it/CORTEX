@@ -63,34 +63,17 @@ SAIDA = '030_spool_Extract_CRRCORP_1222.sql'   # o mesmo ficheiro do P1
 # primeiro os que nao levam REGRA nenhuma.
 PAVES = ('F2', 'F1', 'P9', 'P2', 'M1', 'C1')
 
-# Campos escritos a mao, por pave. Um por um, com a razao.
-#
-# Sao as sete unicas divergencias entre o spool e a Notice V45.02 nos seis paves,
-# e todas do mesmo genero: o spool escreve o campo mais estreito do que a notice
-# manda, e a partir dai tudo o que vem depois fica um octeto fora do sitio. Com o
-# ';' pelo meio isso deixa de ser invisivel, por isso corrigem-se aqui -- e vao
-# na lista de correcoes para a DSID, como o P1 21.65 do SIRL-1223.
 # Campos cuja largura foi forcada com RPAD, por pave: e a lista para a DSID.
 RELATORIO = {}
 
-REGRAS = {
-    # Codigos de pais e de bolsa: a notice da-lhes 2, o spool escreve o valor da
-    # coluna sem RPAD, que da 1. O ficheiro de referencia confirma o 1 (a zona de
-    # dados do M1 acaba no octeto 1580 nas 65 559 linhas, e nao no 1583).
-    'M1': {
-        'M1 7.6':  "RPAD(NVL(C_ENR.cd_pays_recours, ' '), 2)",
-        'M1 8.31': "RPAD(NVL(C_ENR.CD_BOURSE_COTATION, ' '), 2)",
-        'M1 9.1':  "RPAD(NVL(C_ENR.CD_PAYS_LOCAL_GARANT, ' '), 2)",
-    },
-    # Quatro campos que o spool escreve como um literal de um branco, ' ', onde a
-    # notice pede 2, 2, 5 e 2. Ficam em branco, so com a largura certa.
-    'C1': {
-        'C1 4.9':  "RPAD(' ', 2)",
-        'C1 4.99': "RPAD(' ', 2)",
-        'C1 8.12': "RPAD(' ', 5)",
-        'C1 8.14': "RPAD(' ', 2)",
-    },
-}
+# Aqui estavam sete REGRAS -- tres campos do M1 e quatro do C1 -- escritas a mao
+# na ideia de que o spool lhes dava um octeto onde a notice pede 2, 2, 5 e 2.
+# Nao era verdade. O medidor de larguras achatava o branco de dentro dos literais
+# ("'  '" ficava "' '"), e media a menos exactamente estes sete. Com o
+# align_v44.achata a respeitar os literais, os seis paves casam com a Notice
+# V45.02 sem uma unica anomalia: nao ha nada a corrigir a mao, e nada para a lista
+# da DSID neste capitulo.
+REGRAS = {}
 
 
 def ascii_seguro(e):
@@ -206,9 +189,8 @@ def resolve(pave, l):
     """(expressao, classe) para uma linha do alinhamento do casa_paves.
 
     O alinhamento vem de programacao dinamica, nao de sobreposicao por posicao:
-    e o que permite gerar o M1 e o C1, onde ha campos que o spool escreve mais
-    estreitos do que a notice manda e que punham tudo o que vem depois fora do
-    sitio."""
+    um passo guloso dessincroniza na primeira divergencia e a partir dai acusa
+    tudo (no P2 dava 162 divergencias falsas)."""
     r = REGRAS.get(pave, {}).get(l['ref'])
     if r:
         return r, 'REGRA'

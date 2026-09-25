@@ -378,31 +378,31 @@ Três medições tiveram de ser corrigidas antes, senão a régua mentia:
 - a `F_FORMAT_MONTANT_BIS3`, 19, que faltava na lista — era ela sozinha que fazia
   o P2 parecer 19 octetos curto.
 
-Depois disto o C1 mede 981 octetos de dados, que é **exactamente** o último
-octeto não branco medido nas 40 856 linhas C1 do ficheiro de referência de 22/09.
-O M1 mede 1661 e o ficheiro acaba no 1580, onde a régua o põe — e não no 1583,
-que é onde estaria se os três códigos abaixo tivessem 2 octetos.
+Uma quarta medição faltava, e essa custou uma corrida no DEV2: o achatamento do
+espaço branco entrava dentro dos literais. Ver *Nenhuma correção de campo* abaixo.
+Com ela feita, o C1 mede 988 octetos de dados e o M1 1806, e os onze blocos dos
+seis pavés casam com a Notice sem uma anomalia.
 
-### As 7 correções, para a DSID
+### Nenhuma correção de campo, para a DSID — REVISTO (25/09)
 
-São as únicas divergências entre o spool e a Notice V45.02 nos seis pavés, e todas
-do mesmo género: o spool escreve o campo mais estreito do que a Notice manda. Sem
-separador isso passava despercebido (o campo seguinte encostava-se); com `;` pelo
-meio, deixa de passar.
+Aqui estava uma lista de sete campos — `M1 7.6`, `M1 8.31`, `M1 9.1`, `C1 4.9`,
+`C1 4.99`, `C1 8.12` e `C1 8.14` — que o spool parecia escrever mais estreitos do
+que a Notice manda, e que se corrigiam à mão.
 
-| pavé | campo | Notice | spool | o que se faz |
-|---|---|---|---|---|
-| M1 | `M1 7.6` *cd_pays_recours* | 2 | 1 | `RPAD(NVL(...), 2)` |
-| M1 | `M1 8.31` *cd_bourse_cotation* | 2 | 1 | `RPAD(NVL(...), 2)` |
-| M1 | `M1 9.1` *cd_pays_local_garant* | 2 | 1 | `RPAD(NVL(...), 2)` |
-| C1 | `C1 4.9` | 2 | 1 | `RPAD(' ', 2)` |
-| C1 | `C1 4.99` | 2 | 1 | `RPAD(' ', 2)` |
-| C1 | `C1 8.12` | 5 | 1 | `RPAD(' ', 5)` |
-| C1 | `C1 8.14` | 2 | 1 | `RPAD(' ', 2)` |
+**Não era verdade.** O erro era meu, no medidor de larguras: o `align_v44.width()`
+achatava o espaço branco com `re.sub(r'\s+', ' ')` antes de medir, e isso entrava
+dentro dos literais. Um campo escrito como o literal `'  '` — dois brancos — ficava
+medido a 1. São exactamente estes sete:
 
-Os quatro do C1 estavam escritos como o literal `' '` e continuam em branco, só
-com a largura certa. Os três do M1 guardam o valor da coluna e passam a ser
-preenchidos à direita até 2.
+| campo | como está no spool | medido | verdade |
+|---|---|---|---|
+| `C1 4.9`, `C1 4.99`, `C1 8.14` | `'  '` | 1 | 2 |
+| `C1 8.12` | `'     '` | 1 | 5 |
+| `M1 7.6`, `M1 8.31`, `M1 9.1` | `NVL(cd_…, '  ')` | 1 | 2 |
+
+Com o `align_v44.achata()` a respeitar o que está entre apóstrofos, os seis pavés
+casam com a Notice V45.02 **sem uma única anomalia** — nem um DIVERGE, FALTA,
+SOBRA ou PARTE em nenhum dos onze blocos. O spool sempre concordou com a Notice.
 
 Além disto, e como no P1: os campos criados na V45 vão em branco (42 no P2, 12 no
 M1, nenhum nos outros quatro), todos no fim da linha.
@@ -509,3 +509,99 @@ cadeia de `CHR(n)` não der exactamente o literal original, acusa.
 
 Resultado: **0 octetos acima de 0x7F** no `030_spool_Extract_CRRCORP_1222.sql`.
 Nenhum editor, browser ou transferência lhe pode tocar.
+
+## As corridas dos seis pavés no DEV2 (25/09) — e o erro que elas apanharam
+
+Duas corridas, `00021` às 16:54 e `00022` às 18:20, ambas com 554 045 linhas e o
+censo por pavé certo. É aqui que o `comparar_1222.py` sobre o `.dat` diz o que a
+validação estática não pode dizer.
+
+### O que a primeira corrida mostrou
+
+```
+problemas: {'M1 ; FORA DE SITIO': 65559}
+so no novo: {'C1': 40856, 'M1': 65559}
+```
+
+O `;` número 69 do M1 saía no octeto 706 em vez do 707, nas **65 559 linhas**. E o
+C1 diferia em todas as 40 856, a partir do octeto 686.
+
+O culpado apontava para o `M1 8.1`:
+
+```sql
+CASE WHEN substr(nvl(CD_NATURE_SURETE, '  '), -7, 5) = 'SEC01' THEN '1 ' ELSE '  ' END
+```
+
+Lido no spool, os dois ramos têm 2 caracteres e o campo tem largura fixa. Mas o
+que eu tinha **gerado** era `ELSE ' '` — um branco. O achatamento comeu-lhe o
+segundo, e o campo passou a escrever 1 numa linha e 2 noutra.
+
+### A segunda corrida: o M1 fechou, o C1 ficou em 2 121
+
+Com o campo embrulhado em `RPAD(NVL(..., ' '), 2)`, o `problemas:` passou a
+**nenhum** — todos os `;` no lugar nos sete pavés. E a reconstrução:
+
+| pavé | linhas | reconstruídas byte a byte |
+|---|---|---|
+| P1 | 122 225 | 122 180 com `(3982, 3983)` + 45 idênticas — o esperado |
+| P2 | 4 081 | todas |
+| M1 | 65 559 | todas |
+| F1 | 122 474 | todas |
+| F2 | 122 474 | todas |
+| P9 | 76 374 | todas |
+| C1 | 40 856 | 38 735 — faltavam **2 121** |
+
+As 2 121 do C1 são exactamente as linhas com `NB_SALARIE` a NULL, e diferiam num
+único campo:
+
+```sql
+-- no spool:   LPAD(NVL(to_char(NB_SALARIE), '      '), 6, '0')   -> '      '
+-- gerado:     LPAD(NVL(to_char(NB_SALARIE), ' '),      6, '0')   -> '00000 '
+```
+
+Seis brancos achatados a um, e o `LPAD` enche a diferença com zeros. Um campo de
+número de empregados que passava a dizer zero.
+
+### A causa única
+
+Os três problemas — o M1, o C1 e as "7 correções" — são o mesmo erro:
+`re.sub(r'\s+', ' ')` aplicado a texto SQL que tem literais de brancos. Um literal
+de brancos é **valor com largura**, não formatação.
+
+A correção é o `align_v44.achata()`, que parte o texto nos apóstrofos e só achata
+o que está fora deles:
+
+```python
+return ''.join(x if i % 2 else re.sub(r'\s+', ' ', x)
+               for i, x in enumerate(re.split(r"('[^']*')", e)))
+```
+
+Usam-no o `width()` (que mede) e o `mapa_paves.tokens()` (que copia para o
+ficheiro gerado). Com ele: onze blocos, seis pavés, **zero anomalias** contra a
+Notice; o P1 não mexeu um octeto.
+
+### A defesa que fica
+
+Independentemente disto, cada campo dos seis pavés passa a sair embrulhado na
+largura que a Notice manda, quando a expressão não a garante por si:
+
+```sql
+RPAD(NVL(<expressão>, ' '), <largura>)
+```
+
+O `NVL` por dentro não é enfeite: em Oracle `RPAD(NULL, n)` é `NULL`, e um `NULL`
+numa concatenação escreve zero octetos — partia a linha pela outra ponta. São 43
+campos no P2, 29 no M1, 16 no C1, 17 no F1, 12 no P9 e 7 no F2. Não corrige nada que esteja
+errado hoje; fecha a porta a um campo cuja largura dependa dos dados.
+
+### A tabela `ANTIGO` do comparador estava errada
+
+O `comparar_1222.py` reconstruía a linha antiga encolhendo a 1 aqueles sete campos.
+Vinha da mesma medição errada, e escondia o resultado: com a tabela vazia — cada
+campo com a largura da Notice — o M1 reconstrói nas 65 559 linhas e o C1 em 38 735.
+Ficou `ANTIGO = {}`.
+
+### O que falta
+
+Uma terceira corrida no DEV2 com o `C1 4.35` corrigido. O esperado: os seis pavés
+sem uma linha de diferença, e o P1 com o `(3982, 3983)` de sempre.

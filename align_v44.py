@@ -168,8 +168,23 @@ def split_args(s):
     return out
 
 
+def achata(e):
+    """Junta o branco a um so espaco, sem tocar no que esta dentro de ''.
+
+    Um literal de brancos e um valor com largura, nao formatacao: o C1 tem
+    "'  '" (dois) em tres campos e "'     '" (cinco) noutro, o M1 tem
+    "NVL(cd_pays_recours, '  ')", e o C1 4.35 e
+    "LPAD(NVL(to_char(NB_SALARIE), '      '), 6, '0')" -- seis. Achatados a um,
+    cada um destes campos fica medido a menos do que escreve, e no ficheiro com
+    ';' o separador sai fora do sitio a partir dali. Foi o que a corrida de
+    25/09 mostrou no M1 (65 559 linhas) e no C1 (2 121).
+    """
+    return ''.join(x if i % 2 else re.sub(r'\s+', ' ', x)
+                   for i, x in enumerate(re.split(r"('[^']*')", e)))
+
+
 def width(e):
-    t = re.sub(r'\s+', ' ', e).strip().rstrip('|').strip()
+    t = achata(e).strip().rstrip('|').strip()
     if not t:
         return None
     U = t.upper()

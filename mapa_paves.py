@@ -138,7 +138,7 @@ def tokens(a, b):
     out, pos = [], 1
     for t in A.tokenize(a - 1, b):
         w = largura(t['raw'])
-        raw = re.sub(r'\s+', ' ', t['raw']).strip()
+        raw = A.achata(t['raw']).strip()
         out.append((pos, w, raw, bool(BRANCO.match(raw))))
         pos += w or 0
     return out
