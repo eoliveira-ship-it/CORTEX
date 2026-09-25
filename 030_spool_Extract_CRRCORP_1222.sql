@@ -464,103 +464,79 @@ select
 -- ï¿½02: a partir de P_UTLF_AUTORISATION_F1     
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       -- 23/01/18 - CDS ATOS (LFD) - CRRV4.2 US 652
-       --RPAD('C_BTR', 12)||
-       RPAD(C_ENR.APPLI_SOURCE, 12)||
-       -- FIN LFD
-       'M'||
-       :MASYSDATE||
-       'F1'||
-       RPAD(' ', 10)||  -- longueur : 1+2+7
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
-       RPAD(' ', 30)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 20)||
-       RPAD(' ', 50)||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       RPAD(NVL(C_ENR.id_tiers_calc,' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS,' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.cd_type_ope,' '), 2)||
-       RPAD(NVL(C_ENR.cd_objet_credit,' '), 2)||
-       RPAD(NVL(C_ENR.cd_hierarchie_accord,' '), 2)||
-       RPAD(NVL(C_ENR.cd_confirmation_auto,' '), 1)||
-       pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_INITIAL,0))||
-       pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_REVISE,0))||
-       RPAD(NVL(C_ENR.CD_DEVISE_AUTO, ' '), 3)||
-       RPAD(NVL(C_ENR.top_auto_specifique,' '), 1)||
-       --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 4)||
-	   RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE, ' '), 6,' ')|| 
-       RPAD(' ', 10)||
-       -- Fin EMM 
-       RPAD(NVL(TO_CHAR(C_ENR.dt_deb_validite_auto, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.dt_fin_validite_auto, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.dt_fin_validite_auto, 'YYYYMMDD'), ' '), 8)||
-       RPAD(' ', 8)||
-       RPAD(' ', 20)||
-       RPAD(NVL(C_ENR.top_syndication,' '), 1)||
-       RPAD(NVL(C_ENR.cd_position_entite_risque,' '), 1)||
-       RPAD(NVL(C_ENR.cd_entite_groupe_pilote,' '), 5)||
-       RPAD(' ', 20)||
-       RPAD(' ', 10)||
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TT_TRANCHES),0))||
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TT_TRANCHES),0))||
-       RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TT_TRANCHES,'EUR'), 3)||
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TRANCHE_AUT),0))||
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TRANCHE_AUT),0))||
-       RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TRANCHE_AUT,'EUR'), 3)||
-       -- 23/01/18 - CDS ATOS (LFD) - CRRV4.2 US 652
-       --CASE WHEN C_ENR.TOP_SYNDICATION='N' THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(C_ENR.TX_PART_RISK_TRANCHE) END||
-       CASE WHEN C_ENR.TX_PART_RISK_TRANCHE is null THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(C_ENR.TX_PART_RISK_TRANCHE) END||
-       -- FIN LFD
-       RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2)||
-       RPAD(' ', 1)||RPAD(' ', 4)||RPAD(' ', 5)||
-       RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2)||
-       --23/01/2019 CDS Atos (SQN) US 655
-       --RPAD(' ', 20)||
-       RPAD(' ', 4)||
-       -- 06/02/2019 - CDS ATOS (LFD) - US655 CORRECTION
-       --CASE WHEN C_ENR.TOP_SYNDICATION = 'Y' THEN 'L' END|| --IND_POSITION_ENTITE
-       CASE WHEN C_ENR.TOP_SYNDICATION = 'Y' THEN 'L' ELSE ' ' END|| --IND_POSITION_ENTITE
-       -- FIN LFD
-       --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD('0', 1)||		--F1 4.18
-	   RPAD('T', 1)||		--f1 4.19
-	   RPAD(' ', 13)||
-	   -- FIN EMM
-       --Fin SQN
-       NVL(C_ENR.top_titrisation,' ')||
-       RPAD(' ', 20)||
-       RPAD(' ', 10)||
-       RPAD(' ', 3)||
-       RPAD(' ', 1)||
-	   RPAD(' ', 16)||
-	   RPAD(' ', 2)||
-       RPAD(' ', 3)||
-       RPAD(' ', 20)||
-       -- 23/01/18 - CDS ATOS (LFD) - CRRV4.2 US 652
-       --RPAD(NVL(C_ENR.cd_niv_seniorite,'SEN'), 3)||
-       RPAD(NVL(C_ENR.cd_niv_seniorite,' '), 3)||
-       -- FIN LFD
-       RPAD(NVL(C_ENR.cd_segment_casa,' '), 3)||
-       --12/09/2018 CDS Atos (EMM) US 509
-       --CASE WHEN C_ENR.TOP_SYNDICATION='Y' THEN RPAD(NVL(C_ENR.ID_ENGAGEMENT,' '), 40) ELSE RPAD(' ', 40) END||
-       --Fin EMM
-       --09/11/2018 - CDS ATOS (LFD) - ANACREDIT US552
-       RPAD(NVL(C_ENR.REF_SYNDICATION,' '), 40)||
-       -- FIN LFD
-	   --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)|| --KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source'
-	   RPAD(' ', 5)||
-       lPAD(' ', 3169)		--4000 - 831
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (F1)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (F1)     EXATO
+       RPAD(C_ENR.APPLI_SOURCE, 12)||';'||   -- 0.3 (F1)     EXATO
+       'M'||';'||   -- 0.4 (F1)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (F1)     EXATO
+       'F1'||';'||   -- 0.6 (F1)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (F1)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (F1)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (F1)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (F1)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (F1)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (F1)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (F1)     EXATO
+       RPAD(' ', 30)||';'||   -- 1.6 (F1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (F1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.11 (F1)    EXATO
+       RPAD(' ', 40)||';'||   -- 1.16 (F1)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (F1)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (F1)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (F1)    BRANCO
+       RPAD(' ', 50)||';'||   -- F1 2.2       EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- F1 2.5       EXATO
+       RPAD(NVL(C_ENR.id_tiers_calc,' '), 20)||';'||   -- F1 2.6       EXATO
+       RPAD(' ', 10)||';'||   -- F1 2.7       EXATO
+       RPAD(NVL(C_ENR.cd_type_ope,' '), 2)||';'||   -- F1 2.8       EXATO
+       RPAD(NVL(C_ENR.cd_objet_credit,' '), 2)||';'||   -- F1 2.9       EXATO
+       RPAD(NVL(C_ENR.cd_hierarchie_accord,' '), 2)||';'||   -- F1 2.10      EXATO
+       RPAD(NVL(C_ENR.cd_confirmation_auto,' '), 1)||';'||   -- F1 2.11      EXATO
+       pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_INITIAL,0))||';'||   -- F1 2.12      EXATO
+       pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_REVISE,0))||';'||   -- F1 2.13      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_AUTO, ' '), 3)||';'||   -- F1 2.14      EXATO
+       RPAD(NVL(C_ENR.top_auto_specifique,' '), 1)||';'||   -- F1 2.16      EXATO
+       RPAD(' ', 4)||';'||   -- F1 2.17      EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE, ' '), 6,' ')||';'||   -- F1 2.18      EXATO
+       RPAD(' ', 10)||';'||   -- F1 2.99      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.dt_deb_validite_auto, 'YYYYMMDD'), ' '), 8)||';'||   -- F1 3.1       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.dt_fin_validite_auto, 'YYYYMMDD'), ' '), 8)||';'||   -- F1 3.2       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.dt_fin_validite_auto, 'YYYYMMDD'), ' '), 8)||';'||   -- F1 3.3       EXATO
+       RPAD(' ', 8)||';'||   -- F1 3.4       EXATO
+       RPAD(' ', 20)||';'||   -- F1 3.99      EXATO
+       RPAD(NVL(C_ENR.top_syndication,' '), 1)||';'||   -- F1 4.1       EXATO
+       RPAD(NVL(C_ENR.cd_position_entite_risque,' '), 1)||';'||   -- F1 4.2       EXATO
+       RPAD(NVL(C_ENR.cd_entite_groupe_pilote,' '), 5)||';'||   -- F1 4.3       EXATO
+       RPAD(' ', 20)||';'||   -- F1 4.4       EXATO
+       RPAD(' ', 10)||';'||   -- F1 4.5       EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TT_TRANCHES),0))||';'||   -- F1 4.6       EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TT_TRANCHES),0))||';'||   -- F1 4.7       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TT_TRANCHES,'EUR'), 3)||';'||   -- F1 4.8       EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TRANCHE_AUT),0))||';'||   -- F1 4.9       EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TRANCHE_AUT),0))||';'||   -- F1 4.10      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TRANCHE_AUT,'EUR'), 3)||';'||   -- F1 4.11      EXATO
+       CASE WHEN C_ENR.TX_PART_RISK_TRANCHE is null THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(C_ENR.TX_PART_RISK_TRANCHE) END||';'||   -- F1 4.12      EXATO
+       RPAD(' ', 19)||';'||   -- F1 4.13      BRANCO
+       RPAD(' ', 10)||';'||   -- F1 4.14      BRANCO
+       RPAD(' ', 19)||';'||   -- F1 4.15      BRANCO
+       RPAD(' ', 4)||';'||   -- F1 4.16      EXATO
+       CASE WHEN C_ENR.TOP_SYNDICATION = 'Y' THEN 'L' ELSE ' ' END||';'||   -- F1 4.17      EXATO
+       RPAD('0', 1)||';'||   -- F1 4.18      EXATO
+       RPAD('T', 1)||';'||   -- F1 4.19      EXATO
+       RPAD(' ', 13)||';'||   -- F1 4.99      EXATO
+       NVL(C_ENR.top_titrisation,' ')||';'||   -- F1 5.1       EXATO
+       RPAD(' ', 20)||';'||   -- F1 5.2       EXATO
+       RPAD(' ', 10)||';'||   -- F1 5.7       EXATO
+       RPAD(' ', 3)||';'||   -- F1 5.3       EXATO
+       RPAD(' ', 19)||';'||   -- F1 5.4       BRANCO
+       RPAD(' ', 3)||';'||   -- F1 5.5       EXATO
+       RPAD(' ', 20)||';'||   -- F1 5.99      EXATO
+       RPAD(NVL(C_ENR.cd_niv_seniorite,' '), 3)||';'||   -- F1 6.1       EXATO
+       RPAD(NVL(C_ENR.cd_segment_casa,' '), 3)||';'||   -- F1 6.5       EXATO
+       RPAD(NVL(C_ENR.REF_SYNDICATION,' '), 40)||';'||   -- F1 6.6       EXATO
+       RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||';'||   -- F1 6.7       EXATO
+       RPAD(' ', 5)||';'||   -- F1 6.8       EXATO
+       RPAD(' ', 3098)     -- F1 99.99     FILLER (7098 - 72 separadores fica em branco por trimspool)
      as lignedetail1,  -- debut ligne (taille <= 4000)
      -- (compter 1 blanc de separation entre les 2 champs dans le spool)
        LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
@@ -576,52 +552,52 @@ select
 -- ï¿½03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
 ------------------------------------------------------------------------------------------------------------------------
 select
-         to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       RPAD('C_BTR', 12)||
-       'M'||
-       :MASYSDATE||
-       'F2'||
-       RPAD(' ', 10)||  -- longueur : 1+2+7 
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
-       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 20)||
-       RPAD(NVL(C_ENR.CD_TYPE_RISQUE, ' '), 6)||
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_ORIGINE),0))||
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_REVISE),0))||
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_LIGNE),0))||
-       RPAD(NVL(C_ENR.CD_DEVISE_LIGNE_AUTO, ' '), 3)||
-       RPAD(' ', 20)||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.CD_METHODO_BALE2, ' '), 7)||
-       --28/11/2018 - CDS ATOS (SQN) - Mantis 45281 : Code moteur erronï¿½ pour P2 et F2
-       RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||
-       --Fin SQN
-       --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE, ' '), 6,' ')||
-	   RPAD(' ', 5)||
-	   --Fin EMM
-       RPAD(NVL(TO_CHAR(C_ENR.DT_DEB_VALIDITE_LIGNE, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_FIN_VALIDITE_LIGNE, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_FIN_VALIDITE_LIGNE, 'YYYYMMDD'), ' '), 8)||
-       LPAD(NVL(C_ENR.DUREE_MAX_ENGMT, '0'), 5, 0)||
-       RPAD(' ', 20)||
-       RPAD(' ', 28)|| --3+1+2+1+16+2+3
-       -- 18/05/2018 - CDS ATOS (PSR) - ANACREDIT US 348 (F2 4.3)
-       --RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)||
-       RPAD(' ', 40)||
-       -- FIN - CDS ATOS (PSR) - ANACREDIT US 348
-	   --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-       RPAD(' ', 5)||
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source'
-	   RPAD(' ', 5)||
-	   RPAD(' ', 3456)  --4000 - 544
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (F2)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (F2)     EXATO
+       RPAD('C_BTR', 12)||';'||   -- 0.3 (F2)     EXATO
+       'M'||';'||   -- 0.4 (F2)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (F2)     EXATO
+       'F2'||';'||   -- 0.6 (F2)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (F2)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (F2)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (F2)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (F2)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (F2)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (F2)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (F2)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (F2)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (F2)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.11 (F2)    EXATO
+       RPAD(' ', 40)||';'||   -- 1.16 (F2)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (F2)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (F2)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (F2)    BRANCO
+       RPAD(NVL(C_ENR.CD_TYPE_RISQUE, ' '), 6)||';'||   -- F2 2.1       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_ORIGINE),0))||';'||   -- F2 2.4       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_REVISE),0))||';'||   -- F2 2.5       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_LIGNE),0))||';'||   -- F2 2.6       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_LIGNE_AUTO, ' '), 3)||';'||   -- F2 2.7       EXATO
+       RPAD(' ', 20)||';'||   -- F2 2.9       EXATO
+       RPAD(' ', 10)||';'||   -- F2 2.10      EXATO
+       RPAD(NVL(C_ENR.CD_METHODO_BALE2, ' '), 7)||';'||   -- F2 2.17      EXATO
+       RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||';'||   -- F2 2.18      EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE, ' '), 6,' ')||';'||   -- F2 2.19      EXATO
+       RPAD(' ', 5)||';'||   -- F2 2.99      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_DEB_VALIDITE_LIGNE, 'YYYYMMDD'), ' '), 8)||';'||   -- F2 3.1       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_FIN_VALIDITE_LIGNE, 'YYYYMMDD'), ' '), 8)||';'||   -- F2 3.2       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_FIN_VALIDITE_LIGNE, 'YYYYMMDD'), ' '), 8)||';'||   -- F2 3.3       EXATO
+       LPAD(NVL(C_ENR.DUREE_MAX_ENGMT, '0'), 5, 0)||';'||   -- F2 3.4       EXATO
+       RPAD(' ', 20)||';'||   -- F2 3.99      EXATO
+       RPAD(' ', 3)||';'||   -- F2 6.1       BRANCO
+       RPAD(' ', 1)||';'||   -- F2 6.2       BRANCO
+       RPAD(' ', 2)||';'||   -- F2 6.3       BRANCO
+       RPAD(' ', 19)||';'||   -- F2 4.1       BRANCO
+       RPAD(' ', 3)||';'||   -- F2 4.2       BRANCO
+       RPAD(' ', 40)||';'||   -- F2 4.3       EXATO
+       RPAD(' ', 5)||';'||   -- F2 4.4       EXATO
+       RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||';'||   -- F2 4.5       EXATO
+       RPAD(' ', 5)||';'||   -- F2 4.6       EXATO
+       RPAD(' ', 3412)     -- F2 99.99     FILLER (7412 - 45 separadores fica em branco por trimspool)
      as lignedetail1,  -- debut ligne (taille <= 4000)
      -- (compter 1 blanc de separation entre les 2 champs dans le spool)
        LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
@@ -1920,53 +1896,46 @@ select
 -- N07a: a partir de C_PROVISIONS_DECOTES_P9_CRD
 ------------------------------------------------------------------------------------------------------------------------
 
- SELECT
-     to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-    RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-    RPAD(NVL(C_ENR.APPLI_SOURCE, 'C_BTR'), 12)||  -- 18/02/2019 - CDS ATOS (GBD) - US731
-    'M'||
-    :MASYSDATE||
-    'P9'||
-    RPAD(' ', 10)||  -- longueur : 1+2+7
-    RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-    --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-    RPAD(' ', 10)||
-    RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
-    RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||
-    RPAD(' ', 40)||
-    CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_C',40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074
-    CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40)  END || -- P9 1.16 :: M72074
-    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9 
-    RPAD(' ', 20)||
-    NVL(C_ENR.CD_NAT_DEPRE, ' ')||
-    NVL(C_ENR.CD_PERIM_PROV, ' ')||
-    RPAD(' ', 12)||
-    --22/01/2019 CDS Atos (SQN) US 656
-    --RPAD(' ', 20)||
-    -- 18/04/2019 - CDS ATOS (LFD) - US 774
-    --'2'||
-    NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')|| -- 2.4
-    -- FIN LFD
-    --05/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-	RPAD(' ', 13)||
-	--fin EMM
-    --Fin SQN
-    pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||
-    pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0))||
-    RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||
-    RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||
-    --05/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	-- Debut section 4 -COMPLEMENT DONNEES CLE DE REFERENCE
-	RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)|| -- 16/11/2022 - Mantis 64443 - Correction du Score 7 P9 1.20
-	RPAD(' ', 5)||  -- P9 4.1
-	RPAD(' ', 30)|| -- P9 4.99 :: filler
-	RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||    -- P9 50.1
-	RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)|| -- P9 50.10
-	pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))|| -- P9 50.11
-	RPAD(' ', 12)|| -- P9 50.12
-	RPAD(' ', 19)|| -- P9 50.13
-	LPAD(' ', 3512)   --4000 - 488
+select
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P9)     EXATO
+       RPAD(NVL(C_ENR.APPLI_SOURCE, 'C_BTR'), 12)||';'||   -- 0.3 (P9)     EXATO
+       'M'||';'||   -- 0.4 (P9)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
+       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (P9)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (P9)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (P9)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (P9)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P9)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (P9)     EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_C',40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
+       NVL(C_ENR.CD_NAT_DEPRE, ' ')||';'||   -- P9 2.3       EXATO
+       NVL(C_ENR.CD_PERIM_PROV, ' ')||';'||   -- P9 2.1       EXATO
+       RPAD(' ', 12)||';'||   -- P9 2.2       EXATO
+       NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
+       RPAD(' ', 13)||';'||   -- P9 2.99      EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||';'||   -- P9 3.2       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 3.1       EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||';'||   -- P9 3.15      EXATO
+       RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)||';'||   -- P9 1.20      EXATO
+       RPAD(' ', 5)||';'||   -- P9 4.1       EXATO
+       RPAD(' ', 30)||';'||   -- P9 4.99      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 50.1      EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||';'||   -- P9 50.10     EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||';'||   -- P9 50.11     EXATO
+       RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
+       RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
+       RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
     as lignedetail1,  -- debut ligne (taille <= 4000)
     -- (compter 1 blanc de separation entre les 2 champs dans le spool)
     LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
@@ -1994,54 +1963,46 @@ select
 ------------------------------------------------------------------------------------------------------------------------
 -- N07b: a partir de C_PROVISIONS_DECOTES_P9_SOLD
 ------------------------------------------------------------------------------------------------------------------------
-SELECT  
-    	to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       RPAD('C_BTR', 12)||
-       'M'||
-       :MASYSDATE||
-       'P9'||
-       RPAD(' ', 10)||  -- longueur : 1+2+7
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
-       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||
-       RPAD(' ', 40)||
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_S',40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074 
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END || -- P9 1.16 :: M72074 
-    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9  -- P9 1.16
-	   -- FIN LFD
-       RPAD(' ', 20)||
-       NVL(C_ENR.CD_NAT_DEPRE, ' ')||
-       NVL(C_ENR.CD_PERIM_PROV, ' ')||
-       RPAD(' ', 12)||
-       --22/01/2019 CDS Atos (SQN) US 656
-	   --RPAD(' ', 20)||
-	   -- 18/04/2019 - CDS ATOS (LFD) - US 774
-	   --'2'||
-	   NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')|| -- 2.4
-	   -- FIN LFD
-	   --05/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-	   RPAD(' ', 13)||
-	   --fin EMM
-	   --Fin SQN
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0))||
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_SOLD),0))||
-       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||
-       RPAD(NVL(C_ENR.CD_PCCO_SOLD, ' '),12)||
-       --05/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-		-- Debut section 4 -COMPLEMENT DONNEES CLE DE REFERENCE
-		RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)|| -- 16/11/2022 - Mantis 64443 - Correction du Score 7 P9 1.20
-		RPAD(' ', 5)||
-		RPAD(' ', 30)||
-		RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||
-		RPAD(NVL(C_ENR.CD_PCCO_SOLD, ' '),12)||
-		pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0))||
-        RPAD(' ', 12)||
-		RPAD(' ', 19)||
-		LPAD(' ', 3512)   --4000 - 488
+select
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P9)     EXATO
+       RPAD('C_BTR', 12)||';'||   -- 0.3 (P9)     EXATO
+       'M'||';'||   -- 0.4 (P9)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
+       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (P9)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (P9)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (P9)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (P9)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P9)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (P9)     EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_S',40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
+       NVL(C_ENR.CD_NAT_DEPRE, ' ')||';'||   -- P9 2.3       EXATO
+       NVL(C_ENR.CD_PERIM_PROV, ' ')||';'||   -- P9 2.1       EXATO
+       RPAD(' ', 12)||';'||   -- P9 2.2       EXATO
+       NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
+       RPAD(' ', 13)||';'||   -- P9 2.99      EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0))||';'||   -- P9 3.2       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_SOLD),0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 3.1       EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_SOLD, ' '),12)||';'||   -- P9 3.15      EXATO
+       RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)||';'||   -- P9 1.20      EXATO
+       RPAD(' ', 5)||';'||   -- P9 4.1       EXATO
+       RPAD(' ', 30)||';'||   -- P9 4.99      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 50.1      EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_SOLD, ' '),12)||';'||   -- P9 50.10     EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0))||';'||   -- P9 50.11     EXATO
+       RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
+       RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
+       RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
      as lignedetail1,  -- debut ligne (taille <= 4000)
      -- (compter 1 blanc de separation entre les 2 champs dans le spool)
        LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
@@ -2072,44 +2033,46 @@ WHERE A_EXTRAIRE                  = 'O'
 --  Developper : KLx_Risques           
 -- ============================================================================================================
 -- DEBUT :: M67006 - spec 2.4
-SELECT  
-  to_char(C_ENR.DT_ARRETE, 'YYYYMMDD')                                         || -- 0.1   :: DT_ARRETE
-  RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)                                         || -- 0.2   :: ENTITE
-  RPAD(NVL(C_ENR.APPLI_SOURCE,'DDR'), 12)                                      || -- 0.3   :: APPLI_SOURCE
-  'M'                                                                          || -- 0.4   :: FREQUENCE TRANSMISSION
-  :MASYSDATE                                                                   || -- 0.5   :: DATE/ HEURE TRAITEMENT
-  'P9'                                                                         || -- 0.6   :: TYPE ENREGISTREMENT
-  RPAD(' ', 10)                                                                || -- 0.7(1) + 0.8(2) 0.9(4) + 0.99(3) = 10
-  RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)                                      || -- 1.1   :: ID_TIERS_CALC
-  RPAD(' ', 10)                                                                || -- 1.2   :: ID_CENTRAL_TIERS
-  RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)                                    || -- 1.4   :: ID_AUTORISATION
-  RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)                                       || -- 1.6   :: ID_LIGNE_DET
-  RPAD(' ', 40)                                                                || -- 1.8   :: IDENTIFIANT SURETE RECUE
-  CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT, 40)           -- 1.11  :: ID_ENGAGEMENT || M72074
-    ELSE RPAD(' ', 40)                                                            -- La regle du spool n'est pas la même que la regle 
-  END                                                                          ||    -- d'alimentation de la table provisions_decotes_p9 
-  CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40)           -- 1.16  :: ID_PROVISION || M72074
-    ELSE  RPAD(' ', 40)                                                         -- La regle du spool n'est pas la même que la regle
-  END                                                                          ||    -- d'alimentation de la table provisions_decotes_p9 
-  RPAD(' ', 20)                                                                || -- 1.99(11) + 1.98(7) + 1.97(2) = 20
-  NVL(C_ENR.CD_NAT_DEPRE, ' ')                                                 || -- 2.3   :: CD_NAT_DEPRE
-  NVL(C_ENR.CD_PERIM_PROV, ' ')                                                || -- 2.1   :: CD_PERIM_PROV
-  RPAD(' ', 12)                                                                || -- 2.2   :: FILLER
-  NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')                                     || -- 2.4   :: ORIGINE_CALCUL_PROVISION
-  RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')                             || -- 2.5   :: CD_TYPE_PROD_BANCAIRE
-  RPAD(' ', 13)                                                                || -- 2.99  :: FILLER
-  pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_DEPRECIATION,0))         || -- 3.2   :: MNT_PROVISION_CRD
-  pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_PROVISION_TRIM_CRD,0))   || -- 3.3   :: MNT_PROVISION_TRIM_CRD
-  RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)                                            || -- 3.1   :: CD_DEVISE
-  RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)                                         || -- 3.15  :: CD_PCCO_CRD
-  RPAD(NVL(C_ENR.SYSTEME_SOURCE,'DDR'), 20)                                    || -- 1.20  :: SYSTEME_SOURCE 
-  RPAD(' ', 5)                                                                 || -- 4.1   :: CODE ENTITE SUCCURSALE
-  RPAD(' ', 30)                                                                || -- 4.99  :: FILLER
-  RPAD(NVL(C_ENR.CD_DEVISE_LIASSE, ' '),3)                                     || -- 50.1  :: CD_DEVISE_LIASSE
-  RPAD(NVL(C_ENR.PCCO_DEPRECIATION, ' '),12)                                   || -- 50.10 :: PCCO_DEPRECIATION
-  pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_DEPRECIATION),0))       || -- 50.11 :: MNT_DEPRECIATION
-  RPAD(' ', 12)                                                                || -- 50.12 :: PCCO - SURCOTES
-  RPAD(' ', 19)                                                                || -- 50.13 :: MONTANT DES SURCOTES
+select
+       to_char(C_ENR.DT_ARRETE, 'YYYYMMDD')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P9)     EXATO
+       RPAD(NVL(C_ENR.APPLI_SOURCE,'DDR'), 12)||';'||   -- 0.3 (P9)     EXATO
+       'M'||';'||   -- 0.4 (P9)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
+       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (P9)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (P9)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (P9)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (P9)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P9)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (P9)     EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT, 40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
+       NVL(C_ENR.CD_NAT_DEPRE, ' ')||';'||   -- P9 2.3       EXATO
+       NVL(C_ENR.CD_PERIM_PROV, ' ')||';'||   -- P9 2.1       EXATO
+       RPAD(' ', 12)||';'||   -- P9 2.2       EXATO
+       NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
+       RPAD(' ', 13)||';'||   -- P9 2.99      EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_DEPRECIATION,0))||';'||   -- P9 3.2       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_PROVISION_TRIM_CRD,0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 3.1       EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||';'||   -- P9 3.15      EXATO
+       RPAD(NVL(C_ENR.SYSTEME_SOURCE,'DDR'), 20)||';'||   -- P9 1.20      EXATO
+       RPAD(' ', 5)||';'||   -- P9 4.1       EXATO
+       RPAD(' ', 30)||';'||   -- P9 4.99      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_LIASSE, ' '),3)||';'||   -- P9 50.1      EXATO
+       RPAD(NVL(C_ENR.PCCO_DEPRECIATION, ' '),12)||';'||   -- P9 50.10     EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_DEPRECIATION),0))||';'||   -- P9 50.11     EXATO
+       RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
+       RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
+       RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
   LPAD(' ', 3512) as lignedetail1                                               , -- debut ligne (taille <= 4000) :: 4000 - 488
   --- compter 1 blanc de separation entre les 2 champs dans le spool
   LPAD(' ', 1098) as lignedetail2 -- fin de ligne -- Mantis 11841
@@ -5519,48 +5482,45 @@ select
 -- N13: a partir de P_UTLF_P9_EQU101             
 ------------------------------------------------------------------------------------------------------------------------
 select
-		RPAD(TO_CHAR(C_ENR.DT_ARRETE,'YYYYMMDD'),8,' ')||
-		RPAD(TO_CHAR(C_ENR.CD_CONSO_CPT),5,' ')||
-		RPAD('C_DDR',12,' ')||     -- 18/02/2019 - CDS ATOS (GBD) - US731  - a remplacer ? (si oui maj RG d'alim)
-		'M'||
-		:MASYSDATE||
-		'P9'||
-		RPAD(' ',1)||
-		RPAD(' ',2)||
-		RPAD(' ',7)||
-		RPAD(NVL(C_ENR.ID_TIERS_CALC,' '),20,' ')||
-		--RPAD(NVL(C_ENR.ID_CENTRAL_TIERS,' '),10,' ')||
-		RPAD(' ', 10)||
-		RPAD(NVL(C_ENR.ID_AUTORISATION,' '),30,' ')||
-		RPAD(NVL(C_ENR.ID_LIGNE_DET,' '),30,' ')||
-		RPAD(' ',40)||
-        CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT,40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074
-        CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END ||  --P9 1.16 :: M72074
-    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9 
-		RPAD(' ',20)||
-		RPAD(NVL(C_ENR.CD_NAT_DEPRE,' '),1,' ')||
-		RPAD(NVL(C_ENR.CD_PERIM_PROV,' '),1,' ')||
-		RPAD(' ',12)||
-		--09/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-		RPAD(' ',1)||
-		RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-		RPAD(' ',13)||
-		--Fin EMM
-		pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||
-		pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0))||
-		RPAD(NVL(C_ENR.CD_DEVISE,' '),3,' ')||
-		RPAD(NVL(C_ENR.CD_PCCO_CRD,' '),12,' ')||
-		--09/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-		-- Debut section 4 -COMPLEMENT DONNEES CLE DE REFERENCE
-		RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)|| -- 16/11/2022 - Mantis 64443 - Correction du Score 7 P9 1.20
-		RPAD(' ',5)||
-		RPAD(' ',30)||
-		RPAD(NVL(C_ENR.CD_DEVISE,' '),3,' ')|| -- 50 donnees comptables
-		RPAD(NVL(C_ENR.CD_PCCO_CRD,' '),12,' ')||
-		pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PROVISION_CRD) ||
-		RPAD(' ',12)||
-		RPAD(' ',19)||
-		LPAD(' ', 3512)   --4000 - 488
+       RPAD(TO_CHAR(C_ENR.DT_ARRETE,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(TO_CHAR(C_ENR.CD_CONSO_CPT),5,' ')||';'||   -- 0.2 (P9)     EXATO
+       RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P9)     EXATO
+       'M'||';'||   -- 0.4 (P9)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
+       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(' ',1)||';'||   -- 0.7 (P9)     EXATO
+       RPAD(' ',2)||';'||   -- 0.8 (P9)     EXATO
+       RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (P9)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC,' '),20,' ')||';'||   -- 1.1 (P9)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION,' '),30,' ')||';'||   -- 1.4 (P9)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET,' '),30,' ')||';'||   -- 1.6 (P9)     EXATO
+       RPAD(' ',40)||';'||   -- 1.8 (P9)     EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT,40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
+       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
+       RPAD(NVL(C_ENR.CD_NAT_DEPRE,' '),1,' ')||';'||   -- P9 2.3       EXATO
+       RPAD(NVL(C_ENR.CD_PERIM_PROV,' '),1,' ')||';'||   -- P9 2.1       EXATO
+       RPAD(' ',12)||';'||   -- P9 2.2       EXATO
+       RPAD(' ',1)||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
+       RPAD(' ',13)||';'||   -- P9 2.99      EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||';'||   -- P9 3.2       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE,' '),3,' ')||';'||   -- P9 3.1       EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_CRD,' '),12,' ')||';'||   -- P9 3.15      EXATO
+       RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)||';'||   -- P9 1.20      EXATO
+       RPAD(' ',5)||';'||   -- P9 4.1       EXATO
+       RPAD(' ',30)||';'||   -- P9 4.99      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE,' '),3,' ')||';'||   -- P9 50.1      EXATO
+       RPAD(NVL(C_ENR.CD_PCCO_CRD,' '),12,' ')||';'||   -- P9 50.10     EXATO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PROVISION_CRD)||';'||   -- P9 50.11     EXATO
+       RPAD(' ',12)||';'||   -- P9 50.12     EXATO
+       RPAD(' ',19)||';'||   -- P9 50.13     EXATO
+       RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
 		as lignedetail1,  -- debut ligne (taille <= 4000)
 		-- (compter 1 blanc de separation entre les 2 champs dans le spool)
 		LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 

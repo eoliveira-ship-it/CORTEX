@@ -29,18 +29,48 @@ import align_v44 as A                 # noqa: E402  (tokenize e width)
 sys.stdout = _o
 
 FONTE = '030_spool_Extract_CRRCORP_vPACT.sql'
-A.lines = open(FONTE, encoding='latin-1').read().split('\n')
 
-# blocos de cada pave no spool vPACT (1-based, do 'select' ao ';' do WHERE).
-# O P1 nao esta aqui: tem o seu gerador proprio.
-BLOCOS = {
-    'C1': [(143, 286), (294, 425)],
-    'F1': [(437, 540)],
-    'F2': [(549, 601)],
-    'P2': [(1015, 1388)],
-    'M1': [(1398, 1601)],
-    'P9': [(1615, 1667), (1689, 1742), (1767, 1808), (4165, 4213)],
+# A tabela do FROM identifica o pave. Os blocos acham-se assim, e nao por numero
+# de linha, porque o gerador do P1 ja desloca o ficheiro: o mesmo codigo serve
+# para medir no spool vPACT e para escrever no ficheiro que ja leva o P1 novo.
+TABELAS = {
+    'C1': 'tie_tiers_c1_c5',
+    'F1': 'AUTORISATION_F1',
+    'F2': 'AUTORISATION_DETAIL_F2',
+    'P2': 'ENG_CORP_P2',
+    'M1': 'SURETE_M1',
+    'P9': 'PROVISIONS_DECOTES_P9',
 }
+
+
+def acha_blocos(lines):
+    """{pave: [(primeira linha, ultima linha)]}, 1-based, do 'select' ao ';'.
+
+    O P9 tem um subselect sobre a ENG_CORP_P1 dentro do WHERE: por isso sobe-se
+    do FROM ate ao 'select' (o de cima) e desce-se ate ao primeiro ';' depois do
+    FROM, que e o fim da instrucao."""
+    out = {}
+    for pave, tab in TABELAS.items():
+        for i, ln in enumerate(lines, 1):
+            if not re.search(r'\b' + tab + r'\b\s*\w*\s*$', ln, re.I):
+                continue
+            if not re.search(r'from', lines[i - 2] + ln, re.I):
+                continue
+            a = max(j for j in range(1, i)
+                    if re.match(r'^\s*select\s*$', lines[j - 1], re.I))
+            b = next(j for j in range(i, len(lines)) if ';' in lines[j - 1])
+            out.setdefault(pave, []).append((a, b))
+    return out
+
+
+def carrega_fonte(caminho=FONTE):
+    """Aponta o tokenize do align_v44 a este ficheiro. Devolve (linhas, blocos)."""
+    A.lines = open(caminho, encoding='latin-1').read().split(chr(10))
+    return A.lines, acha_blocos(A.lines)
+
+
+LINHAS, BLOCOS = carrega_fonte()
+
 BRANCO = re.compile(r"^[LR]PAD\s*\(\s*'\s*'\s*,\s*\d+\s*\)$", re.I)
 
 
@@ -53,11 +83,48 @@ def regua(pave):
     return out
 
 
+def parte_concat(s):
+    """Parte 'a||b||c' nos '||' de fora dos parenteses."""
+    out, cur, d = [], '', 0
+    i = 0
+    while i < len(s):
+        if s[i] == '(':
+            d += 1
+        elif s[i] == ')':
+            d -= 1
+        if d == 0 and s[i:i + 2] == '||':
+            out.append(cur)
+            cur = ''
+            i += 2
+            continue
+        cur += s[i]
+        i += 1
+    out.append(cur)
+    return [x for x in (p.strip() for p in out) if x]
+
+
+def largura(raw):
+    """A largura do token. Alem do que o align_v44 mede, sabe somar uma emenda
+    posta entre parenteses -- '(a||b||c)' --, que e como o gen_spool_paves.py
+    escreve os campos que o spool tinha partidos em varios pedacos."""
+    w = A.width(raw)
+    if w is not None:
+        return w
+    s = raw.strip()
+    if s.startswith('(') and s.endswith(')'):
+        partes = parte_concat(s[1:-1])
+        if len(partes) > 1:
+            ws = [largura(p) for p in partes]
+            if all(x is not None for x in ws):
+                return sum(ws)
+    return None
+
+
 def tokens(a, b):
     """[(inicio 1-based, largura, raw, e_branco)] do bloco."""
     out, pos = [], 1
     for t in A.tokenize(a - 1, b):
-        w = A.width(t['raw'])
+        w = largura(t['raw'])
         raw = re.sub(r'\s+', ' ', t['raw']).strip()
         out.append((pos, w, raw, bool(BRANCO.match(raw))))
         pos += w or 0
