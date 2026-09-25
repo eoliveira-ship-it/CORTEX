@@ -172,12 +172,12 @@ spool &1/&2 append;
 -- N01a: a partir de C_C1 
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (C1)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (C1)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (C1)     EXATO
-       ( CASE WHEN C_ENR.FLAG_HN = 'N' THEN RPAD('C_BTR', 12) ELSE RPAD('C_DDR', 12) END)||';'||   -- 0.3 (C1)     EXATO
-       'M'||';'||   -- 0.4 (C1)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (C1)     EXATO
-       'C1'||';'||   -- 0.6 (C1)     EXATO
+       RPAD(NVL(( CASE WHEN C_ENR.FLAG_HN = 'N' THEN RPAD('C_BTR', 12) ELSE RPAD('C_DDR', 12) END), ' '), 12)||';'||   -- 0.3 (C1)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (C1)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (C1)     EXATO
+       RPAD(NVL('C1', ' '), 2)||';'||   -- 0.6 (C1)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (C1)     BRANCO
        RPAD(' ', 9)||';'||   -- 0.99 (C1)    BRANCO
        RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (C1)     EXATO
@@ -189,7 +189,7 @@ select
        RPAD(' ', 40)||';'||   -- 1.16 (C1)    EXATO
        RPAD(' ', 20)||';'||   -- 1.99 (C1)    EXATO
        RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
-       TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')||';'||   -- C1 4.22      EXATO
+       RPAD(NVL(TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS'), ' '), 14)||';'||   -- C1 4.22      EXATO
        RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||';'||   -- C1 4.30      EXATO
        RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||';'||   -- C1 4.31      EXATO
        RPAD(NVL(C_ENR.CD_NUTS, ' '), 5)||';'||   -- C1 4.32      EXATO
@@ -228,7 +228,7 @@ select
        RPAD(NVL(C_ENR.CD_MOTIF_NOTE, ' '), 3)||';'||   -- C1 4.4       EXATO
        RPAD(NVL(C_ENR.NOTE_NAFA, ' '),2)||';'||   -- C1 4.19      EXATO
        RPAD(NVL(C_ENR.NOTE_APR_CORR_GRPE,' '),2)||';'||   -- C1 4.20      EXATO
-       ' '||';'||   -- C1 4.21      EXATO
+       RPAD(NVL(' ', ' '), 1)||';'||   -- C1 4.21      EXATO
        RPAD(NVL(C_ENR.CD_GRILLE_NOTE, ' '), 46)||';'||   -- C1 4.5       EXATO
        RPAD(NVL(C_ENR.CD_CATEG_CONTREPARTIE, ' '), 5)||';'||   -- C1 4.6       EXATO
        RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BAL_TIERS, ' '), 3)||';'||   -- C1 4.7       EXATO
@@ -251,14 +251,14 @@ select
        RPAD(NVL(C_ENR.TOP_CA_CONSO, ' '), 1)||';'||   -- C1 5.3       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_CA, ' '), 3)||';'||   -- C1 5.4       EXATO
        LPAD(NVL(to_char(C_ENR.ANNEE_CA), ' '), 4, ' ')||';'||   -- C1 5.5       EXATO
-       ' '||';'||   -- C1 5.6       EXATO
+       RPAD(NVL(' ', ' '), 1)||';'||   -- C1 5.6       EXATO
        LPAD(nvl(C_ENR.NBRE_JOUR_EXERCICE, 0), 3, 0)||';'||   -- C1 8.1       EXATO
-       NVL(C_ENR.NATURE_CA, ' ')||';'||   -- C1 8.2       EXATO
+       RPAD(NVL(C_ENR.NATURE_CA, ' '), 1)||';'||   -- C1 8.2       EXATO
        LPAD(NVL(C_ENR.CA_IFRS, 0),12, 0)||';'||   -- C1 8.9       EXATO
-       (NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0))||';'||   -- C1 8.10      EMENDA
-       ' '||';'||   -- C1 99.98     EXATO
+       RPAD(NVL((NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0)), ' '), 13)||';'||   -- C1 8.10      EMENDA
+       RPAD(NVL(' ', ' '), 1)||';'||   -- C1 99.98     EXATO
        RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '),6)||';'||   -- C1 8.3       EXATO
-       NVL(C_ENR.STATUT_ACTIVITE_LOC,'A')||';'||   -- C1 8.4       EXATO
+       RPAD(NVL(C_ENR.STATUT_ACTIVITE_LOC,'A'), 1)||';'||   -- C1 8.4       EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||';'||   -- C1 8.5       EXATO
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||';'||   -- C1 8.6       EXATO
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||';'||   -- C1 8.7       EXATO
@@ -284,12 +284,12 @@ select
 -- N01b: a partir de C_C2 
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (C1)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (C1)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (C1)     EXATO
        RPAD('R_BTR', 12)||';'||   -- 0.3 (C1)     EXATO
-       'M'||';'||   -- 0.4 (C1)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (C1)     EXATO
-       'C1'||';'||   -- 0.6 (C1)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (C1)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (C1)     EXATO
+       RPAD(NVL('C1', ' '), 2)||';'||   -- 0.6 (C1)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (C1)     BRANCO
        RPAD(' ', 9)||';'||   -- 0.99 (C1)    BRANCO
        RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (C1)     EXATO
@@ -301,7 +301,7 @@ select
        RPAD(' ', 40)||';'||   -- 1.16 (C1)    EXATO
        RPAD(' ', 20)||';'||   -- 1.99 (C1)    EXATO
        RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
-       TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')||';'||   -- C1 4.22      EXATO
+       RPAD(NVL(TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS'), ' '), 14)||';'||   -- C1 4.22      EXATO
        RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||';'||   -- C1 4.30      EXATO
        RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||';'||   -- C1 4.31      EXATO
        RPAD(NVL(C_ENR.CD_NUTS, ' '), 5)||';'||   -- C1 4.32      EXATO
@@ -340,7 +340,7 @@ select
        RPAD(NVL(C_ENR.CD_MOTIF_NOTE, ' '), 3)||';'||   -- C1 4.4       EXATO
        RPAD(NVL(C_ENR.NOTE_NAFA, ' '),2)||';'||   -- C1 4.19      EXATO
        RPAD(NVL(C_ENR.NOTE_APR_CORR_GRPE,' '),2)||';'||   -- C1 4.20      EXATO
-       ' '||';'||   -- C1 4.21      EXATO
+       RPAD(NVL(' ', ' '), 1)||';'||   -- C1 4.21      EXATO
        RPAD(NVL(C_ENR.CD_GRILLE_NOTE, ' '), 46)||';'||   -- C1 4.5       EXATO
        RPAD(NVL(C_ENR.CD_CATEG_CONTREPARTIE, ' '), 5)||';'||   -- C1 4.6       EXATO
        RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BAL_TIERS, ' '), 3)||';'||   -- C1 4.7       EXATO
@@ -363,14 +363,14 @@ select
        RPAD(NVL(C_ENR.TOP_CA_CONSO, ' '), 1)||';'||   -- C1 5.3       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_CA, ' '), 3)||';'||   -- C1 5.4       EXATO
        LPAD(NVL(to_char(C_ENR.ANNEE_CA), ' '), 4, ' ')||';'||   -- C1 5.5       EXATO
-       ' '||';'||   -- C1 5.6       EXATO
+       RPAD(NVL(' ', ' '), 1)||';'||   -- C1 5.6       EXATO
        LPAD(nvl(C_ENR.NBRE_JOUR_EXERCICE, 0), 3, 0)||';'||   -- C1 8.1       EXATO
-       NVL(C_ENR.NATURE_CA, ' ')||';'||   -- C1 8.2       EXATO
+       RPAD(NVL(C_ENR.NATURE_CA, ' '), 1)||';'||   -- C1 8.2       EXATO
        LPAD(NVL(C_ENR.CA_IFRS, 0),12, 0)||';'||   -- C1 8.9       EXATO
-       (NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0))||';'||   -- C1 8.10      EMENDA
-       ' '||';'||   -- C1 99.98     EXATO
+       RPAD(NVL((NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0)), ' '), 13)||';'||   -- C1 8.10      EMENDA
+       RPAD(NVL(' ', ' '), 1)||';'||   -- C1 99.98     EXATO
        RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '),6)||';'||   -- C1 8.3       EXATO
-       NVL(C_ENR.STATUT_ACTIVITE_LOC,' ')||';'||   -- C1 8.4       EXATO
+       RPAD(NVL(C_ENR.STATUT_ACTIVITE_LOC,' '), 1)||';'||   -- C1 8.4       EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||';'||   -- C1 8.5       EXATO
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||';'||   -- C1 8.6       EXATO
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||';'||   -- C1 8.7       EXATO
@@ -400,12 +400,12 @@ select
 -- N02: a partir de P_UTLF_AUTORISATION_F1     
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (F1)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (F1)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (F1)     EXATO
        RPAD(C_ENR.APPLI_SOURCE, 12)||';'||   -- 0.3 (F1)     EXATO
-       'M'||';'||   -- 0.4 (F1)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (F1)     EXATO
-       'F1'||';'||   -- 0.6 (F1)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (F1)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (F1)     EXATO
+       RPAD(NVL('F1', ' '), 2)||';'||   -- 0.6 (F1)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (F1)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (F1)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (F1)     BRANCO
@@ -428,8 +428,8 @@ select
        RPAD(NVL(C_ENR.cd_objet_credit,' '), 2)||';'||   -- F1 2.9       EXATO
        RPAD(NVL(C_ENR.cd_hierarchie_accord,' '), 2)||';'||   -- F1 2.10      EXATO
        RPAD(NVL(C_ENR.cd_confirmation_auto,' '), 1)||';'||   -- F1 2.11      EXATO
-       pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_INITIAL,0))||';'||   -- F1 2.12      EXATO
-       pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_REVISE,0))||';'||   -- F1 2.13      EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_INITIAL,0)), ' '), 19)||';'||   -- F1 2.12      EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_GLOBAL_REVISE,0)), ' '), 19)||';'||   -- F1 2.13      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_AUTO, ' '), 3)||';'||   -- F1 2.14      EXATO
        RPAD(NVL(C_ENR.top_auto_specifique,' '), 1)||';'||   -- F1 2.16      EXATO
        RPAD(' ', 4)||';'||   -- F1 2.17      EXATO
@@ -445,26 +445,26 @@ select
        RPAD(NVL(C_ENR.cd_entite_groupe_pilote,' '), 5)||';'||   -- F1 4.3       EXATO
        RPAD(' ', 20)||';'||   -- F1 4.4       EXATO
        RPAD(' ', 10)||';'||   -- F1 4.5       EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TT_TRANCHES),0))||';'||   -- F1 4.6       EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TT_TRANCHES),0))||';'||   -- F1 4.7       EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TT_TRANCHES),0)), ' '), 19)||';'||   -- F1 4.6       EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TT_TRANCHES),0)), ' '), 19)||';'||   -- F1 4.7       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TT_TRANCHES,'EUR'), 3)||';'||   -- F1 4.8       EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TRANCHE_AUT),0))||';'||   -- F1 4.9       EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TRANCHE_AUT),0))||';'||   -- F1 4.10      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_INIT_GLOB_BANQ_TRANCHE_AUT),0)), ' '), 19)||';'||   -- F1 4.9       EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TRANCHE_AUT),0)), ' '), 19)||';'||   -- F1 4.10      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TRANCHE_AUT,'EUR'), 3)||';'||   -- F1 4.11      EXATO
-       CASE WHEN C_ENR.TX_PART_RISK_TRANCHE is null THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(C_ENR.TX_PART_RISK_TRANCHE) END||';'||   -- F1 4.12      EXATO
-       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- F1 4.13      EMENDA
-       (RPAD(' ', 1)||RPAD(' ', 4)||RPAD(' ', 5))||';'||   -- F1 4.14      EMENDA
-       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- F1 4.15      EMENDA
+       RPAD(NVL(CASE WHEN C_ENR.TX_PART_RISK_TRANCHE is null THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(C_ENR.TX_PART_RISK_TRANCHE) END, ' '), 10)||';'||   -- F1 4.12      EXATO
+       RPAD(NVL((RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2)), ' '), 19)||';'||   -- F1 4.13      EMENDA
+       RPAD(NVL((RPAD(' ', 1)||RPAD(' ', 4)||RPAD(' ', 5)), ' '), 10)||';'||   -- F1 4.14      EMENDA
+       RPAD(NVL((RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2)), ' '), 19)||';'||   -- F1 4.15      EMENDA
        RPAD(' ', 4)||';'||   -- F1 4.16      EXATO
-       CASE WHEN C_ENR.TOP_SYNDICATION = 'Y' THEN 'L' ELSE ' ' END||';'||   -- F1 4.17      EXATO
+       RPAD(NVL(CASE WHEN C_ENR.TOP_SYNDICATION = 'Y' THEN 'L' ELSE ' ' END, ' '), 1)||';'||   -- F1 4.17      EXATO
        RPAD('0', 1)||';'||   -- F1 4.18      EXATO
        RPAD('T', 1)||';'||   -- F1 4.19      EXATO
        RPAD(' ', 13)||';'||   -- F1 4.99      EXATO
-       NVL(C_ENR.top_titrisation,' ')||';'||   -- F1 5.1       EXATO
+       RPAD(NVL(C_ENR.top_titrisation,' '), 1)||';'||   -- F1 5.1       EXATO
        RPAD(' ', 20)||';'||   -- F1 5.2       EXATO
        RPAD(' ', 10)||';'||   -- F1 5.7       EXATO
        RPAD(' ', 3)||';'||   -- F1 5.3       EXATO
-       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- F1 5.4       EMENDA
+       RPAD(NVL((RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2)), ' '), 19)||';'||   -- F1 5.4       EMENDA
        RPAD(' ', 3)||';'||   -- F1 5.5       EXATO
        RPAD(' ', 20)||';'||   -- F1 5.99      EXATO
        RPAD(NVL(C_ENR.cd_niv_seniorite,' '), 3)||';'||   -- F1 6.1       EXATO
@@ -488,12 +488,12 @@ select
 -- N03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (F2)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (F2)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (F2)     EXATO
        RPAD('C_BTR', 12)||';'||   -- 0.3 (F2)     EXATO
-       'M'||';'||   -- 0.4 (F2)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (F2)     EXATO
-       'F2'||';'||   -- 0.6 (F2)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (F2)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (F2)     EXATO
+       RPAD(NVL('F2', ' '), 2)||';'||   -- 0.6 (F2)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (F2)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (F2)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (F2)     BRANCO
@@ -509,9 +509,9 @@ select
        RPAD(' ', 7)||';'||   -- 1.98 (F2)    BRANCO
        RPAD(' ', 2)||';'||   -- 1.97 (F2)    BRANCO
        RPAD(NVL(C_ENR.CD_TYPE_RISQUE, ' '), 6)||';'||   -- F2 2.1       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_ORIGINE),0))||';'||   -- F2 2.4       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_REVISE),0))||';'||   -- F2 2.5       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_LIGNE),0))||';'||   -- F2 2.6       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_ORIGINE),0)), ' '), 19)||';'||   -- F2 2.4       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_REVISE),0)), ' '), 19)||';'||   -- F2 2.5       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_AUTORISE_LIGNE),0)), ' '), 19)||';'||   -- F2 2.6       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_LIGNE_AUTO, ' '), 3)||';'||   -- F2 2.7       EXATO
        RPAD(' ', 20)||';'||   -- F2 2.9       EXATO
        RPAD(' ', 10)||';'||   -- F2 2.10      EXATO
@@ -1233,12 +1233,12 @@ select
 -- N05: a partir de P_UTLF_ENG_CORP_P2   
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (P2)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (P2)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P2)     EXATO
        RPAD(NVL(C_ENR.APPLI_SOURCE,'C_BTR'), 12)||';'||   -- 0.3 (P2)     EXATO
-       NVL(C_ENR.FREQUENCE,'M')||';'||   -- 0.4 (P2)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (P2)     EXATO
-       'P2'||';'||   -- 0.6 (P2)     EXATO
+       RPAD(NVL(C_ENR.FREQUENCE,'M'), 1)||';'||   -- 0.4 (P2)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (P2)     EXATO
+       RPAD(NVL('P2', ' '), 2)||';'||   -- 0.6 (P2)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (P2)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (P2)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (P2)     BRANCO
@@ -1255,35 +1255,35 @@ select
        RPAD(' ', 2)||';'||   -- 1.97 (P2)    BRANCO
        RPAD(NVL(C_ENR.CD_METHODO_BALE2, 'STD'),7)||';'||   -- P2 1.1       EXATO
        RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||';'||   -- P2 1.2       EXATO
-       NVL(C_ENR.CODE_TRAIT_GRR,'Y')||';'||   -- P2 4.34      EXATO
+       RPAD(NVL(C_ENR.CODE_TRAIT_GRR,'Y'), 1)||';'||   -- P2 4.34      EXATO
        RPAD(nvl(C_ENR.CD_TYPE_RISQUE,' '),6)||';'||   -- P2 2.0       EXATO
-       NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B')||';'||   -- P2 2.4       EXATO
+       RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B'), 1)||';'||   -- P2 2.4       EXATO
        RPAD(nvl(C_ENR.CD_LIGNE_METIER,' '),5)||';'||   -- P2 2.6       EXATO
        RPAD(nvl(C_ENR.CD_PORTEFEUILLE_BALE2,' '),3)||';'||   -- P2 2.18      EXATO
        RPAD(nvl(C_ENR.CD_NATURE_OPE,' '),12)||';'||   -- P2 2.29      EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_ENG, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 3.2       EXATO
-       NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630')||';'||   -- P2 3.4       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630'), 8)||';'||   -- P2 3.4       EXATO
        RPAD(' ', 10)||';'||   -- P2 16.6      EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF)||';'||   -- P2 18.1      EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_CCF)||';'||   -- P2 18.10     EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_EAD)||';'||   -- P2 18.5      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF), ' '), 10)||';'||   -- P2 18.1      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_CCF), ' '), 10)||';'||   -- P2 18.10     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_EAD), ' '), 19)||';'||   -- P2 18.5      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_EAD, 'EUR'), 3)||';'||   -- P2 18.6      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '), 3)||';'||   -- P2 18.18     EXATO
        RPAD(' ', 50)||';'||   -- P2 3.98      EXATO
        RPAD(NVL(C_ENR.TOP_RESTRUCTURATION, ' '), 2)||';'||   -- P2 21.1      EXATO
        RPAD(NVL(to_char(C_ENR.DT_RESTRUCTURATION, 'YYYYMMDD'), ' '),8)||';'||   -- P2 21.2      EXATO
-       NVL(C_ENR.CD_IMP_PRUDENT,'N')||';'||   -- P2 4.1       EXATO
-       NVL(C_ENR.CD_ENG_DTX,'N')||';'||   -- P2 5.2       EXATO
+       RPAD(NVL(C_ENR.CD_IMP_PRUDENT,'N'), 1)||';'||   -- P2 4.1       EXATO
+       RPAD(NVL(C_ENR.CD_ENG_DTX,'N'), 1)||';'||   -- P2 5.2       EXATO
        RPAD(NVL(to_char(C_ENR.DT_EGT_DTX, 'YYYYMMDD'), ' '),8)||';'||   -- P2 5.3       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PNU),0))||';'||   -- P2 4.16      EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PNU),0)), ' '), 19)||';'||   -- P2 4.16      EXATO
        RPAD(nvl(C_ENR.CD_DEVISE_PNU, ' '), 3)||';'||   -- P2 4.17      EXATO
        RPAD(nvl(C_ENR.PCCO_MNT_PNU, ' '), 12)||';'||   -- P2 4.18      EXATO
-       NVL(C_ENR.CD_CIRCUIT_DISTRIB,'CL')||';'||   -- P2 4.23      EXATO
+       RPAD(NVL(C_ENR.CD_CIRCUIT_DISTRIB,'CL'), 2)||';'||   -- P2 4.23      EXATO
        RPAD(' ', 1)||';'||   -- P2 5.6       BRANCO
        RPAD(' ', 20)||';'||   -- P2 5.7       BRANCO
        RPAD(' ', 10)||';'||   -- P2 5.8       BRANCO
        RPAD(' ', 2)||';'||   -- P2 3.33      BRANCO
-       NVL(C_ENR.IND_ACCORD_FUSION,'N')||';'||   -- P2 5.10      EXATO
+       RPAD(NVL(C_ENR.IND_ACCORD_FUSION,'N'), 1)||';'||   -- P2 5.10      EXATO
        RPAD(' ', 25)||';'||   -- P2 5.11      EXATO
        RPAD(' ', 3)||';'||   -- P2 16.3      BRANCO
        RPAD(' ', 5)||';'||   -- P2 11.33     BRANCO
@@ -1301,7 +1301,7 @@ select
        RPAD(' ', 1)||';'||   -- P2 16.22     EXATO
        RPAD(' ', 2)||';'||   -- P2 16.23     EXATO
        RPAD(' ', 3)||';'||   -- P2 16.99     EXATO
-       NVL(C_ENR.TOP_PRODUIT,'N')||';'||   -- P2 4.31      EXATO
+       RPAD(NVL(C_ENR.TOP_PRODUIT,'N'), 1)||';'||   -- P2 4.31      EXATO
        RPAD(' ', 1)||';'||   -- P2 4.32      BRANCO
        RPAD(' ', 10)||';'||   -- P2 11.13     BRANCO
        RPAD(' ', 10)||';'||   -- P2 11.14     BRANCO
@@ -1309,20 +1309,20 @@ select
        RPAD(' ', 1)||';'||   -- P2 4.36      BRANCO
        RPAD(' ', 1)||';'||   -- P2 4.49      EXATO
        RPAD(' ', 29)||';'||   -- P2 4.99      EXATO
-       Substr(pack_utilitaire.F_FORMAT_TAUX (C_ENR.MATURITE_EFF) ,4,6)||';'||   -- P2 3.20      EXATO
-       NVL(C_ENR.TOP_ENG, 'H')||';'||   -- P2 4.8       EXATO
+       RPAD(NVL(Substr(pack_utilitaire.F_FORMAT_TAUX (C_ENR.MATURITE_EFF) ,4,6), ' '), 6)||';'||   -- P2 3.20      EXATO
+       RPAD(NVL(C_ENR.TOP_ENG, 'H'), 1)||';'||   -- P2 4.8       EXATO
        RPAD(' ', 3)||';'||   -- P2 12.16     BRANCO
        RPAD(' ', 2)||';'||   -- P2 4.43      BRANCO
        RPAD(' ', 5)||';'||   -- P2 4.44      BRANCO
        RPAD(' ', 3)||';'||   -- P2 3.99      BRANCO
-       NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')||';'||   -- P2 3.46      EXATO
-       NVL(C_ENR.RESPECT_COND_REG,'Y')||';'||   -- P2 3.47      EXATO
+       RPAD(NVL(C_ENR.CD_USAGE_BIEN_IMM,' '), 1)||';'||   -- P2 3.46      EXATO
+       RPAD(NVL(C_ENR.RESPECT_COND_REG,'Y'), 1)||';'||   -- P2 3.47      EXATO
        RPAD(' ', 19)||';'||   -- P2 4.25      BRANCO
        RPAD(' ', 3)||';'||   -- P2 4.26      BRANCO
        RPAD(' ', 19)||';'||   -- P2 4.27      BRANCO
        RPAD(' ', 3)||';'||   -- P2 4.28      BRANCO
        RPAD(' ', 2)||';'||   -- P2 3.32      BRANCO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_EL)||';'||   -- P2 4.30      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_EL), ' '), 10)||';'||   -- P2 4.30      EXATO
        RPAD(NVL(C_ENR.CD_METH_IFRS9_PD_ORIG,' '),20)||';'||   -- P2 6.99      EXATO
        RPAD(' ', 1)||';'||   -- P2 4.29      BRANCO
        RPAD(' ', 3)||';'||   -- P2 4.40      BRANCO
@@ -1363,34 +1363,34 @@ select
        RPAD(nvl(C_ENR.NOT_EXT_ORG, ' '), 10)||';'||   -- P2 22.52     EXATO
        RPAD(nvl(C_ENR.ORGA_NOTATION_ORIG, 'I'), 2)||';'||   -- P2 22.6      EXATO
        RPAD(nvl(C_ENR.SEG_NOTATION_ORG, ' '), 2)||';'||   -- P2 22.53     EXATO
-       CASE WHEN C_ENR.GRI_NOT_ORG IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(C_ENR.GRI_NOT_ORG,21)||'FR',' '),46) END||';'||   -- P2 22.54     EXATO
-       CASE WHEN C_ENR.METH_NOTATION_ORG = 'C3' THEN '999' ELSE RPAD(nvl(C_ENR.METH_NOTATION_ORG,' '),3) END||';'||   -- P2 22.55     EXATO
+       RPAD(NVL(CASE WHEN C_ENR.GRI_NOT_ORG IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(C_ENR.GRI_NOT_ORG,21)||'FR',' '),46) END, ' '), 46)||';'||   -- P2 22.54     EXATO
+       RPAD(NVL(CASE WHEN C_ENR.METH_NOTATION_ORG = 'C3' THEN '999' ELSE RPAD(nvl(C_ENR.METH_NOTATION_ORG,' '),3) END, ' '), 3)||';'||   -- P2 22.55     EXATO
        RPAD(nvl(C_ENR.OBJ_FINANCIE,'97'),2)||';'||   -- P2 22.7      EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_CONTRAT_ORIGINE)||';'||   -- P2 22.8      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_CONTRAT_ORIGINE), ' '), 19)||';'||   -- P2 22.8      EXATO
        RPAD(nvl(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR'), 3)||';'||   -- P2 22.9      EXATO
        RPAD(nvl(C_ENR.IND_ECH_FOURNI, ' '), 1)||';'||   -- P2 22.12     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_INT_EF_ORG)||';'||   -- P2 22.13     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_INT_EF_ORG), ' '), 10)||';'||   -- P2 22.13     EXATO
        RPAD(nvl(C_ENR.TYP_TAUX, ' '), 1)||';'||   -- P2 22.14     EXATO
        RPAD(nvl(C_ENR.IND_REF, ' '), 12)||';'||   -- P2 22.15     EXATO
        RPAD(nvl(C_ENR.TYP_AMOR_CAP, ' '), 1)||';'||   -- P2 22.16     EXATO
        RPAD(nvl(C_ENR.PER_AMOR_CAP, ' '), 1)||';'||   -- P2 22.17     EXATO
        RPAD(nvl(C_ENR.PER_PAI_INTERET, ' '), 1)||';'||   -- P2 22.18     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLI_OCTROI)||';'||   -- P2 22.19     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLI_OCTROI), ' '), 10)||';'||   -- P2 22.19     EXATO
        RPAD(nvl(C_ENR.MOD_REMB_CREANCE, ' '), 1)||';'||   -- P2 22.20     EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DATE_PRM_ECHEANCE, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.21     EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_DIF_AMOR, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.22     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAF)||';'||   -- P2 22.23     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAN)||';'||   -- P2 22.24     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAF), ' '), 10)||';'||   -- P2 22.23     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAN), ' '), 10)||';'||   -- P2 22.24     EXATO
        RPAD(nvl(C_ENR.PER_REV_TAUX_UNITE_TMP, ' '), 1)||';'||   -- P2 22.25     EXATO
        LPAD(nvl((C_ENR.PER_REV_TAUX_NBR),0),3,0)||';'||   -- P2 22.26     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLT_PRD_EN_CRS)||';'||   -- P2 22.27     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_ADDTIV)||';'||   -- P2 22.28     EXATO
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_MULTP)||';'||   -- P2 22.29     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLT_PRD_EN_CRS), ' '), 10)||';'||   -- P2 22.27     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_ADDTIV), ' '), 10)||';'||   -- P2 22.28     EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_MULTP), ' '), 10)||';'||   -- P2 22.29     EXATO
        RPAD(nvl(C_ENR.BASE_CALCUL_INTERET, ' '), 7)||';'||   -- P2 22.30     EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DATE_PRE_DEB_FOND, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.31     EXATO
-       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- P2 22.32     EMENDA
+       RPAD(NVL((RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2)), ' '), 19)||';'||   -- P2 22.32     EMENDA
        RPAD(' ', 3)||';'||   -- P2 22.33     EXATO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.CAP_THEO_REST_DU)||';'||   -- P2 22.34     EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.CAP_THEO_REST_DU), ' '), 19)||';'||   -- P2 22.34     EXATO
        RPAD(nvl(C_ENR.DEV_CAP_THEO_REST_DU, ' '), 3)||';'||   -- P2 22.35     EXATO
        RPAD('3', 1)||';'||   -- P2 22.36     EXATO
        RPAD(' ', 8)||';'||   -- P2 22.37     EXATO
@@ -1409,7 +1409,7 @@ select
        RPAD(' ', 10)||';'||   -- P2 22.50     BRANCO
        RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_PALL, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.58     EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_PALL, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.59     EXATO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ECHEANCE_EN_COURS)||';'||   -- P2 22.60     EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ECHEANCE_EN_COURS), ' '), 19)||';'||   -- P2 22.60     EXATO
        RPAD(nvl(C_ENR.DEV_MNT_ECHEANCE_EN_COURS, 'EUR'), 3)||';'||   -- P2 22.61     EXATO
        RPAD(nvl(C_ENR.IND_PRE_POST_FIX, ' '), 1)||';'||   -- P2 22.62     EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_ENG_RENOUV,'YYYYMMDD'),' '), 8)||';'||   -- P2 22.63     EXATO
@@ -1419,7 +1419,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.67     EXATO
        RPAD(nvl(C_ENR.EVT_DECL_GAR, ' '), 2)||';'||   -- P2 22.68     EXATO
        RPAD(' ', 5)||';'||   -- P2 22.70     EXATO
-       CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END||';'||   -- P2 22.71     EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END, ' '), 3)||';'||   -- P2 22.71     EXATO
        RPAD(nvl(C_ENR.BUCKET_IFRS9, ' '), 2)||';'||   -- P2 22.72     EXATO
        RPAD(' ', 10)||';'||   -- P2 22.73     BRANCO
        RPAD(' ', 10)||';'||   -- P2 22.74     BRANCO
@@ -1438,14 +1438,14 @@ select
        RPAD (nvl(C_ENR.CD_METH_IFRS9_CCF,' '), 12)||';'||   -- P2 23.10     EXATO
        RPAD (nvl(C_ENR.CD_METH_IFRS9_TX,' '), 12)||';'||   -- P2 23.11     EXATO
        RPAD(' ', 2)||';'||   -- P2 23.99     EXATO
-       nvl(C_ENR.IND_MOBIL_ACTIF,'1')||';'||   -- P2 26.1      EXATO
+       RPAD(nvl(C_ENR.IND_MOBIL_ACTIF,'1'), 1)||';'||   -- P2 26.1      EXATO
        RPAD (nvl(C_ENR.ELIG_MOB_BANQUE_CENTRALE,' '), 1)||';'||   -- P2 26.2      EXATO
        RPAD (nvl(C_ENR.REF_MOB_ACTIF,' '), 3)||';'||   -- P2 26.3      EXATO
        RPAD (nvl(C_ENR.CD_ORGA_MOBIL,' '), 3)||';'||   -- P2 26.4      EXATO
        RPAD(' ', 20)||';'||   -- P2 26.99     EXATO
        RPAD (nvl(C_ENR.IND_OPE_EFFET_LEVIER,' '), 1)||';'||   -- P2 28.1      EXATO
        RPAD (nvl(C_ENR.IND_SPONSOR_FIN,' '), 1)||';'||   -- P2 28.2      EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS3(C_ENR.MNT_IDEMNITE_RES)||';'||   -- P2 29.1      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS3(C_ENR.MNT_IDEMNITE_RES), ' '), 19)||';'||   -- P2 29.1      EXATO
        RPAD (nvl(C_ENR.CD_DEV_MNT_INDEMNITE,' '), 3)||';'||   -- P2 29.2      EXATO
        RPAD(' ', 19)||';'||   -- P2 27.1      EXATO
        RPAD(' ', 3)||';'||   -- P2 27.2      EXATO
@@ -1455,7 +1455,7 @@ select
        RPAD(' ', 5)||';'||   -- P2 31.1      EXATO
        RPAD(' ', 40)||';'||   -- P2 31.2      EXATO
        RPAD(' ', 40)||';'||   -- P2 31.3      EXATO
-       case when C_ENR.MNT_ENG_DT_SIGN_CTRT is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT) end||';'||   -- P2 31.4      EXATO
+       RPAD(NVL(case when C_ENR.MNT_ENG_DT_SIGN_CTRT is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT) end, ' '), 19)||';'||   -- P2 31.4      EXATO
        RPAD(NVL(C_ENR.IND_RESPO_SOLIDAIRE, ' '),1,' ')||';'||   -- P2 31.5      EXATO
        RPAD (NVL(C_ENR.IND_ISF,'2'), 1)||';'||   -- P2 31.6      EXATO
        RPAD(' ',6)||';'||   -- P2 31.7      EXATO
@@ -1468,14 +1468,14 @@ select
        RPAD(' ',15)||';'||   -- P2 31.14     EXATO
        RPAD(' ',19)||';'||   -- P2 31.15     EXATO
        RPAD(' ',3)||';'||   -- P2 31.16     EXATO
-       case when C_ENR.DUREE_INIT_PRET is not null then '+'||LPAD(C_ENR.DUREE_INIT_PRET,5,'0') else RPAD(' ',6) end||';'||   -- P2 31.17     EXATO
-       case when C_ENR.DUREE_TOTALE_PRET_DATE is not null then '+'||LPAD(C_ENR.DUREE_TOTALE_PRET_DATE,5,'0') else RPAD(' ',6) end||';'||   -- P2 31.18     EXATO
+       RPAD(NVL(case when C_ENR.DUREE_INIT_PRET is not null then '+'||LPAD(C_ENR.DUREE_INIT_PRET,5,'0') else RPAD(' ',6) end, ' '), 6)||';'||   -- P2 31.17     EXATO
+       RPAD(NVL(case when C_ENR.DUREE_TOTALE_PRET_DATE is not null then '+'||LPAD(C_ENR.DUREE_TOTALE_PRET_DATE,5,'0') else RPAD(' ',6) end, ' '), 6)||';'||   -- P2 31.18     EXATO
        RPAD(' ',6)||';'||   -- P2 31.19     EXATO
        RPAD(' ',1)||';'||   -- P2 31.20     EXATO
        RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)||';'||   -- P2 31.21     EXATO
        RPAD(' ',2)||';'||   -- P2 31.22     EXATO
-       case when C_ENR.MNT_FOND_REMIS_DATE is null then RPAD(' ',19) else pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_FOND_REMIS_DATE) end||';'||   -- P2 31.23     EXATO
-       case when C_ENR.DEV_FOND_REMIS_DATE is null then RPAD(' ',3) else RPAD(C_ENR.DEV_FOND_REMIS_DATE,3,' ') end||';'||   -- P2 31.24     EXATO
+       RPAD(NVL(case when C_ENR.MNT_FOND_REMIS_DATE is null then RPAD(' ',19) else pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_FOND_REMIS_DATE) end, ' '), 19)||';'||   -- P2 31.23     EXATO
+       RPAD(NVL(case when C_ENR.DEV_FOND_REMIS_DATE is null then RPAD(' ',3) else RPAD(C_ENR.DEV_FOND_REMIS_DATE,3,' ') end, ' '), 3)||';'||   -- P2 31.24     EXATO
        RPAD(' ',15)||';'||   -- P2 31.25     EXATO
        RPAD(' ',15)||';'||   -- P2 31.26     EXATO
        RPAD(' ',15)||';'||   -- P2 31.27     EXATO
@@ -1524,7 +1524,7 @@ select
        RPAD(' ',12)||';'||   -- P2 50.2      EXATO
        RPAD(' ',19)||';'||   -- P2 50.3      EXATO
        RPAD(nvl(C_ENR.PCCO_MNT_PNU,' '),12)||';'||   -- P2 50.4      EXATO
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_PNU)||';'||   -- P2 50.5      EXATO
+       RPAD(NVL(pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_PNU), ' '), 19)||';'||   -- P2 50.5      EXATO
        RPAD(' ',12)||';'||   -- P2 50.8      EXATO
        RPAD(' ',19)||';'||   -- P2 50.9      EXATO
        RPAD(' ',12)||';'||   -- P2 50.14     EXATO
@@ -1646,12 +1646,12 @@ select
 -- N06: a partir de P_UTLF_SURETE_M1   
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (M1)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (M1)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (M1)     EXATO
        RPAD(C_ENR.APPLI_SOURCE, 12)||';'||   -- 0.3 (M1)     EXATO
-       'M'||';'||   -- 0.4 (M1)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (M1)     EXATO
-       'M1'||';'||   -- 0.6 (M1)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (M1)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (M1)     EXATO
+       RPAD(NVL('M1', ' '), 2)||';'||   -- 0.6 (M1)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (M1)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (M1)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (M1)     BRANCO
@@ -1676,8 +1676,8 @@ select
        RPAD(' ', 10)||';'||   -- M1 3.6       EXATO
        RPAD(nvl(C_ENR.CD_LIEU_DEPOT,' '), 1)||';'||   -- M1 8.11      EXATO
        RPAD(' ', 20)||';'||   -- M1 3.99      EXATO
-       NVL(C_ENR.CD_ETENDUE_SURETE, ' ')||';'||   -- M1 4.1       EXATO
-       NVL(C_ENR.CD_ARROSAGE, ' ')||';'||   -- M1 4.3       EXATO
+       RPAD(NVL(C_ENR.CD_ETENDUE_SURETE, ' '), 1)||';'||   -- M1 4.1       EXATO
+       RPAD(NVL(C_ENR.CD_ARROSAGE, ' '), 1)||';'||   -- M1 4.3       EXATO
        RPAD(' ', 20)||';'||   -- M1 4.99      EXATO
        RPAD(NVL(C_ENR.CD_NATURE_SURETE,' '),7)||';'||   -- M1 5.1       EXATO
        RPAD(' ', 2)||';'||   -- M1 5.2       BRANCO
@@ -1685,9 +1685,9 @@ select
        RPAD(' ', 2)||';'||   -- M1 5.4       BRANCO
        RPAD(' ', 2)||';'||   -- M1 5.5       BRANCO
        RPAD(' ', 20)||';'||   -- M1 5.99      BRANCO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INITIAL)||';'||   -- M1 6.1       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INITIAL), ' '), 19)||';'||   -- M1 6.1       EXATO
        RPAD(' ', 10)||';'||   -- M1 6.97      EXATO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE)||';'||   -- M1 6.3       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE), ' '), 19)||';'||   -- M1 6.3       EXATO
        RPAD(' ', 10)||';'||   -- M1 6.98      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- M1 6.5       EXATO
        RPAD(NVL(to_char(C_ENR.DT_REV_MNT, 'YYYYMMDD'),' '),8)||';'||   -- M1 6.6       EXATO
@@ -1695,11 +1695,11 @@ select
        RPAD(' ', 17)||';'||   -- M1 6.99      EXATO
        RPAD(NVL(to_char(C_ENR.DT_DEB_EFFET, 'YYYYMMDD'), ' '),8)||';'||   -- M1 7.1       EXATO
        RPAD(NVL(to_char(C_ENR.DT_FIN_EFFET, 'YYYYMMDD'), ' '),8)||';'||   -- M1 7.2       EXATO
-       nvl(C_ENR.ELIGIBILITE_SURETE_PERS,' ')||';'||   -- M1 7.5       EXATO
+       RPAD(nvl(C_ENR.ELIGIBILITE_SURETE_PERS,' '), 1)||';'||   -- M1 7.5       EXATO
        RPAD(NVL(C_ENR.cd_pays_recours, ' '), 2)||';'||   -- M1 7.6       REGRA
-       NVL(C_ENR.CD_RANG_SURETE, ' ')||';'||   -- M1 7.7       EXATO
-       NVL(C_ENR.CD_SORTIE_RISQ_PAYS, ' ')||';'||   -- M1 7.8       EXATO
-       NVL(C_ENR.cd_methodo_valorisation, ' ')||';'||   -- M1 7.9       EXATO
+       RPAD(NVL(C_ENR.CD_RANG_SURETE, ' '), 1)||';'||   -- M1 7.7       EXATO
+       RPAD(NVL(C_ENR.CD_SORTIE_RISQ_PAYS, ' '), 1)||';'||   -- M1 7.8       EXATO
+       RPAD(NVL(C_ENR.cd_methodo_valorisation, ' '), 1)||';'||   -- M1 7.9       EXATO
        LPAD(C_ENR.CD_PERIODICITE,5,0)||';'||   -- M1 8.26      EXATO
        LPAD(TO_CHAR(C_ENR.EVT_DECL_GAR),2,0)||';'||   -- M1 7.19      EXATO
        RPAD(' ', 1)||';'||   -- M1 7.20      EXATO
@@ -1713,8 +1713,8 @@ select
        RPAD(' ', 19)||';'||   -- M1 8.35      BRANCO
        RPAD(' ', 3)||';'||   -- M1 8.36      BRANCO
        RPAD(NVL(C_ENR.CD_BOURSE_COTATION, ' '), 2)||';'||   -- M1 8.31      REGRA
-       NVL(C_ENR.TOP_COT_BAL_2, ' ')||';'||   -- M1 8.32      EXATO
-       CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, ' '),-7,5) = 'SEC01' THEN '1 ' ELSE ' ' END||';'||   -- M1 8.1       EXATO
+       RPAD(NVL(C_ENR.TOP_COT_BAL_2, ' '), 1)||';'||   -- M1 8.32      EXATO
+       RPAD(NVL(CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, ' '),-7,5) = 'SEC01' THEN '1 ' ELSE ' ' END, ' '), 2)||';'||   -- M1 8.1       EXATO
        RPAD(' ', 12)||';'||   -- M1 8.2       BRANCO
        RPAD(' ', 1)||';'||   -- M1 8.3       BRANCO
        RPAD(' ', 10)||';'||   -- M1 8.4       BRANCO
@@ -1724,8 +1724,8 @@ select
        RPAD(' ', 20)||';'||   -- M1 8.8       BRANCO
        RPAD(' ', 10)||';'||   -- M1 8.9       BRANCO
        RPAD(NVL(C_ENR.CD_NATIO_EMET, ' '), 2)||';'||   -- M1 8.10      EXATO
-       NVL(C_ENR.CD_PER_LIQUID,' ')||';'||   -- M1 8.37      EXATO
-       NVL(C_ENR.CD_PER_LIQUID2, ' ')||';'||   -- M1 8.38      EXATO
+       RPAD(NVL(C_ENR.CD_PER_LIQUID,' '), 1)||';'||   -- M1 8.37      EXATO
+       RPAD(NVL(C_ENR.CD_PER_LIQUID2, ' '), 1)||';'||   -- M1 8.38      EXATO
        RPAD(' ', 2)||';'||   -- M1 8.12      BRANCO
        RPAD(' ', 1)||';'||   -- M1 8.13      BRANCO
        RPAD(' ', 4)||';'||   -- M1 8.14      BRANCO
@@ -1734,12 +1734,12 @@ select
        RPAD(' ', 1)||';'||   -- M1 8.17      BRANCO
        RPAD(NVL(C_ENR.ANNEE_EVT_MIM, ' '),4)||';'||   -- M1 8.18      EXATO
        RPAD(NVL(C_ENR.ANNEE_CONSTRUIT_BIEN, ' '),4)||';'||   -- M1 8.19      EXATO
-       NVL(C_ENR.CD_METHO_VAL_BIEN,' ')||';'||   -- M1 8.27      EXATO
-       NVL(C_ENR.CD_QUAL_MONTAGE,' ')||';'||   -- M1 8.28      EXATO
-       NVL(C_ENR.CD_QUAL_ACTIF,' ')||';'||   -- M1 8.29      EXATO
-       pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_HYPOTHEQUE),0) <0 THEN 0 else nvl((C_ENR.MNT_HYPOTHEQUE),0) END )||';'||   -- M1 8.34      EXATO
-       NVL(C_ENR.CD_BORRO_BASE,' ')||';'||   -- M1 8.39      EXATO
-       ' '||';'||   -- M1 8.42      EXATO
+       RPAD(NVL(C_ENR.CD_METHO_VAL_BIEN,' '), 1)||';'||   -- M1 8.27      EXATO
+       RPAD(NVL(C_ENR.CD_QUAL_MONTAGE,' '), 1)||';'||   -- M1 8.28      EXATO
+       RPAD(NVL(C_ENR.CD_QUAL_ACTIF,' '), 1)||';'||   -- M1 8.29      EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_HYPOTHEQUE),0) <0 THEN 0 else nvl((C_ENR.MNT_HYPOTHEQUE),0) END ), ' '), 19)||';'||   -- M1 8.34      EXATO
+       RPAD(NVL(C_ENR.CD_BORRO_BASE,' '), 1)||';'||   -- M1 8.39      EXATO
+       RPAD(NVL(' ', ' '), 1)||';'||   -- M1 8.42      EXATO
        RPAD(NVL(C_ENR.CD_PAYS_LOCAL_GARANT, ' '), 2)||';'||   -- M1 9.1       REGRA
        RPAD(' ', 20)||';'||   -- M1 9.99      BRANCO
        RPAD(' ', 10)||';'||   -- M1 10.1      BRANCO
@@ -1754,11 +1754,11 @@ select
        RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)||';'||   -- M1 7.16      EXATO
        RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)||';'||   -- M1 7.17      EXATO
        RPAD(NVL(C_ENR.CD_NUTS, ' '),5)||';'||   -- M1 7.18      EXATO
-       case when C_ENR.MNT_TITRES_RECUS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_TITRES_RECUS) end||';'||   -- M1 8.43      EXATO
+       RPAD(NVL(case when C_ENR.MNT_TITRES_RECUS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_TITRES_RECUS) end, ' '), 19)||';'||   -- M1 8.43      EXATO
        RPAD(NVL(C_ENR.CD_DEV_MNT_TITRES_RECUS, ' '), 3)||';'||   -- M1 8.44      EXATO
-       case when C_ENR.MNT_CCNE_RECUS_GAR is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_CCNE_RECUS_GAR) end||';'||   -- M1 8.45      EXATO
+       RPAD(NVL(case when C_ENR.MNT_CCNE_RECUS_GAR is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_CCNE_RECUS_GAR) end, ' '), 19)||';'||   -- M1 8.45      EXATO
        RPAD(NVL(C_ENR.CD_DEV_MNT_CCNE_RECUS_GAR, ' '), 3)||';'||   -- M1 8.46      EXATO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT)||';'||   -- M1 6.8       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT), ' '), 19)||';'||   -- M1 6.8       EXATO
        RPAD(' ', 19)||';'||   -- M1 6.9       EXATO
        RPAD(' ', 3)||';'||   -- M1 6.10      EXATO
        RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||';'||   -- M1 1.40      EXATO
@@ -1783,7 +1783,7 @@ select
        RPAD(' ', 50)||';'||   -- M1 12.99     EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '), 3)||';'||   -- M1 50.1      EXATO
        RPAD('91290000', 12)||';'||   -- M1 50.2      EXATO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE)||';'||   -- M1 50.3      EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE), ' '), 19)||';'||   -- M1 50.3      EXATO
        RPAD(' ',10)||';'||   -- M1 18.1      EXATO
        RPAD(' ',1)||';'||   -- M1 13.11     EXATO
        RPAD(' ',1)||';'||   -- M1 13.12     EXATO
@@ -1824,12 +1824,12 @@ select
 ------------------------------------------------------------------------------------------------------------------------
 
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (P9)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P9)     EXATO
        RPAD(NVL(C_ENR.APPLI_SOURCE, 'C_BTR'), 12)||';'||   -- 0.3 (P9)     EXATO
-       'M'||';'||   -- 0.4 (P9)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
-       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (P9)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (P9)     EXATO
+       RPAD(NVL('P9', ' '), 2)||';'||   -- 0.6 (P9)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (P9)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (P9)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
@@ -1839,19 +1839,19 @@ select
        RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P9)     EXATO
        RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P9)     EXATO
        RPAD(' ', 40)||';'||   -- 1.8 (P9)     EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_C',40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_C',40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.11 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.16 (P9)    EXATO
        RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
        RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
        RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
-       NVL(C_ENR.CD_NAT_DEPRE, ' ')||';'||   -- P9 2.3       EXATO
-       NVL(C_ENR.CD_PERIM_PROV, ' ')||';'||   -- P9 2.1       EXATO
+       RPAD(NVL(C_ENR.CD_NAT_DEPRE, ' '), 1)||';'||   -- P9 2.3       EXATO
+       RPAD(NVL(C_ENR.CD_PERIM_PROV, ' '), 1)||';'||   -- P9 2.1       EXATO
        RPAD(' ', 12)||';'||   -- P9 2.2       EXATO
-       NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' '), 1)||';'||   -- P9 2.4       EXATO
        RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
        RPAD(' ', 13)||';'||   -- P9 2.99      EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||';'||   -- P9 3.2       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0)), ' '), 19)||';'||   -- P9 3.2       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0)), ' '), 19)||';'||   -- P9 3.3       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 3.1       EXATO
        RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||';'||   -- P9 3.15      EXATO
        RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)||';'||   -- P9 1.20      EXATO
@@ -1859,7 +1859,7 @@ select
        RPAD(' ', 30)||';'||   -- P9 4.99      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 50.1      EXATO
        RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||';'||   -- P9 50.10     EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||';'||   -- P9 50.11     EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0)), ' '), 19)||';'||   -- P9 50.11     EXATO
        RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
        RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
@@ -1891,12 +1891,12 @@ select
 -- N07b: a partir de C_PROVISIONS_DECOTES_P9_SOLD
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(NVL(to_char(C_ENR.dt_arrete, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (P9)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P9)     EXATO
        RPAD('C_BTR', 12)||';'||   -- 0.3 (P9)     EXATO
-       'M'||';'||   -- 0.4 (P9)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
-       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (P9)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (P9)     EXATO
+       RPAD(NVL('P9', ' '), 2)||';'||   -- 0.6 (P9)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (P9)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (P9)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
@@ -1906,19 +1906,19 @@ select
        RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P9)     EXATO
        RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P9)     EXATO
        RPAD(' ', 40)||';'||   -- 1.8 (P9)     EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_S',40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_S',40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.11 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.16 (P9)    EXATO
        RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
        RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
        RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
-       NVL(C_ENR.CD_NAT_DEPRE, ' ')||';'||   -- P9 2.3       EXATO
-       NVL(C_ENR.CD_PERIM_PROV, ' ')||';'||   -- P9 2.1       EXATO
+       RPAD(NVL(C_ENR.CD_NAT_DEPRE, ' '), 1)||';'||   -- P9 2.3       EXATO
+       RPAD(NVL(C_ENR.CD_PERIM_PROV, ' '), 1)||';'||   -- P9 2.1       EXATO
        RPAD(' ', 12)||';'||   -- P9 2.2       EXATO
-       NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' '), 1)||';'||   -- P9 2.4       EXATO
        RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
        RPAD(' ', 13)||';'||   -- P9 2.99      EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0))||';'||   -- P9 3.2       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_SOLD),0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0)), ' '), 19)||';'||   -- P9 3.2       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_SOLD),0)), ' '), 19)||';'||   -- P9 3.3       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 3.1       EXATO
        RPAD(NVL(C_ENR.CD_PCCO_SOLD, ' '),12)||';'||   -- P9 3.15      EXATO
        RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)||';'||   -- P9 1.20      EXATO
@@ -1926,7 +1926,7 @@ select
        RPAD(' ', 30)||';'||   -- P9 4.99      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 50.1      EXATO
        RPAD(NVL(C_ENR.CD_PCCO_SOLD, ' '),12)||';'||   -- P9 50.10     EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0))||';'||   -- P9 50.11     EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_SOLD),0)), ' '), 19)||';'||   -- P9 50.11     EXATO
        RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
        RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
@@ -1961,12 +1961,12 @@ WHERE A_EXTRAIRE                  = 'O'
 -- ============================================================================================================
 -- DEBUT :: M67006 - spec 2.4
 select
-       to_char(C_ENR.DT_ARRETE, 'YYYYMMDD')||';'||   -- 0.1 (P9)     EXATO
+       RPAD(NVL(to_char(C_ENR.DT_ARRETE, 'YYYYMMDD'), ' '), 8)||';'||   -- 0.1 (P9)     EXATO
        RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P9)     EXATO
        RPAD(NVL(C_ENR.APPLI_SOURCE,'DDR'), 12)||';'||   -- 0.3 (P9)     EXATO
-       'M'||';'||   -- 0.4 (P9)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
-       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (P9)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (P9)     EXATO
+       RPAD(NVL('P9', ' '), 2)||';'||   -- 0.6 (P9)     EXATO
        RPAD(' ', 1)||';'||   -- 0.7 (P9)     BRANCO
        RPAD(' ', 2)||';'||   -- 0.8 (P9)     BRANCO
        RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
@@ -1976,19 +1976,19 @@ select
        RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P9)     EXATO
        RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P9)     EXATO
        RPAD(' ', 40)||';'||   -- 1.8 (P9)     EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT, 40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT, 40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.11 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.16 (P9)    EXATO
        RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
        RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
        RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
-       NVL(C_ENR.CD_NAT_DEPRE, ' ')||';'||   -- P9 2.3       EXATO
-       NVL(C_ENR.CD_PERIM_PROV, ' ')||';'||   -- P9 2.1       EXATO
+       RPAD(NVL(C_ENR.CD_NAT_DEPRE, ' '), 1)||';'||   -- P9 2.3       EXATO
+       RPAD(NVL(C_ENR.CD_PERIM_PROV, ' '), 1)||';'||   -- P9 2.1       EXATO
        RPAD(' ', 12)||';'||   -- P9 2.2       EXATO
-       NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' ')||';'||   -- P9 2.4       EXATO
+       RPAD(NVL(C_ENR.ORIGINE_CALCUL_PROVISION, ' '), 1)||';'||   -- P9 2.4       EXATO
        RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
        RPAD(' ', 13)||';'||   -- P9 2.99      EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_DEPRECIATION,0))||';'||   -- P9 3.2       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_PROVISION_TRIM_CRD,0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_DEPRECIATION,0)), ' '), 19)||';'||   -- P9 3.2       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_PROVISION_TRIM_CRD,0)), ' '), 19)||';'||   -- P9 3.3       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- P9 3.1       EXATO
        RPAD(NVL(C_ENR.CD_PCCO_CRD, ' '),12)||';'||   -- P9 3.15      EXATO
        RPAD(NVL(C_ENR.SYSTEME_SOURCE,'DDR'), 20)||';'||   -- P9 1.20      EXATO
@@ -1996,7 +1996,7 @@ select
        RPAD(' ', 30)||';'||   -- P9 4.99      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_LIASSE, ' '),3)||';'||   -- P9 50.1      EXATO
        RPAD(NVL(C_ENR.PCCO_DEPRECIATION, ' '),12)||';'||   -- P9 50.10     EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_DEPRECIATION),0))||';'||   -- P9 50.11     EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_DEPRECIATION),0)), ' '), 19)||';'||   -- P9 50.11     EXATO
        RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
        RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
@@ -5412,9 +5412,9 @@ select
        RPAD(TO_CHAR(C_ENR.DT_ARRETE,'YYYYMMDD'),8,' ')||';'||   -- 0.1 (P9)     EXATO
        RPAD(TO_CHAR(C_ENR.CD_CONSO_CPT),5,' ')||';'||   -- 0.2 (P9)     EXATO
        RPAD('C_DDR',12,' ')||';'||   -- 0.3 (P9)     EXATO
-       'M'||';'||   -- 0.4 (P9)     EXATO
-       :MASYSDATE||';'||   -- 0.5 (P9)     EXATO
-       'P9'||';'||   -- 0.6 (P9)     EXATO
+       RPAD(NVL('M', ' '), 1)||';'||   -- 0.4 (P9)     EXATO
+       RPAD(NVL(:MASYSDATE, ' '), 12)||';'||   -- 0.5 (P9)     EXATO
+       RPAD(NVL('P9', ' '), 2)||';'||   -- 0.6 (P9)     EXATO
        RPAD(' ',1)||';'||   -- 0.7 (P9)     EXATO
        RPAD(' ',2)||';'||   -- 0.8 (P9)     EXATO
        RPAD(' ', 4)||';'||   -- 0.9 (P9)     BRANCO
@@ -5424,8 +5424,8 @@ select
        RPAD(NVL(C_ENR.ID_AUTORISATION,' '),30,' ')||';'||   -- 1.4 (P9)     EXATO
        RPAD(NVL(C_ENR.ID_LIGNE_DET,' '),30,' ')||';'||   -- 1.6 (P9)     EXATO
        RPAD(' ',40)||';'||   -- 1.8 (P9)     EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT,40) ELSE RPAD(' ', 40) END||';'||   -- 1.11 (P9)    EXATO
-       CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END||';'||   -- 1.16 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT,40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.11 (P9)    EXATO
+       RPAD(NVL(CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END, ' '), 40)||';'||   -- 1.16 (P9)    EXATO
        RPAD(' ', 11)||';'||   -- 1.99 (P9)    BRANCO
        RPAD(' ', 7)||';'||   -- 1.98 (P9)    BRANCO
        RPAD(' ', 2)||';'||   -- 1.97 (P9)    BRANCO
@@ -5435,8 +5435,8 @@ select
        RPAD(' ',1)||';'||   -- P9 2.4       EXATO
        RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P9 2.5       EXATO
        RPAD(' ',13)||';'||   -- P9 2.99      EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0))||';'||   -- P9 3.2       EXATO
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0))||';'||   -- P9 3.3       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_CRD),0)), ' '), 19)||';'||   -- P9 3.2       EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PROVISION_TRIM_CRD),0)), ' '), 19)||';'||   -- P9 3.3       EXATO
        RPAD(NVL(C_ENR.CD_DEVISE,' '),3,' ')||';'||   -- P9 3.1       EXATO
        RPAD(NVL(C_ENR.CD_PCCO_CRD,' '),12,' ')||';'||   -- P9 3.15      EXATO
        RPAD(COALESCE(C_ENR.APPLI_SOURCE,'C_BTR'), 20)||';'||   -- P9 1.20      EXATO
@@ -5444,7 +5444,7 @@ select
        RPAD(' ',30)||';'||   -- P9 4.99      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE,' '),3,' ')||';'||   -- P9 50.1      EXATO
        RPAD(NVL(C_ENR.CD_PCCO_CRD,' '),12,' ')||';'||   -- P9 50.10     EXATO
-       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PROVISION_CRD)||';'||   -- P9 50.11     EXATO
+       RPAD(NVL(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PROVISION_CRD), ' '), 19)||';'||   -- P9 50.11     EXATO
        RPAD(' ',12)||';'||   -- P9 50.12     EXATO
        RPAD(' ',19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)

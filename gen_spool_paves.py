@@ -70,6 +70,9 @@ PAVES = ('F2', 'F1', 'P9', 'P2', 'M1', 'C1')
 # manda, e a partir dai tudo o que vem depois fica um octeto fora do sitio. Com o
 # ';' pelo meio isso deixa de ser invisivel, por isso corrigem-se aqui -- e vao
 # na lista de correcoes para a DSID, como o P1 21.65 do SIRL-1223.
+# Campos cuja largura foi forcada com RPAD, por pave: e a lista para a DSID.
+RELATORIO = {}
+
 REGRAS = {
     # Codigos de pais e de bolsa: a notice da-lhes 2, o spool escreve o valor da
     # coluna sem RPAD, que da 1. O ficheiro de referencia confirma o 1 (a zona de
@@ -154,6 +157,42 @@ def so_ascii(linhas):
     return out, dobradas
 
 
+JA_FIXA = re.compile(r'^\s*(RPAD|LPAD)\s*\(.*?,\s*(\d+)\s*(,[^,]*)?\)\s*$',
+                     re.I | re.S)
+
+
+def largura_garantida(e):
+    """A largura que a expressao escreve SEMPRE, ou None se depender do valor.
+
+    O spool tem 37 campos escritos como 'NVL(coluna, \\' \\')' ou como um CASE cujos
+    ramos nao tem todos o mesmo tamanho. Esses escrevem o que a coluna tiver: num
+    ficheiro de largura fixa, uma linha com valor mais curto empurra todo o resto
+    para a esquerda. Sem separador isso passava despercebido; com ';' pelo meio,
+    o separador sai fora do sitio -- foi o que a corrida de 25/09 mostrou no M1
+    (65 559 linhas) e no C1.
+    """
+    s = re.sub(r'\s+', ' ', e).strip()
+    m = JA_FIXA.match(s)
+    if m:
+        return int(m.group(2))
+    return None
+
+
+def forca_largura(e, ln):
+    """Embrulha a expressao num RPAD do tamanho da notice, se for preciso.
+
+    Com NVL por dentro: em Oracle o RPAD(NULL, n) e NULL, e um NULL numa
+    concatenacao escreve zero octetos -- voltaria a partir a linha, que e
+    exactamente o que se esta a corrigir. E a concatenacao tambem engole o NULL
+    de uma expressao sem NVL, por isso o embrulho serve as duas coisas.
+    """
+    if largura_garantida(e) == ln:
+        return e, False
+    if re.match(r'^NVL\s*\(', e, re.I):          # ja tem NVL, nao leva outro
+        return 'RPAD(%s, %d)' % (e, ln), True
+    return "RPAD(NVL(%s, ' '), %d)" % (e, ln), True
+
+
 def limites(linhas, a, b):
     """(linha do 'as lignedetail1', linha do 'as lignedetail2'), 1-based."""
     c1 = next(i for i in range(a, b + 1)
@@ -194,7 +233,7 @@ def bloco(linhas, pave, a, b):
         raise SystemExit('%s: o ultimo campo da notice nao e o filler: %s'
                          % (pave, campos[nfim][0]))
 
-    corpo, censo, faltam = [], collections.Counter(), []
+    corpo, censo, faltam, forcados = [], collections.Counter(), [], []
     for l in CP.casa(pave, a, b):
         if l['ref'] == campos[nfim][0]:
             continue                          # o filler final vai no fim
@@ -206,6 +245,10 @@ def bloco(linhas, pave, a, b):
         if any(ord(c) > 127 for c in e):
             e = ascii_seguro(e)
             censo['ASCII'] += 1
+        e, forcado = forca_largura(e, l['len'])
+        if forcado:
+            censo['RPAD'] += 1
+            forcados.append((l['ref'], l['len']))
         corpo.append("       %s||';'||   -- %-12s %s" % (e, l['ref'], cl))
     if faltam:
         print('%s: %d campos sem regra' % (pave, len(faltam)))
@@ -234,7 +277,7 @@ def bloco(linhas, pave, a, b):
     # esse filler de pe ao lado do novo -- 7512 octetos e um erro de sintaxe.
     resto_linha = re.search(r'as\s+lignedetail1.*$', linhas[c1 - 1], re.I)
     cauda = ['     ' + resto_linha.group(0)] + linhas[c1:b]
-    return ['select'] + corpo + cauda, censo, dados, sep, resto
+    return ['select'] + corpo + cauda, censo, dados, sep, resto, forcados
 
 
 def escreve():
@@ -243,8 +286,10 @@ def escreve():
     novos = {}
     for pave in PAVES:
         for k, (a, b) in enumerate(blocos_fonte[pave]):
-            novo, censo, dados, sep, resto = bloco(fonte, pave, a, b)
+            novo, censo, dados, sep, resto, forcados = bloco(fonte, pave, a, b)
             novos[(pave, k)] = (fonte[a - 1:b], novo)
+            if k == 0:
+                RELATORIO[pave] = forcados
             print('%s bloco %d-%d : dados %d + separadores %d + filler %d = %d'
                   % (pave, a, b, dados, sep, resto, dados + sep + resto))
             print('   %s' % '  '.join('%s %d' % (k2, censo[k2])
