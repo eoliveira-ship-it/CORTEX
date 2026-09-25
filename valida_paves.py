@@ -67,7 +67,11 @@ def valores(linhas, a, b):
             # valor: se contasse, a correcao para RPAD(' ', 2) dava campo perdido
             if MP.BRANCO.match(y) or re.fullmatch(r"' *'", y):
                 continue
-            out.append(re.sub(r'\s+', '', x))
+            # O literal acentuado do translate do C1 sai em CHR(n) no ficheiro
+            # gerado, para nenhum encode lhe poder tocar. Aplica-se a mesma troca
+            # ao lado do spool: se as duas nao derem a mesma coisa, e porque a
+            # conversao nao foi fiel, e isso tem de acusar.
+            out.append(re.sub(r'\s+', '', GP.ascii_seguro(x)))
     return sorted(out)
 
 

@@ -65,12 +65,12 @@
 -- Domaine       : RINT                                                       --
 -- Application   : 030  - Declarations Des Risques                            --
 --------------------------------------------------------------------------------
--- Notice        : CRRCV4.4_Grande ClientËle_Corporate_V44.02.xlsx            --
+-- Notice        : CRRCV4.4_Grande Clientele_Corporate_V44.02.xlsx            --
 --------------------------------------------------------------------------------
 -- Creation      : le 18/05/2021 par DUGUET MARC                              --
 -- Modifications :                                                            --
 --------------------------------------------------------------------------------
--- 18/03/2026 MESQUIPE: SIRL-500 - [QDD B‚le 4] Absence mnt acquisition dans  --
+-- 18/03/2026 MESQUIPE: SIRL-500 - [QDD Bale 4] Absence mnt acquisition dans  --
 --                                 extraction CRR                             --
 -- 22/01/2026 GOMESHU : Projet FED- CRR C3RD                                  --
 -- 19/01/2026 GOMESHU : SIRL-519                                              --
@@ -126,7 +126,7 @@ Formats  :  char 4201
   / ! \                     pas de point-virgule dans commentaires
   -----   
 
-select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limitÔøΩ a 4000 car 
+select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limite a 4000 car 
 Pour avoir les 4201 car : 
 select ( champ1 || champ2 ) as lignedetail1, champ3 as lignedetail2  from table  : 
 le spool va ecrire la ligne "lignedetail1 lignedetail2"  (avec 1 blanc entre les 2)
@@ -149,7 +149,7 @@ SET HEADING OFF
 SET FEED OFF
 set trimspool OFF
 --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
---SET linesize 4201   --4201  mais requete SQL limite ÔøΩ 4000 !
+--SET linesize 4201   --4201  mais requete SQL limite a 4000 !
 -- Mantis 11841 - Modification linesize
 --SET linesize 5099   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
 --SET linesize 5699   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
@@ -165,11 +165,11 @@ spool &1/&2 append;
 ------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------------------
--- ÔøΩ01: a partir de P_UTLF_TIERS_C1 
+-- N01: a partir de P_UTLF_TIERS_C1 
 -- 2 select 
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
--- ÔøΩ01a: a partir de C_C1 
+-- N01a: a partir de C_C1 
 ------------------------------------------------------------------------------------------------------------------------
 select
        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (C1)     EXATO
@@ -188,7 +188,7 @@ select
        RPAD(' ', 40)||';'||   -- 1.11 (C1)    EXATO
        RPAD(' ', 40)||';'||   -- 1.16 (C1)    EXATO
        RPAD(' ', 20)||';'||   -- 1.99 (C1)    EXATO
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
        TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')||';'||   -- C1 4.22      EXATO
        RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||';'||   -- C1 4.30      EXATO
        RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||';'||   -- C1 4.31      EXATO
@@ -217,8 +217,8 @@ select
        RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||';'||   -- C1 3.1       EXATO
        RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||';'||   -- C1 3.2       EXATO
        RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||';'||   -- C1 3.3       EXATO
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 70)||';'||   -- C1 3.5       EXATO
-       RPAD(NVL(translate(upper(C_ENR.VILLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 30)||';'||   -- C1 3.6       EXATO
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 70)||';'||   -- C1 3.5       EXATO
+       RPAD(NVL(translate(upper(C_ENR.VILLE), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 30)||';'||   -- C1 3.6       EXATO
        RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||';'||   -- C1 3.7       EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.0       EXATO
        RPAD(NVL(C_ENR.NOTE_INTERNE, ' '), 2)||';'||   -- C1 4.1       EXATO
@@ -262,7 +262,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||';'||   -- C1 8.5       EXATO
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||';'||   -- C1 8.6       EXATO
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||';'||   -- C1 8.7       EXATO
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 114)||';'||   -- C1 8.8       EXATO
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 114)||';'||   -- C1 8.8       EXATO
        LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||';'||   -- C1 8.11      EXATO
        RPAD(' ', 5)||';'||   -- C1 8.12      REGRA
        RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||';'||   -- C1 8.13      EXATO
@@ -281,7 +281,7 @@ select
     and (cd_conso_cpt = :ENTITE  or :ENTITE = 'TOTAL' );
 
 ------------------------------------------------------------------------------------------------------------------------
--- ÔøΩ01b: a partir de C_C2 
+-- N01b: a partir de C_C2 
 ------------------------------------------------------------------------------------------------------------------------
 select
        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (C1)     EXATO
@@ -300,7 +300,7 @@ select
        RPAD(' ', 40)||';'||   -- 1.11 (C1)    EXATO
        RPAD(' ', 40)||';'||   -- 1.16 (C1)    EXATO
        RPAD(' ', 20)||';'||   -- 1.99 (C1)    EXATO
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
        TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')||';'||   -- C1 4.22      EXATO
        RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||';'||   -- C1 4.30      EXATO
        RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||';'||   -- C1 4.31      EXATO
@@ -329,8 +329,8 @@ select
        RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||';'||   -- C1 3.1       EXATO
        RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||';'||   -- C1 3.2       EXATO
        RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||';'||   -- C1 3.3       EXATO
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 70)||';'||   -- C1 3.5       EXATO
-       RPAD(NVL(translate(upper(C_ENR.VILLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 30)||';'||   -- C1 3.6       EXATO
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 70)||';'||   -- C1 3.5       EXATO
+       RPAD(NVL(translate(upper(C_ENR.VILLE), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 30)||';'||   -- C1 3.6       EXATO
        RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||';'||   -- C1 3.7       EXATO
        RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.0       EXATO
        RPAD(NVL(C_ENR.NOTE_INTERNE, ' '), 2)||';'||   -- C1 4.1       EXATO
@@ -374,7 +374,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||';'||   -- C1 8.5       EXATO
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||';'||   -- C1 8.6       EXATO
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||';'||   -- C1 8.7       EXATO
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 114)||';'||   -- C1 8.8       EXATO
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220), 'AACEEEEIIOOUUU'), ' '), 114)||';'||   -- C1 8.8       EXATO
        LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||';'||   -- C1 8.11      EXATO
        RPAD(' ', 5)||';'||   -- C1 8.12      REGRA
        RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||';'||   -- C1 8.13      EXATO
@@ -397,7 +397,7 @@ select
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- ÔøΩ02: a partir de P_UTLF_AUTORISATION_F1     
+-- N02: a partir de P_UTLF_AUTORISATION_F1     
 ------------------------------------------------------------------------------------------------------------------------
 select
        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (F1)     EXATO
@@ -485,7 +485,7 @@ select
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- ÔøΩ03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
+-- N03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
 ------------------------------------------------------------------------------------------------------------------------
 select
        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (F2)     EXATO
@@ -1314,7 +1314,7 @@ select
        RPAD(' ', 3)||';'||   -- P2 12.16     BRANCO
        RPAD(' ', 2)||';'||   -- P2 4.43      BRANCO
        RPAD(' ', 5)||';'||   -- P2 4.44      BRANCO
-       RPAD(' ', 3)||';'||   -- P2†3.99      BRANCO
+       RPAD(' ', 3)||';'||   -- P2 3.99      BRANCO
        NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')||';'||   -- P2 3.46      EXATO
        NVL(C_ENR.RESPECT_COND_REG,'Y')||';'||   -- P2 3.47      EXATO
        RPAD(' ', 19)||';'||   -- P2 4.25      BRANCO

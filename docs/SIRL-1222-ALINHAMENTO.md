@@ -454,3 +454,58 @@ A prova de que a troca não mexeu em nada: com `cp1252` em vez de `latin-1`, o
 `030_spool_Extract_CRRCORP_1222.sql` sai com o mesmo MD5
 (`378028c23bb3a09f5c3e44978978c4e8`, antes de se corrigir o fim de linha para
 CRLF).
+
+## O ficheiro entregue passa a ser ASCII puro (25/09)
+
+O encode declarado não chega: o ficheiro continuava a estragar-se de cada vez que
+passava por um passo que o lê como UTF-8 — o VS Code a adivinhar, a **vista web do
+GitHub** (que mostra `�` em qualquer ficheiro que não seja UTF-8), um copiar-colar
+do browser. E o que se estraga não dá erro nenhum, que é o pior: fica a produzir
+um ficheiro errado em silêncio.
+
+Foi medido o alcance exato. Em todo o spool, os octetos acentuados em **código**
+são 8 linhas, todas a mesma coisa:
+
+```sql
+translate(upper(C_ENR.NOM_TIERS), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU')
+```
+
+o `translate` que tira os acentos ao **nome, morada, cidade e razão social do
+tiers** no C1 (quatro campos × dois blocos). Se aqueles 14 octetos virarem
+losangos, o `translate` deixa de casar e **o nome do tiers sai acentuado no
+ficheiro entregue**.
+
+Passam a ser escritos assim:
+
+```sql
+translate(upper(C_ENR.NOM_TIERS),
+          CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200)||CHR(202)||CHR(203)||
+          CHR(206)||CHR(221)||CHR(212)||CHR(214)||CHR(217)||CHR(219)||CHR(220),
+          'AACEEEEIIOOUUU')
+```
+
+**A premissa**, que é a mesma que o ficheiro já faz hoje ao trazer os octetos
+`C0..DC` escritos: a base tem um charset ocidental de um octeto. Confirma-se em
+dois segundos antes de correr:
+
+```sql
+SELECT value FROM nls_database_parameters WHERE parameter = 'NLS_CHARACTERSET';
+SELECT CHR(192)||CHR(194)||CHR(199)||CHR(201)||CHR(200) FROM dual;   -- ÀÂÇÉÈ
+```
+
+Se a primeira devolver `WE8MSWIN1252` ou `WE8ISO8859P15`, está certo.
+
+Os comentários também foram dobrados para ASCII: `Clientèle` → `Clientele`,
+`Bâle 4` → `Bale 4`. E as três sequências `ï¿½` — um caractere perdido há muito,
+gravado como `EF BF BD` — ficaram com a letra que o francês pede: `limité a 4000`
+→ `limite a 4000`, `limite à 4000` → `limite a 4000`, `№01` → `N01`.
+
+O `gen_spool_paves.py` **recusa-se** a dobrar um acento que esteja dentro de um
+literal: literal é código, e dobrá-lo mudava o que a consulta faz. Se aparecer um
+que o `CHR()` não apanhou, ele pára em vez de estragar em silêncio.
+
+O `valida_paves.py` aplica a mesma troca ao lado do spool antes de comparar: se a
+cadeia de `CHR(n)` não der exactamente o literal original, acusa.
+
+Resultado: **0 octetos acima de 0x7F** no `030_spool_Extract_CRRCORP_1222.sql`.
+Nenhum editor, browser ou transferência lhe pode tocar.

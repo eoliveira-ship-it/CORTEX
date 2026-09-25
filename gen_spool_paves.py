@@ -41,6 +41,7 @@ cima de um bloco ja gerado.
 """
 import collections
 import io
+import unicodedata
 import os
 import sys
 
@@ -87,6 +88,70 @@ REGRAS = {
         'C1 8.14': "RPAD(' ', 2)",
     },
 }
+
+
+def ascii_seguro(e):
+    """Troca um literal com acentos por uma cadeia de CHR(n).
+
+    Porque: os unicos octetos acentuados que este ficheiro tem em CODIGO sao a
+    lista do translate(upper(...), 'AACEEEEIIOOUUU') do C1, que tira os acentos
+    ao nome, morada, cidade e razao social do tiers -- 8 linhas, duas por bloco.
+    Enquanto la estiverem, qualquer passo que leia o ficheiro como UTF-8 (o VS
+    Code a adivinhar, a vista web do GitHub, um copiar-colar do browser) poe
+    U+FFFD no lugar; gravado assim, o translate deixa de tirar os acentos e o
+    nome do tiers sai acentuado no ficheiro entregue -- sem erro nenhum, o que e
+    pior.
+
+    Com CHR(n) o ficheiro fica em ASCII puro e nenhum encode lhe pode tocar. A
+    premissa e que a base de dados tem um charset ocidental de um octeto
+    (WE8MSWIN1252 ou WE8ISO8859P15), que e a mesma premissa que o ficheiro ja
+    faz hoje ao trazer os octetos C0..DC escritos.
+    """
+    def troca(m):
+        s = m.group(1)
+        if all(ord(c) < 128 for c in s):
+            return m.group(0)
+        return '||'.join('CHR(%d)' % ord(c) for c in s)
+    return re.sub(r"'([^']*)'", troca, e)
+
+
+# As tres sequencias 'i¿½' do ficheiro de origem sao um caractere perdido ha
+# muito -- um U+FFFD gravado como EF BF BD -- e estao todas em comentarios. O
+# francês diz qual era; repoe-se a letra sem acento.
+PERDIDO = 'ï¿½'
+CORTES = [
+    ('limit' + PERDIDO + ' a 4000', 'limite a 4000'),
+    ('limite ' + PERDIDO + ' 4000', 'limite a 4000'),
+    (PERDIDO + '0', 'N0'),
+]
+
+
+def dobra_comentario(s):
+    """O comentario em ASCII puro: Clientele, Bale, e o espaco-duro normal."""
+    for a, b in CORTES:
+        s = s.replace(a, b)
+    s = s.replace(' ', ' ')
+    return ''.join(c for c in unicodedata.normalize('NFKD', s) if ord(c) < 128)
+
+
+def so_ascii(linhas):
+    """Poe o ficheiro todo em ASCII, e recusa-se a mexer em codigo.
+
+    Um octeto acentuado dentro de um literal e CODIGO: se aparecer aqui, e porque
+    o ascii_seguro() nao o apanhou, e dobra-lo mudaria o que a consulta faz. Nesse
+    caso para, em vez de estragar em silencio."""
+    out, dobradas = [], 0
+    for n, l in enumerate(linhas, 1):
+        if all(ord(c) < 128 for c in l):
+            out.append(l)
+            continue
+        for m in re.finditer(r"'([^']*)'", l):
+            if any(ord(c) > 127 for c in m.group(1)):
+                raise SystemExit('linha %d: acento dentro de um literal, que e'
+                                 ' codigo: %s' % (n, l.strip()[:70]))
+        out.append(dobra_comentario(l))
+        dobradas += 1
+    return out, dobradas
 
 
 def limites(linhas, a, b):
@@ -138,6 +203,9 @@ def bloco(linhas, pave, a, b):
             faltam.append(l)
             continue
         censo[cl] += 1
+        if any(ord(c) > 127 for c in e):
+            e = ascii_seguro(e)
+            censo['ASCII'] += 1
         corpo.append("       %s||';'||   -- %-12s %s" % (e, l['ref'], cl))
     if faltam:
         print('%s: %d campos sem regra' % (pave, len(faltam)))
@@ -195,6 +263,8 @@ def escreve():
             trocas.append((a, b, novo))
     for a, b, novo in sorted(trocas, reverse=True):
         saida[a - 1:b] = novo
+    saida, dobradas = so_ascii(saida)
+    print('ASCII puro: %d linhas de comentario dobradas' % dobradas)
     # cp1252 e fim de linha do Windows, como o ficheiro que este vai substituir:
     # todos os .sql e .sh do repo estao em CRLF, e e assim que o spool vPACT que
     # gerou o ficheiro de referencia esta escrito.
