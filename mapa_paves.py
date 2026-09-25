@@ -104,9 +104,17 @@ def parte_concat(s):
 
 
 def largura(raw):
-    """A largura do token. Alem do que o align_v44 mede, sabe somar uma emenda
-    posta entre parenteses -- '(a||b||c)' --, que e como o gen_spool_paves.py
-    escreve os campos que o spool tinha partidos em varios pedacos."""
+    """A largura do token. Alem do que o align_v44 mede, sabe:
+
+      - somar uma emenda posta entre parenteses, '(a||b||c)', que e como o
+        gen_spool_paves.py escreve os campos que o spool tinha em varios pedacos;
+      - desembrulhar um parenteses que so embrulha, '( CASE ... END)' -- o C1
+        abre-o com um espaco e o medidor do align_v44 so reconhece '(CASE';
+      - a mascara de data longa 'YYYYMMDDHH24MISS', 14, do C1;
+      - a F_FORMAT_MONTANT_BIS3, 19, que o P2 usa e nao estava na lista.
+
+    Sem estas quatro, ficavam quatro tokens sem largura e a regua do C1 saia 33
+    octetos curta -- o que o ficheiro de referencia desmentiu (mede 981)."""
     w = A.width(raw)
     if w is not None:
         return w
@@ -117,6 +125,11 @@ def largura(raw):
             ws = [largura(p) for p in partes]
             if all(x is not None for x in ws):
                 return sum(ws)
+        return largura(s[1:-1])
+    if re.search(r"TO_CHAR\s*\(.*'YYYYMMDDHH24MISS'", s, re.I):
+        return 14
+    if re.search(r'\bF_FORMAT_MONTANT_BIS3\s*\(', s, re.I):
+        return 19
     return None
 
 

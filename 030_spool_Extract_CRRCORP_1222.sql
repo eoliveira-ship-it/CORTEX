@@ -169,144 +169,105 @@ spool &1/&2 append;
 ------------------------------------------------------------------------------------------------------------------------
 -- ÔøΩ01a: a partir de C_C1 
 ------------------------------------------------------------------------------------------------------------------------
-select 
-        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       -- Retour arriere scores 7 - annulation 731 pour appli_source dans l utl file
-       -- 18/02/2019 - CDS ATOS (GBD) - US731 >remplace 
-       (
-       CASE WHEN C_ENR.FLAG_HN = 'N' THEN
-             RPAD('C_BTR', 12)
-       ELSE
-             RPAD('C_DDR', 12)
-        END)||
-       -- 18/02/2019 - CDS ATOS (GBD) - US731
-       'M'||
-       :MASYSDATE||
-       'C1'||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(' ', 30)||
-       RPAD(' ', 30)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 20)||
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 40)||
-       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 90)||
-       TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')|| -- a modifier
--- 29/05/2018 CDS Atos (JMP) ANACREDIT  US346 
--- Remplacement de la zone libre de 76 blancs par :
--- * 25 Blancs destinÔøΩs ÔøΩ C 14.30 ÔøΩ C 14.34 dans les US a venir,
--- * Le nombre de salariÔøΩs sur 6 chiffres,
--- * Puis 45 Blancs.
-       --07/01/2019 CDS Atos (SQN) US 615
---       RPAD(' ',76)||
---       RPAD(' ',25)|| On split le 25 en 10+1+5+1+8 pour C 14.30 ÔøΩ C 14.34
-       -- 13/05/2019 - CDS ATOS (LFD) - US 791
-       --RPAD(' ',10)||--RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||
-       --RPAD(' ',1)||--RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||
-       RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||
-       RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||
-       -- FIN LFD
-       RPAD(NVL(C_ENR.CD_NUTS, ' '), 5)||
-       RPAD(NVL(C_ENR.ETAT_AVNCT_PJ, ' '), 1)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_OUV_PJ, 'YYYYMMDD'), ' '),8)||
-       LPAD(NVL(to_char(C_ENR.NB_SALARIE), '      '),6,'0')||
-       --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
-		RPAD(NVL(C_ENR.IND_CEL, ' '), 1) ||
-		RPAD(NVL(C_ENR.NIV_INTG_GROUPE_TIE, ' '), 1) ||
-		RPAD(NVL(C_ENR.IND_OPCVM_EFFET_LEV, ' '), 1) ||
-		RPAD(' ', 4) ||
-		RPAD(NVL(C_ENR.CD_AGENT_ECO, ' '), 6) ||
-		RPAD(' ', 4)||
-		RPAD(' ', 21)||
-		RPAD(' ', 6)||
-		RPAD(' ',1)||
-		--Fin EMM 
-       --Fin SQN
--- Fin 29/05/2018 CDS Atos (JMP) ANACREDIT  US346        
-       RPAD(NVL(C_ENR.REF_IDENT_NATIO, ' '), 2)||
-       RPAD(NVL(C_ENR.IDENT_NATIO, ' '), 20)||
-       --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 1)||
-	   RPAD(' ', 10)||
-	   RPAD(' ', 1)||
-		--Fin EMM
-       RPAD(NVL(C_ENR.AGENCE_NOTATION, ' '), 2)||
-       RPAD(NVL(C_ENR.CD_TYPE_COTATION, ' '), 2)||
-       RPAD(NVL(C_ENR.COTATION, ' '), 10)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_COTATION, 'YYYYMMDD'), ' '),8)||
-       RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||
-       RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||
-       RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 70)||
-       RPAD(NVL(translate(upper(C_ENR.VILLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 30)||
-       RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||
-       --29/01/2019 CDS Atos (SQN) US 649
-       --15/01/18 CDS ATOS (EMM) Sprint 3 US 2 Rework
-       --(CASE WHEN C_ENR.NOTE_INTERNE <> 'ND' THEN RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8) ELSE RPAD(' ', 8) END)||
-       --Fin EMM
-       RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8)||
-       --Fin SQN
-       RPAD(NVL(C_ENR.NOTE_INTERNE, ' '), 2)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_REVISION_NOTE, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_ENTREE_DEFAUT, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(C_ENR.CD_METHODO_NOTE, ' '), 3)||
-       RPAD(NVL(C_ENR.CD_MOTIF_NOTE, ' '), 3)||
-       RPAD(NVL(C_ENR.NOTE_NAFA, ' '),2)||
-       RPAD(NVL(C_ENR.NOTE_APR_CORR_GRPE,' '),2)||
-       ' '||
-       RPAD(NVL(C_ENR.CD_GRILLE_NOTE, ' '), 46)||
-       RPAD(NVL(C_ENR.CD_CATEG_CONTREPARTIE, ' '), 5)||
-       RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BAL_TIERS, ' '), 3)||
-       RPAD(NVL(C_ENR.CD_SECTEUR_ACTIVITE, ' '), 6)||
-       '  '||
-       RPAD(NVL(C_ENR.CD_NORME_LOCAL_ACT, ' '), 1)||
-       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '), 6)||
-       --RPAD(NVL(C_ENR.CD_FORM_JUR, ' '), 2)|| -- BALE4
-       RPAD(NVL(C_ENR.IND_RATIO_CET, ' '), 1)|| -- C1 8.81 pos 694 - BALE4
-       RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)|| -- C1 8.82 pos 695 - BALE4
-       LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||
-       RPAD(NVL(C_ENR.IND_WL, '9'), 1)|| --C1 4.18	Indicateur Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrÈe en Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.24	Date de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrÈe en Watch List
-       RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||--C1 4.26	Motif de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||
-       '  '||
-       RPAD(NVL(C_ENR.CD_TYPE_RELATION, ' '), 1)||
-       --29/01/2019 CDS Atos (SQN) US 649
-       --(CASE WHEN length(to_char(C_ENR.MNT_CA)) > 12 THEN RPAD(' ', 12) WHEN C_ENR.MNT_CA < 0 THEN RPAD(' ', 12) WHEN C_ENR.MNT_CA > 0 THEN LPAD(NVL(to_char(C_ENR.MNT_CA), ' '), 12, 0) ELSE RPAD(' ', 12) END)||
-       -- US739 LPAD(NVL(to_char(C_ENR.MNT_CA), ' '), 12, 0)||  
-       LPAD(NVL(C_ENR.MNT_CA, '0'), 12, 0)||  -- 27/02/2019 - CDS ATOS (GBD) - US739  (C1 5.2) (col 750) Chiffre d'affaire
-       --Fin SQN
-       RPAD(NVL(C_ENR.TOP_CA_CONSO, ' '), 1)||
-       RPAD(NVL(C_ENR.CD_DEVISE_CA, ' '), 3)||
-       LPAD(NVL(to_char(C_ENR.ANNEE_CA), ' '), 4, ' ')||
-       ' '||
-       LPAD(nvl(C_ENR.NBRE_JOUR_EXERCICE, 0), 3, 0)||
-       NVL(C_ENR.NATURE_CA, ' ')||
-       LPAD(NVL(C_ENR.CA_IFRS, 0),12, 0)||
-       NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||
-       LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0)||
-       ' '||
-       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '),6)||
-       NVL(C_ENR.STATUT_ACTIVITE_LOC,'A')||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||
-       RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||    --- champ ref_ident_nat_2 de 2 caracteres dans la table -- 18/02/2019 - CDS ATOS (GBD) - US731  (C1 8.6)
-       RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 114)||
-       LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||
-       '     '||
-       RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||
-       '  '||
-       RPAD(NVL(C_ENR.NOTE_CALC_FIN,' '),2)||
-	   --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 7)|| 		--C1 8.16
-	   LPAD(' ', 3011) 		--4000 - 989
+select
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (C1)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (C1)     EXATO
+       ( CASE WHEN C_ENR.FLAG_HN = 'N' THEN RPAD('C_BTR', 12) ELSE RPAD('C_DDR', 12) END)||';'||   -- 0.3 (C1)     EXATO
+       'M'||';'||   -- 0.4 (C1)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (C1)     EXATO
+       'C1'||';'||   -- 0.6 (C1)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (C1)     BRANCO
+       RPAD(' ', 9)||';'||   -- 0.99 (C1)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (C1)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (C1)     EXATO
+       RPAD(' ', 30)||';'||   -- 1.4 (C1)     EXATO
+       RPAD(' ', 30)||';'||   -- 1.6 (C1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (C1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.11 (C1)    EXATO
+       RPAD(' ', 40)||';'||   -- 1.16 (C1)    EXATO
+       RPAD(' ', 20)||';'||   -- 1.99 (C1)    EXATO
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
+       TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')||';'||   -- C1 4.22      EXATO
+       RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||';'||   -- C1 4.30      EXATO
+       RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||';'||   -- C1 4.31      EXATO
+       RPAD(NVL(C_ENR.CD_NUTS, ' '), 5)||';'||   -- C1 4.32      EXATO
+       RPAD(NVL(C_ENR.ETAT_AVNCT_PJ, ' '), 1)||';'||   -- C1 4.33      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_OUV_PJ, 'YYYYMMDD'), ' '),8)||';'||   -- C1 4.34      EXATO
+       LPAD(NVL(to_char(C_ENR.NB_SALARIE), ' '),6,'0')||';'||   -- C1 4.35      EXATO
+       RPAD(NVL(C_ENR.IND_CEL, ' '), 1)||';'||   -- C1 4.40      EXATO
+       RPAD(NVL(C_ENR.NIV_INTG_GROUPE_TIE, ' '), 1)||';'||   -- C1 4.41      EXATO
+       RPAD(NVL(C_ENR.IND_OPCVM_EFFET_LEV, ' '), 1)||';'||   -- C1 4.42      EXATO
+       RPAD(' ', 4)||';'||   -- C1 4.43      EXATO
+       RPAD(NVL(C_ENR.CD_AGENT_ECO, ' '), 6)||';'||   -- C1 4.44      EXATO
+       RPAD(' ', 4)||';'||   -- C1 4.45      EXATO
+       RPAD(' ', 21)||';'||   -- C1 4.46      EXATO
+       RPAD(' ', 6)||';'||   -- C1 4.47      EXATO
+       RPAD(' ',1)||';'||   -- C1 2.98      EXATO
+       RPAD(NVL(C_ENR.REF_IDENT_NATIO, ' '), 2)||';'||   -- C1 2.3       EXATO
+       RPAD(NVL(C_ENR.IDENT_NATIO, ' '), 20)||';'||   -- C1 2.4       EXATO
+       RPAD(' ', 1)||';'||   -- C1 2.5       EXATO
+       RPAD(' ', 10)||';'||   -- C1 4.48      EXATO
+       RPAD(' ', 1)||';'||   -- C1 5.13      EXATO
+       RPAD(NVL(C_ENR.AGENCE_NOTATION, ' '), 2)||';'||   -- C1 2.9       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_COTATION, ' '), 2)||';'||   -- C1 2.10      EXATO
+       RPAD(NVL(C_ENR.COTATION, ' '), 10)||';'||   -- C1 2.11      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_COTATION, 'YYYYMMDD'), ' '),8)||';'||   -- C1 2.12      EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||';'||   -- C1 3.1       EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||';'||   -- C1 3.2       EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||';'||   -- C1 3.3       EXATO
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 70)||';'||   -- C1 3.5       EXATO
+       RPAD(NVL(translate(upper(C_ENR.VILLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 30)||';'||   -- C1 3.6       EXATO
+       RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||';'||   -- C1 3.7       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.0       EXATO
+       RPAD(NVL(C_ENR.NOTE_INTERNE, ' '), 2)||';'||   -- C1 4.1       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_REVISION_NOTE, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.2       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_ENTREE_DEFAUT, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.15      EXATO
+       RPAD(NVL(C_ENR.CD_METHODO_NOTE, ' '), 3)||';'||   -- C1 4.3       EXATO
+       RPAD(NVL(C_ENR.CD_MOTIF_NOTE, ' '), 3)||';'||   -- C1 4.4       EXATO
+       RPAD(NVL(C_ENR.NOTE_NAFA, ' '),2)||';'||   -- C1 4.19      EXATO
+       RPAD(NVL(C_ENR.NOTE_APR_CORR_GRPE,' '),2)||';'||   -- C1 4.20      EXATO
+       ' '||';'||   -- C1 4.21      EXATO
+       RPAD(NVL(C_ENR.CD_GRILLE_NOTE, ' '), 46)||';'||   -- C1 4.5       EXATO
+       RPAD(NVL(C_ENR.CD_CATEG_CONTREPARTIE, ' '), 5)||';'||   -- C1 4.6       EXATO
+       RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BAL_TIERS, ' '), 3)||';'||   -- C1 4.7       EXATO
+       RPAD(NVL(C_ENR.CD_SECTEUR_ACTIVITE, ' '), 6)||';'||   -- C1 4.8       EXATO
+       RPAD(' ', 2)||';'||   -- C1 4.9       REGRA
+       RPAD(NVL(C_ENR.CD_NORME_LOCAL_ACT, ' '), 1)||';'||   -- C1 4.10      EXATO
+       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '), 6)||';'||   -- C1 4.11      EXATO
+       RPAD(NVL(C_ENR.IND_RATIO_CET, ' '), 1)||';'||   -- C1 8.81      EXATO
+       RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)||';'||   -- C1 8.82      EXATO
+       LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||';'||   -- C1 4.13      EXATO
+       RPAD(NVL(C_ENR.IND_WL, '9'), 1)||';'||   -- C1 4.18      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.23      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.24      EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA , ' '), 2)||';'||   -- C1 4.25      EXATO
+       RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||';'||   -- C1 4.26      EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||';'||   -- C1 4.17      EXATO
+       RPAD(' ', 2)||';'||   -- C1 4.99      REGRA
+       RPAD(NVL(C_ENR.CD_TYPE_RELATION, ' '), 1)||';'||   -- C1 5.1       EXATO
+       LPAD(NVL(C_ENR.MNT_CA, '0'), 12, 0)||';'||   -- C1 5.2       EXATO
+       RPAD(NVL(C_ENR.TOP_CA_CONSO, ' '), 1)||';'||   -- C1 5.3       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_CA, ' '), 3)||';'||   -- C1 5.4       EXATO
+       LPAD(NVL(to_char(C_ENR.ANNEE_CA), ' '), 4, ' ')||';'||   -- C1 5.5       EXATO
+       ' '||';'||   -- C1 5.6       EXATO
+       LPAD(nvl(C_ENR.NBRE_JOUR_EXERCICE, 0), 3, 0)||';'||   -- C1 8.1       EXATO
+       NVL(C_ENR.NATURE_CA, ' ')||';'||   -- C1 8.2       EXATO
+       LPAD(NVL(C_ENR.CA_IFRS, 0),12, 0)||';'||   -- C1 8.9       EXATO
+       (NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0))||';'||   -- C1 8.10      EMENDA
+       ' '||';'||   -- C1 99.98     EXATO
+       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '),6)||';'||   -- C1 8.3       EXATO
+       NVL(C_ENR.STATUT_ACTIVITE_LOC,'A')||';'||   -- C1 8.4       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||';'||   -- C1 8.5       EXATO
+       RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||';'||   -- C1 8.6       EXATO
+       RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||';'||   -- C1 8.7       EXATO
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 114)||';'||   -- C1 8.8       EXATO
+       LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||';'||   -- C1 8.11      EXATO
+       RPAD(' ', 5)||';'||   -- C1 8.12      REGRA
+       RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||';'||   -- C1 8.13      EXATO
+       RPAD(' ', 2)||';'||   -- C1 8.14      REGRA
+       RPAD(NVL(C_ENR.NOTE_CALC_FIN,' '),2)||';'||   -- C1 8.15      EXATO
+       RPAD(' ', 7)||';'||   -- C1 8.16      EXATO
+       RPAD(' ', 2915)     -- C1 99.99     FILLER (6915 - 97 separadores fica em branco por trimspool)
      as lignedetail1,  -- debut ligne (taille <= 4000)
      -- (compter 1 blanc de separation entre les 2 champs dans le spool)
        LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841  
@@ -320,132 +281,105 @@ select
 ------------------------------------------------------------------------------------------------------------------------
 -- ÔøΩ01b: a partir de C_C2 
 ------------------------------------------------------------------------------------------------------------------------
-select   
-          to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       -- Retour arriere scores 7 - annulation 731 pour appli_source dans l utl file
-       -- 18/02/2019 - CDS ATOS (GBD) - US731  >remplace
-       RPAD('R_BTR', 12)||
-       -- 18/02/2019 - CDS ATOS (GBD) - US731
-       'M'||
-       :MASYSDATE||
-       'C1'||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(' ', 30)||
-       RPAD(' ', 30)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 20)||
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 40)||
-       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 90)||
-       TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')|| --a modifier
-       --07/01/2019 CDS Atos (SQN) US 615
-       --RPAD(' ',76)||
-      -- 13/05/2019 - CDS ATOS (LFD) - US 791
-       --RPAD(' ',10)||--RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||
-       --RPAD(' ',1)||--RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||
-       RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||
-       RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||
-       -- FIN LFD
-       RPAD(NVL(C_ENR.CD_NUTS, ' '), 5)||
-       RPAD(NVL(C_ENR.ETAT_AVNCT_PJ, ' '), 1)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_OUV_PJ, 'YYYYMMDD'), ' '),8)||
-       LPAD(NVL(to_char(C_ENR.NB_SALARIE), '      '),6,'0')||
-       --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(NVL(C_ENR.IND_CEL, ' '), 1) ||
-		RPAD(NVL(C_ENR.NIV_INTG_GROUPE_TIE, ' '), 1) ||
-		RPAD(NVL(C_ENR.IND_OPCVM_EFFET_LEV, ' '), 1) ||
-		RPAD(' ', 4) ||
-		RPAD(NVL(C_ENR.CD_AGENT_ECO, ' '), 6) ||
-		RPAD(' ', 4)||
-		RPAD(' ', 21)||
-		RPAD(' ', 6)||
-		RPAD(' ',1)||
-       --Fin EMM 
-       --Fin SQN
-       RPAD(NVL(C_ENR.REF_IDENT_NATIO, ' '), 2)||
-       RPAD(NVL(C_ENR.IDENT_NATIO, ' '), 20)||
-       --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 1)||
-	   RPAD(' ', 10)||
-	   RPAD(' ', 1)||
-	  --Fin EMM
-       RPAD(NVL(C_ENR.AGENCE_NOTATION, ' '), 2)||
-       RPAD(NVL(C_ENR.CD_TYPE_COTATION, ' '), 2)||
-       RPAD(NVL(C_ENR.COTATION, ' '), 10)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_COTATION, 'YYYYMMDD'), ' '),8)||
-       RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||
-       RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||
-       RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 70)||
-       RPAD(NVL(translate(upper(C_ENR.VILLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 30)||
-       RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||
-       --29/01/2019 CDS Atos (SQN) US 649
-       --15/01/18 CDS ATOS (EMM) Sprint 3 US 2 Rework
-       --(CASE WHEN C_ENR.NOTE_INTERNE <> 'ND' THEN RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8) ELSE RPAD(' ', 8) END)||
-       --Fin EMM
-       RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8)||
-       --Fin SQN
-       RPAD(NVL(C_ENR.NOTE_INTERNE, ' '), 2)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_REVISION_NOTE, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_ENTREE_DEFAUT, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(C_ENR.CD_METHODO_NOTE, ' '), 3)||
-       RPAD(NVL(C_ENR.CD_MOTIF_NOTE, ' '), 3)||
-       RPAD(NVL(C_ENR.NOTE_NAFA, ' '),2)||
-       RPAD(NVL(C_ENR.NOTE_APR_CORR_GRPE,' '),2)||
-       ' '||
-       RPAD(NVL(C_ENR.CD_GRILLE_NOTE, ' '), 46)||
-       RPAD(NVL(C_ENR.CD_CATEG_CONTREPARTIE, ' '), 5)||
-       RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BAL_TIERS, ' '), 3)||
-       RPAD(NVL(C_ENR.CD_SECTEUR_ACTIVITE, ' '), 6)||
-       '  '||
-       RPAD(NVL(C_ENR.CD_NORME_LOCAL_ACT, ' '), 1)||
-       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '), 6)||
-       --RPAD(NVL(C_ENR.CD_FORM_JUR, ' '), 2)|| -- BALE4
-       RPAD(NVL(C_ENR.IND_RATIO_CET, ' '), 1)|| -- C1 8.81 pos 694 - BALE4
-       RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)|| -- C1 8.82 pos 695 - BALE4
-       LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||
-       RPAD(NVL(C_ENR.IND_WL, '9'), 1)|| --C1 4.18	Indicateur Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrÈe en Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.24	Date de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrÈe en Watch List
-       RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||--C1 4.26	Motif de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||
-       '  '||
-       RPAD(NVL(C_ENR.CD_TYPE_RELATION, ' '), 1)||
-       --29/01/2019 CDS Atos (SQN) US 649
-       --(CASE WHEN length(to_char(C_ENR.MNT_CA)) > 12 THEN RPAD(' ', 12) WHEN C_ENR.MNT_CA < 0 THEN RPAD(' ', 12) WHEN C_ENR.MNT_CA > 0 THEN LPAD(NVL(to_char(C_ENR.MNT_CA), ' '), 12, 0) ELSE RPAD(' ', 12) END)||
-       --US739 LPAD(NVL(to_char(C_ENR.MNT_CA), ' '), 12, 0)||
-       LPAD(NVL(C_ENR.MNT_CA, '0'), 12, 0)||  -- 27/02/2019 - CDS ATOS (GBD) - US739  (C1 5.2) (col 750) Chiffre d'affaire
-       --Fin SQN
-       RPAD(NVL(C_ENR.TOP_CA_CONSO, ' '), 1)||
-       RPAD(NVL(C_ENR.CD_DEVISE_CA, ' '), 3)||
-       LPAD(NVL(to_char(C_ENR.ANNEE_CA), ' '), 4, ' ')||
-       ' '||
-       LPAD(nvl(C_ENR.NBRE_JOUR_EXERCICE, 0), 3, 0)||
-       NVL(C_ENR.NATURE_CA, ' ')||
-       LPAD(NVL(C_ENR.CA_IFRS, 0),12, 0)||
-       NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||
-       LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0)||
-       ' '||
-       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '),6)||
-       NVL(C_ENR.STATUT_ACTIVITE_LOC,' ')||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||
-       RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||    --- champ ref_ident_nat_2 de 2 caracteres dans la table -- 18/02/2019 - CDS ATOS (GBD) - US731  (C1 8.6)
-       RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 114)||
-       LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||
-       '     '||
-       RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||
-       '  '||
-       RPAD(NVL(C_ENR.NOTE_CALC_FIN,' '),2)||
-	   --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 7)||
-       LPAD(' ', 3011) ---4000 - 989
+select
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (C1)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (C1)     EXATO
+       RPAD('R_BTR', 12)||';'||   -- 0.3 (C1)     EXATO
+       'M'||';'||   -- 0.4 (C1)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (C1)     EXATO
+       'C1'||';'||   -- 0.6 (C1)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (C1)     BRANCO
+       RPAD(' ', 9)||';'||   -- 0.99 (C1)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (C1)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (C1)     EXATO
+       RPAD(' ', 30)||';'||   -- 1.4 (C1)     EXATO
+       RPAD(' ', 30)||';'||   -- 1.6 (C1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (C1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.11 (C1)    EXATO
+       RPAD(' ', 40)||';'||   -- 1.16 (C1)    EXATO
+       RPAD(' ', 20)||';'||   -- 1.99 (C1)    EXATO
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 40)||';'||   -- C1 2.1       EXATO
+       TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')||';'||   -- C1 4.22      EXATO
+       RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||';'||   -- C1 4.30      EXATO
+       RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||';'||   -- C1 4.31      EXATO
+       RPAD(NVL(C_ENR.CD_NUTS, ' '), 5)||';'||   -- C1 4.32      EXATO
+       RPAD(NVL(C_ENR.ETAT_AVNCT_PJ, ' '), 1)||';'||   -- C1 4.33      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_OUV_PJ, 'YYYYMMDD'), ' '),8)||';'||   -- C1 4.34      EXATO
+       LPAD(NVL(to_char(C_ENR.NB_SALARIE), ' '),6,'0')||';'||   -- C1 4.35      EXATO
+       RPAD(NVL(C_ENR.IND_CEL, ' '), 1)||';'||   -- C1 4.40      EXATO
+       RPAD(NVL(C_ENR.NIV_INTG_GROUPE_TIE, ' '), 1)||';'||   -- C1 4.41      EXATO
+       RPAD(NVL(C_ENR.IND_OPCVM_EFFET_LEV, ' '), 1)||';'||   -- C1 4.42      EXATO
+       RPAD(' ', 4)||';'||   -- C1 4.43      EXATO
+       RPAD(NVL(C_ENR.CD_AGENT_ECO, ' '), 6)||';'||   -- C1 4.44      EXATO
+       RPAD(' ', 4)||';'||   -- C1 4.45      EXATO
+       RPAD(' ', 21)||';'||   -- C1 4.46      EXATO
+       RPAD(' ', 6)||';'||   -- C1 4.47      EXATO
+       RPAD(' ',1)||';'||   -- C1 2.98      EXATO
+       RPAD(NVL(C_ENR.REF_IDENT_NATIO, ' '), 2)||';'||   -- C1 2.3       EXATO
+       RPAD(NVL(C_ENR.IDENT_NATIO, ' '), 20)||';'||   -- C1 2.4       EXATO
+       RPAD(' ', 1)||';'||   -- C1 2.5       EXATO
+       RPAD(' ', 10)||';'||   -- C1 4.48      EXATO
+       RPAD(' ', 1)||';'||   -- C1 5.13      EXATO
+       RPAD(NVL(C_ENR.AGENCE_NOTATION, ' '), 2)||';'||   -- C1 2.9       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_COTATION, ' '), 2)||';'||   -- C1 2.10      EXATO
+       RPAD(NVL(C_ENR.COTATION, ' '), 10)||';'||   -- C1 2.11      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_COTATION, 'YYYYMMDD'), ' '),8)||';'||   -- C1 2.12      EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||';'||   -- C1 3.1       EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||';'||   -- C1 3.2       EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||';'||   -- C1 3.3       EXATO
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 70)||';'||   -- C1 3.5       EXATO
+       RPAD(NVL(translate(upper(C_ENR.VILLE), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 30)||';'||   -- C1 3.6       EXATO
+       RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||';'||   -- C1 3.7       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_CLOTURE_CPT_NOTE, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.0       EXATO
+       RPAD(NVL(C_ENR.NOTE_INTERNE, ' '), 2)||';'||   -- C1 4.1       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_REVISION_NOTE, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.2       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_ENTREE_DEFAUT, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.15      EXATO
+       RPAD(NVL(C_ENR.CD_METHODO_NOTE, ' '), 3)||';'||   -- C1 4.3       EXATO
+       RPAD(NVL(C_ENR.CD_MOTIF_NOTE, ' '), 3)||';'||   -- C1 4.4       EXATO
+       RPAD(NVL(C_ENR.NOTE_NAFA, ' '),2)||';'||   -- C1 4.19      EXATO
+       RPAD(NVL(C_ENR.NOTE_APR_CORR_GRPE,' '),2)||';'||   -- C1 4.20      EXATO
+       ' '||';'||   -- C1 4.21      EXATO
+       RPAD(NVL(C_ENR.CD_GRILLE_NOTE, ' '), 46)||';'||   -- C1 4.5       EXATO
+       RPAD(NVL(C_ENR.CD_CATEG_CONTREPARTIE, ' '), 5)||';'||   -- C1 4.6       EXATO
+       RPAD(NVL(C_ENR.CD_PORTEFEUILLE_BAL_TIERS, ' '), 3)||';'||   -- C1 4.7       EXATO
+       RPAD(NVL(C_ENR.CD_SECTEUR_ACTIVITE, ' '), 6)||';'||   -- C1 4.8       EXATO
+       RPAD(' ', 2)||';'||   -- C1 4.9       REGRA
+       RPAD(NVL(C_ENR.CD_NORME_LOCAL_ACT, ' '), 1)||';'||   -- C1 4.10      EXATO
+       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '), 6)||';'||   -- C1 4.11      EXATO
+       RPAD(NVL(C_ENR.IND_RATIO_CET, ' '), 1)||';'||   -- C1 8.81      EXATO
+       RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)||';'||   -- C1 8.82      EXATO
+       LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||';'||   -- C1 4.13      EXATO
+       RPAD(NVL(C_ENR.IND_WL, '9'), 1)||';'||   -- C1 4.18      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.23      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||';'||   -- C1 4.24      EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA , ' '), 2)||';'||   -- C1 4.25      EXATO
+       RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||';'||   -- C1 4.26      EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||';'||   -- C1 4.17      EXATO
+       RPAD(' ', 2)||';'||   -- C1 4.99      REGRA
+       RPAD(NVL(C_ENR.CD_TYPE_RELATION, ' '), 1)||';'||   -- C1 5.1       EXATO
+       LPAD(NVL(C_ENR.MNT_CA, '0'), 12, 0)||';'||   -- C1 5.2       EXATO
+       RPAD(NVL(C_ENR.TOP_CA_CONSO, ' '), 1)||';'||   -- C1 5.3       EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_CA, ' '), 3)||';'||   -- C1 5.4       EXATO
+       LPAD(NVL(to_char(C_ENR.ANNEE_CA), ' '), 4, ' ')||';'||   -- C1 5.5       EXATO
+       ' '||';'||   -- C1 5.6       EXATO
+       LPAD(nvl(C_ENR.NBRE_JOUR_EXERCICE, 0), 3, 0)||';'||   -- C1 8.1       EXATO
+       NVL(C_ENR.NATURE_CA, ' ')||';'||   -- C1 8.2       EXATO
+       LPAD(NVL(C_ENR.CA_IFRS, 0),12, 0)||';'||   -- C1 8.9       EXATO
+       (NVL(C_ENR.RES_NET_RETRAITE_SIGN, ' ')||LPAD(NVL(C_ENR.RES_NET_RETRAITE_MNT,0),12,0))||';'||   -- C1 8.10      EMENDA
+       ' '||';'||   -- C1 99.98     EXATO
+       RPAD(NVL(C_ENR.CD_ACTIVITE_LOCALE, ' '),6)||';'||   -- C1 8.3       EXATO
+       NVL(C_ENR.STATUT_ACTIVITE_LOC,' ')||';'||   -- C1 8.4       EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||';'||   -- C1 8.5       EXATO
+       RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||';'||   -- C1 8.6       EXATO
+       RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||';'||   -- C1 8.7       EXATO
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '¿¬«…» ÀŒ›‘÷Ÿ€‹', 'AACEEEEIIOOUUU'), ' '), 114)||';'||   -- C1 8.8       EXATO
+       LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||';'||   -- C1 8.11      EXATO
+       RPAD(' ', 5)||';'||   -- C1 8.12      REGRA
+       RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||';'||   -- C1 8.13      EXATO
+       RPAD(' ', 2)||';'||   -- C1 8.14      REGRA
+       RPAD(NVL(C_ENR.NOTE_CALC_FIN,' '),2)||';'||   -- C1 8.15      EXATO
+       RPAD(' ', 7)||';'||   -- C1 8.16      EXATO
+       RPAD(' ', 2915)     -- C1 99.99     FILLER (6915 - 97 separadores fica em branco por trimspool)
      as lignedetail1,  -- debut ligne (taille <= 4000)
      -- (compter 1 blanc de separation entre les 2 champs dans le spool)
        LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
@@ -516,9 +450,9 @@ select
        pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_MAJ_GLOB_BANQ_TRANCHE_AUT),0))||';'||   -- F1 4.10      EXATO
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_SYND_TRANCHE_AUT,'EUR'), 3)||';'||   -- F1 4.11      EXATO
        CASE WHEN C_ENR.TX_PART_RISK_TRANCHE is null THEN RPAD(' ', 10) ELSE pack_utilitaire.f_format_taux(C_ENR.TX_PART_RISK_TRANCHE) END||';'||   -- F1 4.12      EXATO
-       RPAD(' ', 19)||';'||   -- F1 4.13      BRANCO
-       RPAD(' ', 10)||';'||   -- F1 4.14      BRANCO
-       RPAD(' ', 19)||';'||   -- F1 4.15      BRANCO
+       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- F1 4.13      EMENDA
+       (RPAD(' ', 1)||RPAD(' ', 4)||RPAD(' ', 5))||';'||   -- F1 4.14      EMENDA
+       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- F1 4.15      EMENDA
        RPAD(' ', 4)||';'||   -- F1 4.16      EXATO
        CASE WHEN C_ENR.TOP_SYNDICATION = 'Y' THEN 'L' ELSE ' ' END||';'||   -- F1 4.17      EXATO
        RPAD('0', 1)||';'||   -- F1 4.18      EXATO
@@ -528,7 +462,7 @@ select
        RPAD(' ', 20)||';'||   -- F1 5.2       EXATO
        RPAD(' ', 10)||';'||   -- F1 5.7       EXATO
        RPAD(' ', 3)||';'||   -- F1 5.3       EXATO
-       RPAD(' ', 19)||';'||   -- F1 5.4       BRANCO
+       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- F1 5.4       EMENDA
        RPAD(' ', 3)||';'||   -- F1 5.5       EXATO
        RPAD(' ', 20)||';'||   -- F1 5.99      EXATO
        RPAD(NVL(C_ENR.cd_niv_seniorite,' '), 3)||';'||   -- F1 6.1       EXATO
@@ -1297,375 +1231,405 @@ select
 -- N05: a partir de P_UTLF_ENG_CORP_P2   
 ------------------------------------------------------------------------------------------------------------------------
 select
-       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       RPAD(NVL(C_ENR.APPLI_SOURCE,'C_BTR'), 12)||                                                       -- 08/02/2019 - CDS ATOS (GBD)- US677 : APPLI_SOURCE  (P2 0.3)
-       NVL(C_ENR.FREQUENCE,'M')||     --   CASE WHEN C_ENR.CD_TYPE_RISQUE = 'EQU101' THEN 'T' ELSE 'M'END|| -- 08/02/2019 - CDS ATOS (GBD)- US677  :  Frequence (P2 0.4)
-       :MASYSDATE||
-       'P2'||
-       RPAD(' ', 10)||  -- longueur : 1+2+7
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||   --dans la synthese il est dit a blanc pour les tre5 mais aujourd hui nous la renseignons pour tous
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
-       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||
-       RPAD(' ', 40)||
-       RPAD(C_ENR.ID_ENGAGEMENT,40)||  --pour les TRE2 a TRE4 pas de champ mais c'est une clef de la table -- a revoir si besoin
-       RPAD(' ', 40)||
-       RPAD(' ', 20)||
-       RPAD(NVL(C_ENR.CD_METHODO_BALE2, 'STD'),7)||
-       --28/11/2018 - CDS ATOS (SQN) - Mantis 45281 : Code moteur errone pour P2 et F2
-        RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||
-       --Fin SQN
-       NVL(C_ENR.CODE_TRAIT_GRR,'Y')||   -- 08/02/2019 - CDS ATOS (GBD)- US677 : Traitement GRR (P2 4.34)
-       RPAD(nvl(C_ENR.CD_TYPE_RISQUE,' '),6)||
-       NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B')||
-       RPAD(nvl(C_ENR.CD_LIGNE_METIER,' '),5)||
-       RPAD(nvl(C_ENR.CD_PORTEFEUILLE_BALE2,' '),3)||
-       RPAD(nvl(C_ENR.CD_NATURE_OPE,' '),12)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_ENG, 'YYYYMMDD'), ' '), 8)||
-       NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630')||
-       RPAD(' ', 10)||    --taux pondÔøΩration baloise
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_CCF)||        -- 08/02/2019 - CDS ATOS (GBD)- US677 : Taux CCF (P2 18.10)  ( *100 fait a l'alimentation)
-       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_EAD)||   -- 08/02/2019 - CDS ATOS (GBD)- US677 : Montant EAD (P2 18.5) 
-       RPAD(NVL(C_ENR.CD_DEVISE_EAD, 'EUR'), 3)||
-       RPAD(NVL(C_ENR.CD_DEVISE, ' '), 3)||
-       RPAD(' ', 50)||
-       RPAD(NVL(C_ENR.TOP_RESTRUCTURATION, ' '), 2)||
-       RPAD(NVL(to_char(C_ENR.DT_RESTRUCTURATION, 'YYYYMMDD'), ' '),8)||
-       NVL(C_ENR.CD_IMP_PRUDENT,'N')||
-       NVL(C_ENR.CD_ENG_DTX,'N')||
-       RPAD(NVL(to_char(C_ENR.DT_EGT_DTX, 'YYYYMMDD'), ' '),8)||
-       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PNU),0))||
-       RPAD(nvl(C_ENR.CD_DEVISE_PNU, ' '), 3)||
-       RPAD(nvl(C_ENR.PCCO_MNT_PNU, ' '), 12)||
-       NVL(C_ENR.CD_CIRCUIT_DISTRIB,'CL')||
-       RPAD(' ', 33)||  --1+20+10+2
-       NVL(C_ENR.IND_ACCORD_FUSION,'N')||  -- 08/02/2019 - CDS ATOS (GBD)- US677 : Indic Accord de Fusion (P2 5.10)
-       RPAD(' ', 25)||
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 33)|| -- 3+5+2+1+1+1+7+1+1+1+1+4+5
-       RPAD(' ', 1)||
-       RPAD(' ', 1)||
-       RPAD(' ', 1)||
-       RPAD(' ', 2)||
-       RPAD(' ', 3)|| --fin donnees 3.10
-       --FIN EMM
-       NVL(C_ENR.TOP_PRODUIT,'N')||           -- 08/02/2019 - CDS ATOS (GBD)- US677  : Produit ss jacent (P2 4.31)
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 30)|| --1+1+4+5+1+4+5+8+1
-       RPAD(' ', 1)||
-       RPAD(' ', 29)||
-        --FIN EMM
-       Substr(pack_utilitaire.F_FORMAT_TAUX (C_ENR.MATURITE_EFF)  ,4,6)||
-       NVL(C_ENR.TOP_ENG, 'H')||
-       RPAD(' ', 13)|| --3+10
-       NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')||
-       NVL(C_ENR.RESPECT_COND_REG,'Y')||   -- 08/02/2019 - CDS ATOS (GBD)- US677  : Respect des conditions reglementaires (P2 3.47)
---      RPAD(' ', 13)||
-       --24/01/2019 - CDS Atos (SQN) US 670
-       --RPAD(' ', 76)||    --1+16+2+3+1+16+2+3+2+30
-       RPAD(' ', 46)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_EL)||
-       RPAD(NVL(C_ENR.CD_METH_IFRS9_PD_ORIG,' '),20) || -- P2 6.99 :: projet OMP - sous-tache SIRL-238
-       --Fin SQN
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 6)|| --1+3+1+1 
-	   RPAD(' ', 45)||
-	   RPAD(' ', 10)||	 --  Fin 42 c 
-		--Fin EMM
-       RPAD(' ', 1)||
-       RPAD(' ', 17)||
-       RPAD(nvl(C_ENR.CLASS_CPT_REF_ACT, ' '), 3)||
-       RPAD(nvl(C_ENR.EVT_CREDIT, ' '), 1)||
-       RPAD(nvl(C_ENR.NAT_EVN_CREDIT, ' '), 1)||
-       RPAD(nvl(C_ENR.STATU_CREDIT, ' '), 1)||                                    --23/04/2018 CDS ATOS (EMM) Sprint 8 US 273 (P2 21.5)
-       RPAD(nvl(C_ENR.IND_CREANCE_PER, ' '), 2)||
-       RPAD (NVL(TO_CHAR(C_ENR.DATE_PREM_ACT_FORB, 'YYYYMMDD'), ' '), 8)||        --23/04/2018 CDS ATOS (EMM) Sprint 8 US 274 (P2 21.7)
-       RPAD(NVL(TO_CHAR(C_ENR.DAT_DER_REST_COM, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DAT_DER_REST_RIS, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PURG, 'YYYYMMDD'), ' '), 8)  ||                --23/04/2018 CDS ATOS (EMM) Sprint 8 US 273 (P2 21.10)
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PURG, 'YYYYMMDD'), ' '), 8)  ||                --23/04/2018 CDS ATOS (EMM) Sprint 8 US 273 (P2 21.11)
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PROB, 'YYYYMMDD'), ' '), 8)  ||                --23/04/2018 CDS ATOS (EMM) Sprint 8 US 273 (P2 21.12)
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PROB, 'YYYYMMDD'), ' '), 8)  ||                --23/04/2018 CDS ATOS (EMM) Sprint 8 US 273 (P2 21.13)
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_THEO_FIN_FORB, 'YYYYMMDD'), ' '), 8)  ||            --23/04/2018 CDS ATOS (EMM) Sprint 8 US 273 (P2 21.14)
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_EFF_FORB, 'YYYYMMDD'), ' '), 8)  ||            --23/04/2018 CDS ATOS (EMM) Sprint 8 US 274 (P2 21.15)
-       --24/01/2019 - CDS Atos (SQN) US 670
-       --RPAD (' ', 16)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_PL_NPL, 'YYYYMMDD'), ' '), 8)  ||
-       RPAD(nvl(C_ENR.CD_MOTIF_PL_NPL, ' '), 2)||
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	    RPAD (' ', 2)||
-	   RPAD (' ', 2)||
-	   RPAD (' ', 2)||	--zone libre
-	   --Fin EMM
-       --Fin SQN
-       RPAD(nvl(C_ENR.IND_PRD_NON_ECH, ' '), 3)||
-       RPAD(nvl(C_ENR.IND_OBJ_MET_PAL_DAT_FOURNI, ' '), 1)||
-       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-       RPAD(nvl(C_ENR.REF_UNI_CONTRAT, ' '), 40)||
-       RPAD(nvl(C_ENR.REF_UNI_ELEM_CONTRAT, ' '), 40)||
-       --09/11/18 CDS Atos (EMM) US 546
-       RPAD(nvl(C_ENR.IND_NIV_RISQUE, ' '), 1)||
-       --Fin EMM
-       RPAD(' ', 4)||
-       RPAD(' ', 40)||       
-       RPAD(nvl(C_ENR.NOT_FIN_RET_ORG, 'ND'), 2)||      
-       RPAD(nvl(C_ENR.NOT_EXT_ORG, ' '), 10)||
-       --RPAD(nvl(C_ENR.ORG_NOTATION_ORG, ' '), 2)||
-       RPAD(nvl(C_ENR.ORGA_NOTATION_ORIG, 'I'), 2)||  -- 08/02/2019 - CDS ATOS (GBD)- US677 : Organisme de notation a l'origine (P2 22.6)
-       RPAD(nvl(C_ENR.SEG_NOTATION_ORG, ' '), 2)||
-       --RPAD(nvl(C_ENR.GRI_NOT_ORG, ' '), 46)||
-       CASE WHEN C_ENR.GRI_NOT_ORG IS NULL THEN RPAD(' ',46)    
-       ELSE RPAD(nvl(rpad(C_ENR.GRI_NOT_ORG,21)||'FR',' '),46) END ||
-       --RPAD(upper(nvl(C_ENR.METH_NOTATION_ORG, ' ')), 3)||
-       CASE WHEN C_ENR.METH_NOTATION_ORG = 'C3' THEN '999'
-       ELSE RPAD(nvl(C_ENR.METH_NOTATION_ORG,' '),3) END||
-       RPAD(nvl(C_ENR.OBJ_FINANCIE,'97'),2)||
-       --01/06/2018 - CDS ATOS (PSR) - US 292 - CRRV4.1 Instruments (A)
-       --RPAD(' ', 1)|| 
-       --RPAD(' ', 16)||
-       --RPAD(' ', 2)|| 
-       --RPAD(' ', 3)||
-        -- 05/07/2018 - CDS AtoS (FAD) - Mantis 44080 : 
-        --  Si le montant du contrat ? l'origine est null alors n'afficher que des blancs pour le montant et la devise associ?e
-        --pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_CONTRAT_ORIGINE)||--P1 22.8 : Montant du contrat ? l'origine
-        --RPAD(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 3)||--P1 22.9 : Devise du montant du contrat ? l'origine
-        pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_CONTRAT_ORIGINE)||--P1 22.8 : Montant du contrat ? l'origine
-        RPAD(nvl(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR'), 3)||--P1 22.9 : Devise du montant du contrat ? l'origine
-        -- Fin - CDS AtoS (FAD) - Mantis 44080
-        -- fin US 292 - CDS ATOS(PSR)
-       RPAD(nvl(C_ENR.IND_ECH_FOURNI, ' '), 1)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_INT_EF_ORG)||
-       RPAD(nvl(C_ENR.TYP_TAUX, ' '), 1)||
-       RPAD(nvl(C_ENR.IND_REF, ' '), 12)||
-       RPAD(nvl(C_ENR.TYP_AMOR_CAP, ' '), 1)||
-       RPAD(nvl(C_ENR.PER_AMOR_CAP, ' '), 1)||
-       RPAD(nvl(C_ENR.PER_PAI_INTERET, ' '), 1)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLI_OCTROI)||
-       RPAD(nvl(C_ENR.MOD_REMB_CREANCE, ' '), 1)||
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_PRM_ECHEANCE, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_DIF_AMOR, 'YYYYMMDD'), ' '), 8)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAF)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAN)||
-       RPAD(nvl(C_ENR.PER_REV_TAUX_UNITE_TMP, ' '), 1)||
-       LPAD(nvl((C_ENR.PER_REV_TAUX_NBR),0),3,0)||
-                 pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLT_PRD_EN_CRS)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_ADDTIV)||
-       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_MULTP)||
-       RPAD(nvl(C_ENR.BASE_CALCUL_INTERET, ' '), 7)||
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_PRE_DEB_FOND, 'YYYYMMDD'), ' '), 8)||
-       RPAD(' ', 1)||
-       RPAD(' ', 16)||
-       RPAD(' ', 2)||
-       RPAD(' ', 3)||
-       pack_utilitaire.f_format_montant_bis2(C_ENR.CAP_THEO_REST_DU)||
-       RPAD(nvl(C_ENR.DEV_CAP_THEO_REST_DU, ' '), 3)||
-       RPAD('3', 1)||
-       RPAD(' ', 8)||
-       RPAD(' ',130 )||--8+1+16+2+3+8+1+4+5+1+16+2+38+16+2+3+1+4+5+1+4+5
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_PALL, 'YYYYMMDD'), ' '), 8)||
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_PALL, 'YYYYMMDD'), ' '), 8)||
-       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ECHEANCE_EN_COURS)||
-       RPAD(nvl(C_ENR.DEV_MNT_ECHEANCE_EN_COURS, 'EUR'), 3)|| 
-       RPAD(nvl(C_ENR.IND_PRE_POST_FIX, ' '), 1)|| 
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_ENG_RENOUV,'YYYYMMDD'),' '), 8) || -- P2 22.63 :: projet OMP - sous-tache SIRL-236
-       --24/01/2019 - CDS Atos (SQN) US 670
-       --RPAD(' ', 55)||
-       RPAD(' ', 12)||    --2+1+4+5
-       RPAD(nvl(C_ENR.CD_PAYS_JURIDICTION, ' '), 2)||
-       RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)||
-       RPAD(nvl(C_ENR.EVT_DECL_GAR, ' '), 2)||
-       RPAD(' ', 5)||
-       --13/02/2019 - CDS ATOS (SQN) - CRRV4.2 - Correctif : CD_MOTIF_SCO_LC0267 : completer le code a gauche a 0.
-       --RPAD(nvl(C_ENR.CD_MOTIF_SCO_LC0267, ' '), 3)||
-       --LPAD(nvl(C_ENR.CD_MOTIF_SCO_LC0267,' '),3,'0')||
-       --15/02/19 CDS ATOS (EMM) Correctif 2 score 7
-       CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3)
-       ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||
-       --Fin EMM
-       RPAD(nvl(C_ENR.BUCKET_IFRS9, ' '), 2)||
-       RPAD(' ', 21)||    --1+4+5+1+4+5+1
-       --Fin SQN
-       RPAD(nvl(C_ENR.ELIG_OUTIL_MUT_PROV, ' '), 1)|| 
-       RPAD(nvl(C_ENR.CENT_RESULT, ' '), 7)||
-       RPAD(nvl(C_ENR.SYS_GEST_SOURCE, ' '), 20)|| 
-       RPAD(nvl(C_ENR.CLASS_CPT_ACT_NOR_IFRS9, ' '), 3)|| 
-       RPAD(nvl(C_ENR.CLASS_CPT_ACT_NOR_NAT, ' '), 3)||  
-       RPAD(nvl(C_ENR.IND_ACT_DEP_ORG, ' '), 1)|| 
-       RPAD(nvl(C_ENR.ZONE_APP_COMPTA, ' '), 40)|| 
-       RPAD (' ', 10)||
-       RPAD (nvl(C_ENR.CD_METH_IFRS9_PD,' '), 12)||
-       RPAD (nvl(C_ENR.CD_METH_IFRS9_LGD,' '), 12)||
-       RPAD (nvl(C_ENR.CD_METH_IFRS9_CCF,' '), 12)||
-       RPAD (nvl(C_ENR.CD_METH_IFRS9_TX,' '), 12)||
-       --24/01/2019 - CDS Atos (SQN) US 670
-       --RPAD(' ', 54)||  1+1+1+16+2+3
-       -- 06/02/2019 - CDS ATOS (LFD) - CRRV4.2 US 718
-       --RPAD(' ', 30)||
-       RPAD(' ', 2)||
-       nvl(C_ENR.IND_MOBIL_ACTIF,'1')||              -- 08/02/2019 - CDS ATOS (GBD)- US677 : Indic mobilisation actif (P2 26.1)
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD (nvl(C_ENR.ELIG_MOB_BANQUE_CENTRALE,' '), 1)||
-	   RPAD (nvl(C_ENR.REF_MOB_ACTIF,' '), 3)||
-	   RPAD (nvl(C_ENR.CD_ORGA_MOBIL,' '), 3)||
-	   RPAD(' ', 20)||
-	   -- FIN EMM
-       -- FIN LFD
-       RPAD (nvl(C_ENR.IND_OPE_EFFET_LEVIER,' '), 1)||
-       RPAD (nvl(C_ENR.IND_SPONSOR_FIN,' '), 1)||
-       pack_utilitaire.F_FORMAT_MONTANT_BIS3(C_ENR.MNT_IDEMNITE_RES)||
-       RPAD (nvl(C_ENR.CD_DEV_MNT_INDEMNITE,' '), 3)||
-       --Fin SQN
-	   --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 19)|| --DEBUT 27
-	   RPAD(' ', 3)||
-	   RPAD (nvl(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD,' '), 1)||
-	   RPAD (nvl(C_ENR.MOTIF_EXCLU_ANACREDIT,' '), 2)||
-	   RPAD(' ', 23)||
-	   RPAD(' ', 5)|| --DEBUT 31a
-	   RPAD(' ', 40)||
-	  RPAD(' ', 40)||
-	  case when C_ENR.MNT_ENG_DT_SIGN_CTRT is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT) end ||
-	  RPAD(NVL(C_ENR.IND_RESPO_SOLIDAIRE, ' '),1,' ')||
-  	RPAD (NVL(C_ENR.IND_ISF,'2'), 1)|| -- KLx (GH) CRRv4.3 141 - P1 31.6 Indicateur dossier infrastructure eligible au facteur de reduction 75%
-	  RPAD(' ',6)|| --P2 31.7
-	  RPAD(' ',1)|| --P2 31.8 --Fin 31a
-    RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')|| --P2 31.9--debut 31b
-	  RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')|| --P2 31.10
-	  RPAD(' ',1)|| --P2 31.11
-	  RPAD(' ',1)|| --P2 31.12
-	  RPAD(' ',1)|| --P2 31.13
-	  RPAD(' ',15)|| --P2 31.14
-	  RPAD(' ',19)|| --P2 31.15
-	  RPAD(' ',3)|| --P2 31.16
-    case when C_ENR.DUREE_INIT_PRET is not null then '+'||LPAD(C_ENR.DUREE_INIT_PRET,5,'0') else RPAD(' ',6) end ||--P2 31.17 --M71784 pos 1966
-    case when C_ENR.DUREE_TOTALE_PRET_DATE is not null then '+'||LPAD(C_ENR.DUREE_TOTALE_PRET_DATE,5,'0') else RPAD(' ',6) end ||--P2 31.18 --M71784 pos 1972
-	  RPAD(' ',6)|| --P2 31.19
-	  RPAD(' ',1)|| --P2 31.20
-	  RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P2 31.21 M71371
-	  RPAD(' ',2)|| --P2 31.22
-    -- US 261 - KLx Risque (VDC) [CRRv4.3] Leasing - CRR Corporate - Score 7 'Montant des fonds remis √† date '
-    -- P2 32.23 
-	  case when C_ENR.MNT_FOND_REMIS_DATE is null then RPAD(' ',19) else pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_FOND_REMIS_DATE) end ||
-	  case when C_ENR.DEV_FOND_REMIS_DATE is null then RPAD(' ',3) else RPAD(C_ENR.DEV_FOND_REMIS_DATE,3,' ') end ||
-    -- FIN VDC
-	  RPAD(' ',15)||
-	  RPAD(' ',15)||
-	  RPAD(' ',15)||
-	  RPAD(' ',15)||
-	  RPAD(' ',15)|| 
-	  RPAD(' ',1)|| --DEBUT 31c
-	  RPAD(' ',1)||
-	  RPAD(' ',19)|| --DEBUT 31d
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)|| --DEBUT 31e
-	  RPAD(' ',3)||
-	  RPAD(' ',7)|| --DEBUT 31g
-	  RPAD(' ',2)||
-	  RPAD(' ',2)|| 
-	  RPAD(' ',2)||
-	  RPAD(' ',2)|| 
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',2)|| --DEBUT 31h
-	  RPAD(' ',2)||
-	  RPAD(' ',2)|| 
-	  RPAD(' ',20)||
-	  RPAD(' ',10)|| 
-	  RPAD(' ',15)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)|| 
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||
-	  RPAD(' ',19)||
-	  RPAD(' ',3)||	  
-	  RPAD (nvl(C_ENR.CD_DEVISE,' '), 3)|| --DEBUT 50
-	  RPAD(' ',12)||
-	  RPAD(' ',19)||
-	  RPAD(nvl(C_ENR.PCCO_MNT_PNU,' '),12)|| -- P2 50.4 --KLX Risque (VDC) - US 278 - CRR Corporate - Score 6 'PCCO - Valeur du principal 2''
-	  pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_PNU)|| --P2 50.5 --KLX Risque (VDC) - US 278 - CRR Corporate - Score 6 'PCCO - Valeur du principal 2''
-	  RPAD(' ',12)||
-	  RPAD(' ',19)||
-	  RPAD(' ',12)||
-	  RPAD(' ',19)||
-	  RPAD(' ',12)||
-	  RPAD(' ',19)||
-	  RPAD(' ',12)||
-	  RPAD(' ',19)||
-	  RPAD(' ',12)|| --P2 15 pos 2629 - VIDE
-	  RPAD(' ',12)|| --P2 16 pos 2641 - VIDE
-	  RPAD(' ',12)|| --P2 14 pos 2653 - VIDE
-	  RPAD(' ',7)|| --P2 21.48 pos 2665 - VIDE
-	  RPAD(' ',19)|| --P2 21.49 pos 2672 - VIDE
-	  RPAD(' ',3)|| --P2 21.50 pos 2691 - VIDE
-	  RPAD(' ',19)|| --P2 21.51 pos 2694 - VIDE
-	  RPAD(' ',3)|| --P2 21.52 pos 2713 - VIDE
-	  RPAD(' ',19)|| --P2 21.53 pos 2716 - VIDE
-	  RPAD(' ',3)|| --P2 21.54 pos 2735 - VIDE
-	  RPAD(NVL(C_ENR.IND_UCC,' '),1)|| -- P2 21.66 pos 2738  
-	  RPAD(' ',10)|| --P2 21.61 pos 2739 --VIDE
-	  RPAD(' ',10)|| --P2 21.62 pos 2749 --VIDE
-	  RPAD(' ',19)|| --P2 21.63 pos 2759 --VIDE
-	  RPAD(' ',3)|| --P2 21.64 pos 2778 --VIDE
-	  RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1)|| --P2 21.44 pos 2781
-	  RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1)|| --P2 21.45 pos 2782
-	  RPAD(NVL(C_ENR.IND_CONF_CRIT_OPE,' '),1)|| --P2 21.46 pos 2783
-	  RPAD(' ',1)|| --P2 21.67 pos 2784 - VIDE
-	  RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P2 21.68 pos 2785
-	  RPAD(nvl(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P2 21.55 pos 2786
-	  RPAD(' ',20)|| --P2 21.89 pos 2798 - VIDE
-	  RPAD(' ',10)|| --P2 21.90 pos 2818 - VIDE
-	  RPAD(' ',10)|| --P2 21.47 pos 2828 - VIDE
-	  RPAD(' ',1)|| --P2 21.56 pos 2838 - VIDE
-		RPAD(NVL(C_ENR.IND_INVEST_CAPITAL_RISQ,' '),1)|| --P2 21.57 pos 2839 
-		RPAD(NVL(C_ENR.IND_INVEST_PROG_LEGISLATIF,' '),1)|| --P2 21.58 pos 2840 
-	  RPAD(NVL(C_ENR.IND_IPRE,' '),1)|| --P2 21.38 pos 2841 
-	  RPAD(NVL(C_ENR.IND_EXPO_ADC,' '),1)|| --P2 21.39 pos 2842
-    RPAD(NVL(C_ENR.IND_REAL_COND_PONDERATION_PREFE,' '),1)|| --P2 21.40 pos 2843
-	  RPAD(' ',1)|| --P2 21.41 pos 2844 - VIDE
-	  RPAD(' ',1)|| --P2 21.42 pos 2845 - VIDE
-	  RPAD(pack_utilitaire.F_FORMAT_TAUX_15(C_ENR.ETV_RATIO),15)|| -- P2 21.43 pos 2846 
-	  RPAD(NVL(C_ENR.USAGE_BIEN_FINANCE,' '),1)|| --P2 8.13 pos 2861
-	  RPAD(' ',40)|| --P2 21.71 pos 2862 - VIDE
-	  RPAD(' ',40)|| --P2 21.72 pos 2902 - VIDE
-	  RPAD(' ',40)|| --P2 21.73 pos 2942 - VIDE
-	  RPAD(' ',40)|| --P2 21.74 pos 2982 - VIDE
-	  RPAD(' ',40)|| --P2 21.75 pos 3022 - VIDE
-	  RPAD(' ',40)|| --P2 21.76 pos 3062 - VIDE
-	  RPAD(' ',11)|| --P2 21.77 pos 3102 - VIDE
-	  RPAD(' ',12)|| --P2 21.78 pos 3113 - VIDE
-	  RPAD(' ',1)|| --P2 21.94 pos 3125 - VIDE
-	  RPAD(' ',2)|| --P2 21.95 pos 3126 - VIDE
-	  RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10)|| --P2 21.81 pos 3128
-	  RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR_PREC),10)|| --P2 21.82 pos 3138
-	  RPAD(' ',15)|| --P2 21.83 pos 3148 -- VIDE
-	  RPAD(' ',15)|| --P2 21.84 pos 3163 -- VIDE
-	  RPAD(' ',15)|| --P2 21.85 pos 3178 - VIDE
-	  RPAD(NVL(C_ENR.CD_TYPE_BIEN_COMM,' '),1)|| --P2 21.86 pos 3193
-	  RPAD(NVL(C_ENR.CD_EMPLACE_BIEN_COMM,' '),1)|| --P2 21.87 pos 3194 
-    RPAD(NVL(C_ENR.IND_OPE_AVEC_RECOURS,' '),1)|| -- P2 21.88 pos 3195 
-	  RPAD(' ',20)|| --P2 31.51 pos 3196 - VIDE
-	  RPAD(' ',19)|| --P2 31.52 pos 3216 - VIDE
-	  RPAD(' ',3)|| --P2 31.53 pos 3235 - VIDE    
-	  LPAD (' ', 762)   -- 4000 - 3238
-    --LPAD (' ', 1371)   -- 4000 - 2629
-    as lignedetail1,  -- debut ligne (taille <= 4000)
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (P2)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (P2)     EXATO
+       RPAD(NVL(C_ENR.APPLI_SOURCE,'C_BTR'), 12)||';'||   -- 0.3 (P2)     EXATO
+       NVL(C_ENR.FREQUENCE,'M')||';'||   -- 0.4 (P2)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (P2)     EXATO
+       'P2'||';'||   -- 0.6 (P2)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (P2)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (P2)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (P2)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (P2)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (P2)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (P2)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (P2)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (P2)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.8 (P2)     EXATO
+       RPAD(C_ENR.ID_ENGAGEMENT,40)||';'||   -- 1.11 (P2)    EXATO
+       RPAD(' ', 40)||';'||   -- 1.16 (P2)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (P2)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (P2)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (P2)    BRANCO
+       RPAD(NVL(C_ENR.CD_METHODO_BALE2, 'STD'),7)||';'||   -- P2 1.1       EXATO
+       RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||';'||   -- P2 1.2       EXATO
+       NVL(C_ENR.CODE_TRAIT_GRR,'Y')||';'||   -- P2 4.34      EXATO
+       RPAD(nvl(C_ENR.CD_TYPE_RISQUE,' '),6)||';'||   -- P2 2.0       EXATO
+       NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B')||';'||   -- P2 2.4       EXATO
+       RPAD(nvl(C_ENR.CD_LIGNE_METIER,' '),5)||';'||   -- P2 2.6       EXATO
+       RPAD(nvl(C_ENR.CD_PORTEFEUILLE_BALE2,' '),3)||';'||   -- P2 2.18      EXATO
+       RPAD(nvl(C_ENR.CD_NATURE_OPE,' '),12)||';'||   -- P2 2.29      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_ENG, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 3.2       EXATO
+       NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630')||';'||   -- P2 3.4       EXATO
+       RPAD(' ', 10)||';'||   -- P2 16.6      EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF)||';'||   -- P2 18.1      EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_CCF)||';'||   -- P2 18.10     EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_EAD)||';'||   -- P2 18.5      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE_EAD, 'EUR'), 3)||';'||   -- P2 18.6      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '), 3)||';'||   -- P2 18.18     EXATO
+       RPAD(' ', 50)||';'||   -- P2 3.98      EXATO
+       RPAD(NVL(C_ENR.TOP_RESTRUCTURATION, ' '), 2)||';'||   -- P2 21.1      EXATO
+       RPAD(NVL(to_char(C_ENR.DT_RESTRUCTURATION, 'YYYYMMDD'), ' '),8)||';'||   -- P2 21.2      EXATO
+       NVL(C_ENR.CD_IMP_PRUDENT,'N')||';'||   -- P2 4.1       EXATO
+       NVL(C_ENR.CD_ENG_DTX,'N')||';'||   -- P2 5.2       EXATO
+       RPAD(NVL(to_char(C_ENR.DT_EGT_DTX, 'YYYYMMDD'), ' '),8)||';'||   -- P2 5.3       EXATO
+       pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PNU),0))||';'||   -- P2 4.16      EXATO
+       RPAD(nvl(C_ENR.CD_DEVISE_PNU, ' '), 3)||';'||   -- P2 4.17      EXATO
+       RPAD(nvl(C_ENR.PCCO_MNT_PNU, ' '), 12)||';'||   -- P2 4.18      EXATO
+       NVL(C_ENR.CD_CIRCUIT_DISTRIB,'CL')||';'||   -- P2 4.23      EXATO
+       RPAD(' ', 1)||';'||   -- P2 5.6       BRANCO
+       RPAD(' ', 20)||';'||   -- P2 5.7       BRANCO
+       RPAD(' ', 10)||';'||   -- P2 5.8       BRANCO
+       RPAD(' ', 2)||';'||   -- P2 3.33      BRANCO
+       NVL(C_ENR.IND_ACCORD_FUSION,'N')||';'||   -- P2 5.10      EXATO
+       RPAD(' ', 25)||';'||   -- P2 5.11      EXATO
+       RPAD(' ', 3)||';'||   -- P2 16.3      BRANCO
+       RPAD(' ', 5)||';'||   -- P2 11.33     BRANCO
+       RPAD(' ', 2)||';'||   -- P2 11.12     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.9      BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.12     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.13     BRANCO
+       RPAD(' ', 7)||';'||   -- P2 16.15     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.16     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.17     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.18     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 16.19     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 16.20     EXATO
+       RPAD(' ', 1)||';'||   -- P2 16.21     EXATO
+       RPAD(' ', 1)||';'||   -- P2 16.22     EXATO
+       RPAD(' ', 2)||';'||   -- P2 16.23     EXATO
+       RPAD(' ', 3)||';'||   -- P2 16.99     EXATO
+       NVL(C_ENR.TOP_PRODUIT,'N')||';'||   -- P2 4.31      EXATO
+       RPAD(' ', 1)||';'||   -- P2 4.32      BRANCO
+       RPAD(' ', 10)||';'||   -- P2 11.13     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 11.14     BRANCO
+       RPAD(' ', 8)||';'||   -- P2 4.24      BRANCO
+       RPAD(' ', 1)||';'||   -- P2 4.36      BRANCO
+       RPAD(' ', 1)||';'||   -- P2 4.49      EXATO
+       RPAD(' ', 29)||';'||   -- P2 4.99      EXATO
+       Substr(pack_utilitaire.F_FORMAT_TAUX (C_ENR.MATURITE_EFF) ,4,6)||';'||   -- P2 3.20      EXATO
+       NVL(C_ENR.TOP_ENG, 'H')||';'||   -- P2 4.8       EXATO
+       RPAD(' ', 3)||';'||   -- P2 12.16     BRANCO
+       RPAD(' ', 2)||';'||   -- P2 4.43      BRANCO
+       RPAD(' ', 5)||';'||   -- P2 4.44      BRANCO
+       RPAD(' ', 3)||';'||   -- P2†3.99      BRANCO
+       NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')||';'||   -- P2 3.46      EXATO
+       NVL(C_ENR.RESPECT_COND_REG,'Y')||';'||   -- P2 3.47      EXATO
+       RPAD(' ', 19)||';'||   -- P2 4.25      BRANCO
+       RPAD(' ', 3)||';'||   -- P2 4.26      BRANCO
+       RPAD(' ', 19)||';'||   -- P2 4.27      BRANCO
+       RPAD(' ', 3)||';'||   -- P2 4.28      BRANCO
+       RPAD(' ', 2)||';'||   -- P2 3.32      BRANCO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_EL)||';'||   -- P2 4.30      EXATO
+       RPAD(NVL(C_ENR.CD_METH_IFRS9_PD_ORIG,' '),20)||';'||   -- P2 6.99      EXATO
+       RPAD(' ', 1)||';'||   -- P2 4.29      BRANCO
+       RPAD(' ', 3)||';'||   -- P2 4.40      BRANCO
+       RPAD(' ', 1)||';'||   -- P2 4.41      BRANCO
+       RPAD(' ', 1)||';'||   -- P2 4.48      BRANCO
+       RPAD(' ', 45)||';'||   -- P2 4.98      EXATO
+       RPAD(' ', 10)||';'||   -- P2 7.99      EXATO
+       RPAD(' ', 1)||';'||   -- P2 3.36      EXATO
+       RPAD(' ', 17)||';'||   -- P2 8.99      EXATO
+       RPAD(nvl(C_ENR.CLASS_CPT_REF_ACT, ' '), 3)||';'||   -- P2 19.5      EXATO
+       RPAD(nvl(C_ENR.EVT_CREDIT, ' '), 1)||';'||   -- P2 21.3      EXATO
+       RPAD(nvl(C_ENR.NAT_EVN_CREDIT, ' '), 1)||';'||   -- P2 21.4      EXATO
+       RPAD(nvl(C_ENR.STATU_CREDIT, ' '), 1)||';'||   -- P2 21.5      EXATO
+       RPAD(nvl(C_ENR.IND_CREANCE_PER, ' '), 2)||';'||   -- P2 21.6      EXATO
+       RPAD (NVL(TO_CHAR(C_ENR.DATE_PREM_ACT_FORB, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.7      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DAT_DER_REST_COM, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.8      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DAT_DER_REST_RIS, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.9      EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PURG, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.10     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PURG, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.11     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PROB, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.12     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PROB, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.13     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_THEO_FIN_FORB, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.14     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_EFF_FORB, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.15     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_PL_NPL, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 21.16     EXATO
+       RPAD(nvl(C_ENR.CD_MOTIF_PL_NPL, ' '), 2)||';'||   -- P2 21.17     EXATO
+       RPAD (' ', 2)||';'||   -- P2 21.18     EXATO
+       RPAD (' ', 2)||';'||   -- P2 21.19     EXATO
+       RPAD (' ', 2)||';'||   -- P2 21.99     EXATO
+       RPAD(nvl(C_ENR.IND_PRD_NON_ECH, ' '), 3)||';'||   -- P2 22.56     EXATO
+       RPAD(nvl(C_ENR.IND_OBJ_MET_PAL_DAT_FOURNI, ' '), 1)||';'||   -- P2 22.57     EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- P2 4.42      EXATO
+       RPAD(nvl(C_ENR.REF_UNI_CONTRAT, ' '), 40)||';'||   -- P2 22.1      EXATO
+       RPAD(nvl(C_ENR.REF_UNI_ELEM_CONTRAT, ' '), 40)||';'||   -- P2 22.51     EXATO
+       RPAD(nvl(C_ENR.IND_NIV_RISQUE, ' '), 1)||';'||   -- P2 22.2      EXATO
+       RPAD(' ', 4)||';'||   -- P2 22.3      EXATO
+       RPAD(' ', 40)||';'||   -- P2 22.4      EXATO
+       RPAD(nvl(C_ENR.NOT_FIN_RET_ORG, 'ND'), 2)||';'||   -- P2 22.5      EXATO
+       RPAD(nvl(C_ENR.NOT_EXT_ORG, ' '), 10)||';'||   -- P2 22.52     EXATO
+       RPAD(nvl(C_ENR.ORGA_NOTATION_ORIG, 'I'), 2)||';'||   -- P2 22.6      EXATO
+       RPAD(nvl(C_ENR.SEG_NOTATION_ORG, ' '), 2)||';'||   -- P2 22.53     EXATO
+       CASE WHEN C_ENR.GRI_NOT_ORG IS NULL THEN RPAD(' ',46) ELSE RPAD(nvl(rpad(C_ENR.GRI_NOT_ORG,21)||'FR',' '),46) END||';'||   -- P2 22.54     EXATO
+       CASE WHEN C_ENR.METH_NOTATION_ORG = 'C3' THEN '999' ELSE RPAD(nvl(C_ENR.METH_NOTATION_ORG,' '),3) END||';'||   -- P2 22.55     EXATO
+       RPAD(nvl(C_ENR.OBJ_FINANCIE,'97'),2)||';'||   -- P2 22.7      EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_CONTRAT_ORIGINE)||';'||   -- P2 22.8      EXATO
+       RPAD(nvl(C_ENR.DEV_MNT_CONTRAT_ORIGINE, 'EUR'), 3)||';'||   -- P2 22.9      EXATO
+       RPAD(nvl(C_ENR.IND_ECH_FOURNI, ' '), 1)||';'||   -- P2 22.12     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_INT_EF_ORG)||';'||   -- P2 22.13     EXATO
+       RPAD(nvl(C_ENR.TYP_TAUX, ' '), 1)||';'||   -- P2 22.14     EXATO
+       RPAD(nvl(C_ENR.IND_REF, ' '), 12)||';'||   -- P2 22.15     EXATO
+       RPAD(nvl(C_ENR.TYP_AMOR_CAP, ' '), 1)||';'||   -- P2 22.16     EXATO
+       RPAD(nvl(C_ENR.PER_AMOR_CAP, ' '), 1)||';'||   -- P2 22.17     EXATO
+       RPAD(nvl(C_ENR.PER_PAI_INTERET, ' '), 1)||';'||   -- P2 22.18     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLI_OCTROI)||';'||   -- P2 22.19     EXATO
+       RPAD(nvl(C_ENR.MOD_REMB_CREANCE, ' '), 1)||';'||   -- P2 22.20     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_PRM_ECHEANCE, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.21     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_DIF_AMOR, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.22     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAF)||';'||   -- P2 22.23     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_PLAN)||';'||   -- P2 22.24     EXATO
+       RPAD(nvl(C_ENR.PER_REV_TAUX_UNITE_TMP, ' '), 1)||';'||   -- P2 22.25     EXATO
+       LPAD(nvl((C_ENR.PER_REV_TAUX_NBR),0),3,0)||';'||   -- P2 22.26     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_CLT_PRD_EN_CRS)||';'||   -- P2 22.27     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_ADDTIV)||';'||   -- P2 22.28     EXATO
+       pack_utilitaire.F_FORMAT_TAUX(C_ENR.TAUX_MARG_MULTP)||';'||   -- P2 22.29     EXATO
+       RPAD(nvl(C_ENR.BASE_CALCUL_INTERET, ' '), 7)||';'||   -- P2 22.30     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_PRE_DEB_FOND, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.31     EXATO
+       (RPAD(' ', 1)||RPAD(' ', 16)||RPAD(' ', 2))||';'||   -- P2 22.32     EMENDA
+       RPAD(' ', 3)||';'||   -- P2 22.33     EXATO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.CAP_THEO_REST_DU)||';'||   -- P2 22.34     EXATO
+       RPAD(nvl(C_ENR.DEV_CAP_THEO_REST_DU, ' '), 3)||';'||   -- P2 22.35     EXATO
+       RPAD('3', 1)||';'||   -- P2 22.36     EXATO
+       RPAD(' ', 8)||';'||   -- P2 22.37     EXATO
+       RPAD(' ', 8)||';'||   -- P2 22.38     BRANCO
+       RPAD(' ', 19)||';'||   -- P2 22.39     BRANCO
+       RPAD(' ', 3)||';'||   -- P2 22.40     BRANCO
+       RPAD(' ', 8)||';'||   -- P2 22.41     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 22.42     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 22.43     BRANCO
+       RPAD(' ', 19)||';'||   -- P2 22.44     BRANCO
+       RPAD(' ', 3)||';'||   -- P2 22.45     BRANCO
+       RPAD(' ', 8)||';'||   -- P2 22.46     BRANCO
+       RPAD(' ', 19)||';'||   -- P2 22.47     BRANCO
+       RPAD(' ', 3)||';'||   -- P2 22.48     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 22.49     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 22.50     BRANCO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_PALL, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.58     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_FIN_PALL, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.59     EXATO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ECHEANCE_EN_COURS)||';'||   -- P2 22.60     EXATO
+       RPAD(nvl(C_ENR.DEV_MNT_ECHEANCE_EN_COURS, 'EUR'), 3)||';'||   -- P2 22.61     EXATO
+       RPAD(nvl(C_ENR.IND_PRE_POST_FIX, ' '), 1)||';'||   -- P2 22.62     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_DEB_ENG_RENOUV,'YYYYMMDD'),' '), 8)||';'||   -- P2 22.63     EXATO
+       RPAD(' ', 2)||';'||   -- P2 22.64     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 22.65     BRANCO
+       RPAD(nvl(C_ENR.CD_PAYS_JURIDICTION, ' '), 2)||';'||   -- P2 22.66     EXATO
+       RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)||';'||   -- P2 22.67     EXATO
+       RPAD(nvl(C_ENR.EVT_DECL_GAR, ' '), 2)||';'||   -- P2 22.68     EXATO
+       RPAD(' ', 5)||';'||   -- P2 22.70     EXATO
+       CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END||';'||   -- P2 22.71     EXATO
+       RPAD(nvl(C_ENR.BUCKET_IFRS9, ' '), 2)||';'||   -- P2 22.72     EXATO
+       RPAD(' ', 10)||';'||   -- P2 22.73     BRANCO
+       RPAD(' ', 10)||';'||   -- P2 22.74     BRANCO
+       RPAD(' ', 1)||';'||   -- P2 22.99     BRANCO
+       RPAD(nvl(C_ENR.ELIG_OUTIL_MUT_PROV, ' '), 1)||';'||   -- P2 23.1      EXATO
+       RPAD(nvl(C_ENR.CENT_RESULT, ' '), 7)||';'||   -- P2 23.2      EXATO
+       RPAD(nvl(C_ENR.SYS_GEST_SOURCE, ' '), 20)||';'||   -- P2 23.3      EXATO
+       RPAD(nvl(C_ENR.CLASS_CPT_ACT_NOR_IFRS9, ' '), 3)||';'||   -- P2 23.4      EXATO
+       RPAD(nvl(C_ENR.CLASS_CPT_ACT_NOR_NAT, ' '), 3)||';'||   -- P2 23.5      EXATO
+       RPAD(nvl(C_ENR.IND_ACT_DEP_ORG, ' '), 1)||';'||   -- P2 23.6      EXATO
+       RPAD(nvl(C_ENR.ZONE_APP_COMPTA, ' '), 40)||';'||   -- P2 23.7      EXATO
+       RPAD(' ', 5)||';'||   -- P2 23.12     BRANCO
+       RPAD(' ', 5)||';'||   -- P2 23.13     BRANCO
+       RPAD (nvl(C_ENR.CD_METH_IFRS9_PD,' '), 12)||';'||   -- P2 23.8      EXATO
+       RPAD (nvl(C_ENR.CD_METH_IFRS9_LGD,' '), 12)||';'||   -- P2 23.9      EXATO
+       RPAD (nvl(C_ENR.CD_METH_IFRS9_CCF,' '), 12)||';'||   -- P2 23.10     EXATO
+       RPAD (nvl(C_ENR.CD_METH_IFRS9_TX,' '), 12)||';'||   -- P2 23.11     EXATO
+       RPAD(' ', 2)||';'||   -- P2 23.99     EXATO
+       nvl(C_ENR.IND_MOBIL_ACTIF,'1')||';'||   -- P2 26.1      EXATO
+       RPAD (nvl(C_ENR.ELIG_MOB_BANQUE_CENTRALE,' '), 1)||';'||   -- P2 26.2      EXATO
+       RPAD (nvl(C_ENR.REF_MOB_ACTIF,' '), 3)||';'||   -- P2 26.3      EXATO
+       RPAD (nvl(C_ENR.CD_ORGA_MOBIL,' '), 3)||';'||   -- P2 26.4      EXATO
+       RPAD(' ', 20)||';'||   -- P2 26.99     EXATO
+       RPAD (nvl(C_ENR.IND_OPE_EFFET_LEVIER,' '), 1)||';'||   -- P2 28.1      EXATO
+       RPAD (nvl(C_ENR.IND_SPONSOR_FIN,' '), 1)||';'||   -- P2 28.2      EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS3(C_ENR.MNT_IDEMNITE_RES)||';'||   -- P2 29.1      EXATO
+       RPAD (nvl(C_ENR.CD_DEV_MNT_INDEMNITE,' '), 3)||';'||   -- P2 29.2      EXATO
+       RPAD(' ', 19)||';'||   -- P2 27.1      EXATO
+       RPAD(' ', 3)||';'||   -- P2 27.2      EXATO
+       RPAD (nvl(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD,' '), 1)||';'||   -- P2 27.3      EXATO
+       RPAD (nvl(C_ENR.MOTIF_EXCLU_ANACREDIT,' '), 2)||';'||   -- P2 27.4      EXATO
+       RPAD(' ', 23)||';'||   -- P2 27.99     EXATO
+       RPAD(' ', 5)||';'||   -- P2 31.1      EXATO
+       RPAD(' ', 40)||';'||   -- P2 31.2      EXATO
+       RPAD(' ', 40)||';'||   -- P2 31.3      EXATO
+       case when C_ENR.MNT_ENG_DT_SIGN_CTRT is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT) end||';'||   -- P2 31.4      EXATO
+       RPAD(NVL(C_ENR.IND_RESPO_SOLIDAIRE, ' '),1,' ')||';'||   -- P2 31.5      EXATO
+       RPAD (NVL(C_ENR.IND_ISF,'2'), 1)||';'||   -- P2 31.6      EXATO
+       RPAD(' ',6)||';'||   -- P2 31.7      EXATO
+       RPAD(' ',1)||';'||   -- P2 31.8      EXATO
+       RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')||';'||   -- P2 31.9      EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')||';'||   -- P2 31.10     EXATO
+       RPAD(' ',1)||';'||   -- P2 31.11     EXATO
+       RPAD(' ',1)||';'||   -- P2 31.12     EXATO
+       RPAD(' ',1)||';'||   -- P2 31.13     EXATO
+       RPAD(' ',15)||';'||   -- P2 31.14     EXATO
+       RPAD(' ',19)||';'||   -- P2 31.15     EXATO
+       RPAD(' ',3)||';'||   -- P2 31.16     EXATO
+       case when C_ENR.DUREE_INIT_PRET is not null then '+'||LPAD(C_ENR.DUREE_INIT_PRET,5,'0') else RPAD(' ',6) end||';'||   -- P2 31.17     EXATO
+       case when C_ENR.DUREE_TOTALE_PRET_DATE is not null then '+'||LPAD(C_ENR.DUREE_TOTALE_PRET_DATE,5,'0') else RPAD(' ',6) end||';'||   -- P2 31.18     EXATO
+       RPAD(' ',6)||';'||   -- P2 31.19     EXATO
+       RPAD(' ',1)||';'||   -- P2 31.20     EXATO
+       RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)||';'||   -- P2 31.21     EXATO
+       RPAD(' ',2)||';'||   -- P2 31.22     EXATO
+       case when C_ENR.MNT_FOND_REMIS_DATE is null then RPAD(' ',19) else pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_FOND_REMIS_DATE) end||';'||   -- P2 31.23     EXATO
+       case when C_ENR.DEV_FOND_REMIS_DATE is null then RPAD(' ',3) else RPAD(C_ENR.DEV_FOND_REMIS_DATE,3,' ') end||';'||   -- P2 31.24     EXATO
+       RPAD(' ',15)||';'||   -- P2 31.25     EXATO
+       RPAD(' ',15)||';'||   -- P2 31.26     EXATO
+       RPAD(' ',15)||';'||   -- P2 31.27     EXATO
+       RPAD(' ',15)||';'||   -- P2 31.28     EXATO
+       RPAD(' ',15)||';'||   -- P2 31.29     EXATO
+       RPAD(' ',1)||';'||   -- P2 31.37     EXATO
+       RPAD(' ',1)||';'||   -- P2 31.38     EXATO
+       RPAD(' ',19)||';'||   -- P2 29.3      EXATO
+       RPAD(' ',3)||';'||   -- P2 29.4      EXATO
+       RPAD(' ',19)||';'||   -- P2 29.5      EXATO
+       RPAD(' ',3)||';'||   -- P2 29.6      EXATO
+       RPAD(' ',19)||';'||   -- P2 21.20     EXATO
+       RPAD(' ',3)||';'||   -- P2 21.21     EXATO
+       RPAD(' ',7)||';'||   -- P2 16.24     EXATO
+       RPAD(' ',2)||';'||   -- P2 16.25     EXATO
+       RPAD(' ',2)||';'||   -- P2 16.26     EXATO
+       RPAD(' ',2)||';'||   -- P2 16.27     EXATO
+       RPAD(' ',2)||';'||   -- P2 16.28     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.29     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.30     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.31     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.32     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.33     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.34     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.35     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.36     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.37     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.38     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.39     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.40     EXATO
+       RPAD(' ',19)||';'||   -- P2 16.41     EXATO
+       RPAD(' ',3)||';'||   -- P2 16.42     EXATO
+       RPAD(' ',2)||';'||   -- P2 28.3      EXATO
+       RPAD(' ',2)||';'||   -- P2 28.4      EXATO
+       RPAD(' ',2)||';'||   -- P2 28.5      EXATO
+       RPAD(' ',20)||';'||   -- P2 28.6      EXATO
+       RPAD(' ',10)||';'||   -- P2 28.7      EXATO
+       RPAD(' ',15)||';'||   -- P2 28.8      EXATO
+       RPAD(' ',19)||';'||   -- P2 28.9      EXATO
+       RPAD(' ',3)||';'||   -- P2 28.10     EXATO
+       RPAD(' ',19)||';'||   -- P2 28.11     EXATO
+       RPAD(' ',3)||';'||   -- P2 28.12     EXATO
+       RPAD(' ',19)||';'||   -- P2 28.13     EXATO
+       RPAD(' ',3)||';'||   -- P2 28.14     EXATO
+       RPAD (nvl(C_ENR.CD_DEVISE,' '), 3)||';'||   -- P2 50.1      EXATO
+       RPAD(' ',12)||';'||   -- P2 50.2      EXATO
+       RPAD(' ',19)||';'||   -- P2 50.3      EXATO
+       RPAD(nvl(C_ENR.PCCO_MNT_PNU,' '),12)||';'||   -- P2 50.4      EXATO
+       pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_PNU)||';'||   -- P2 50.5      EXATO
+       RPAD(' ',12)||';'||   -- P2 50.8      EXATO
+       RPAD(' ',19)||';'||   -- P2 50.9      EXATO
+       RPAD(' ',12)||';'||   -- P2 50.14     EXATO
+       RPAD(' ',19)||';'||   -- P2 50.15     EXATO
+       RPAD(' ',12)||';'||   -- P2 50.16     EXATO
+       RPAD(' ',19)||';'||   -- P2 50.17     EXATO
+       RPAD(' ',12)||';'||   -- P2 50.18     EXATO
+       RPAD(' ',19)||';'||   -- P2 50.19     EXATO
+       RPAD(' ',12)||';'||   -- P2 15        EXATO
+       RPAD(' ',12)||';'||   -- P2 16        EXATO
+       RPAD(' ',12)||';'||   -- P2 14        EXATO
+       RPAD(' ',7)||';'||   -- P2 21.48     EXATO
+       RPAD(' ',19)||';'||   -- P2 21.49     EXATO
+       RPAD(' ',3)||';'||   -- P2 21.50     EXATO
+       RPAD(' ',19)||';'||   -- P2 21.51     EXATO
+       RPAD(' ',3)||';'||   -- P2 21.52     EXATO
+       RPAD(' ',19)||';'||   -- P2 21.53     EXATO
+       RPAD(' ',3)||';'||   -- P2 21.54     EXATO
+       RPAD(NVL(C_ENR.IND_UCC,' '),1)||';'||   -- P2 21.66     EXATO
+       RPAD(' ',10)||';'||   -- P2 21.61     EXATO
+       RPAD(' ',10)||';'||   -- P2 21.62     EXATO
+       RPAD(' ',19)||';'||   -- P2 21.63     EXATO
+       RPAD(' ',3)||';'||   -- P2 21.64     EXATO
+       RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1)||';'||   -- P2 21.44     EXATO
+       RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1)||';'||   -- P2 21.45     EXATO
+       RPAD(NVL(C_ENR.IND_CONF_CRIT_OPE,' '),1)||';'||   -- P2 21.46     EXATO
+       RPAD(' ',1)||';'||   -- P2 21.67     EXATO
+       RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)||';'||   -- P2 21.68     EXATO
+       RPAD(nvl(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)||';'||   -- P2 21.55     EXATO
+       RPAD(' ',20)||';'||   -- P2 21.89     EXATO
+       RPAD(' ',10)||';'||   -- P2 21.90     EXATO
+       RPAD(' ',10)||';'||   -- P2 21.47     EXATO
+       RPAD(' ',1)||';'||   -- P2 21.56     EXATO
+       RPAD(NVL(C_ENR.IND_INVEST_CAPITAL_RISQ,' '),1)||';'||   -- P2 21.57     EXATO
+       RPAD(NVL(C_ENR.IND_INVEST_PROG_LEGISLATIF,' '),1)||';'||   -- P2 21.58     EXATO
+       RPAD(NVL(C_ENR.IND_IPRE,' '),1)||';'||   -- P2 21.38     EXATO
+       RPAD(NVL(C_ENR.IND_EXPO_ADC,' '),1)||';'||   -- P2 21.39     EXATO
+       RPAD(NVL(C_ENR.IND_REAL_COND_PONDERATION_PREFE,' '),1)||';'||   -- P2 21.40     EXATO
+       RPAD(' ',1)||';'||   -- P2 21.41     EXATO
+       RPAD(' ',1)||';'||   -- P2 21.42     EXATO
+       RPAD(pack_utilitaire.F_FORMAT_TAUX_15(C_ENR.ETV_RATIO),15)||';'||   -- P2 21.43     EXATO
+       RPAD(NVL(C_ENR.USAGE_BIEN_FINANCE,' '),1)||';'||   -- P2 8.13      EXATO
+       RPAD(' ',40)||';'||   -- P2 21.71     EXATO
+       RPAD(' ',40)||';'||   -- P2 21.72     EXATO
+       RPAD(' ',40)||';'||   -- P2 21.73     EXATO
+       RPAD(' ',40)||';'||   -- P2 21.74     EXATO
+       RPAD(' ',40)||';'||   -- P2 21.75     EXATO
+       RPAD(' ',40)||';'||   -- P2 21.76     EXATO
+       RPAD(' ',11)||';'||   -- P2 21.77     EXATO
+       RPAD(' ',12)||';'||   -- P2 21.78     EXATO
+       RPAD(' ',1)||';'||   -- P2 21.94     EXATO
+       RPAD(' ',2)||';'||   -- P2 21.95     EXATO
+       RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10)||';'||   -- P2 21.81     EXATO
+       RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR_PREC),10)||';'||   -- P2 21.82     EXATO
+       RPAD(' ',15)||';'||   -- P2 21.83     EXATO
+       RPAD(' ',15)||';'||   -- P2 21.84     EXATO
+       RPAD(' ',15)||';'||   -- P2 21.85     EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_BIEN_COMM,' '),1)||';'||   -- P2 21.86     EXATO
+       RPAD(NVL(C_ENR.CD_EMPLACE_BIEN_COMM,' '),1)||';'||   -- P2 21.87     EXATO
+       RPAD(NVL(C_ENR.IND_OPE_AVEC_RECOURS,' '),1)||';'||   -- P2 21.88     EXATO
+       RPAD(' ',20)||';'||   -- P2 31.51     EXATO
+       RPAD(' ',19)||';'||   -- P2 31.52     EXATO
+       RPAD(' ',3)||';'||   -- P2 31.53     EXATO
+       RPAD(' ', 8)||';'||   -- P2 1001      NOVO
+       RPAD(' ', 8)||';'||   -- P2 1002      NOVO
+       RPAD(' ', 1)||';'||   -- P2 22.222    NOVO
+       RPAD(' ', 1)||';'||   -- P2 600       NOVO
+       RPAD(' ', 1)||';'||   -- P2 601       NOVO
+       RPAD(' ', 1)||';'||   -- P2 602       NOVO
+       RPAD(' ', 19)||';'||   -- P2 603       NOVO
+       RPAD(' ', 3)||';'||   -- P2 603.1     NOVO
+       RPAD(' ', 19)||';'||   -- P2 604       NOVO
+       RPAD(' ', 3)||';'||   -- P2 604.1     NOVO
+       RPAD(' ', 19)||';'||   -- P2 605       NOVO
+       RPAD(' ', 3)||';'||   -- P2 605.1     NOVO
+       RPAD(' ', 40)||';'||   -- P2 606       NOVO
+       RPAD(' ', 1)||';'||   -- P2 607       NOVO
+       RPAD(' ', 19)||';'||   -- P2 608       NOVO
+       RPAD(' ', 3)||';'||   -- P2 608.1     NOVO
+       RPAD(' ', 8)||';'||   -- P2 609       NOVO
+       RPAD(' ', 19)||';'||   -- P2 610       NOVO
+       RPAD(' ', 3)||';'||   -- P2 610.1     NOVO
+       RPAD(' ', 8)||';'||   -- P2 611       NOVO
+       RPAD(' ', 19)||';'||   -- P2 612       NOVO
+       RPAD(' ', 3)||';'||   -- P2 612.1     NOVO
+       RPAD(' ', 1)||';'||   -- P2 613       NOVO
+       RPAD(' ', 1)||';'||   -- P2 617       NOVO
+       RPAD(' ', 1)||';'||   -- P2 618       NOVO
+       RPAD(' ', 19)||';'||   -- P2 619       NOVO
+       RPAD(' ', 1)||';'||   -- P2 620       NOVO
+       RPAD(' ', 1)||';'||   -- P2 635       NOVO
+       RPAD(' ', 2)||';'||   -- P2 625       NOVO
+       RPAD(' ', 1)||';'||   -- P2 626       NOVO
+       RPAD(' ', 1)||';'||   -- P2 627       NOVO
+       RPAD(' ', 19)||';'||   -- P2 628       NOVO
+       RPAD(' ', 3)||';'||   -- P2 628.1     NOVO
+       RPAD(' ', 1)||';'||   -- P2 629       NOVO
+       RPAD(' ', 19)||';'||   -- P2 630       NOVO
+       RPAD(' ', 3)||';'||   -- P2 630.1     NOVO
+       RPAD(' ', 19)||';'||   -- P2 631       NOVO
+       RPAD(' ', 3)||';'||   -- P2 631.1     NOVO
+       RPAD(' ', 19)||';'||   -- P2 632       NOVO
+       RPAD(' ', 3)||';'||   -- P2 632.1     NOVO
+       RPAD(' ', 19)||';'||   -- P2 633       NOVO
+       RPAD(' ', 3)||';'||   -- P2 633.1     NOVO
+       RPAD(' ', 18)     -- P2 99.99     FILLER (4018 - 397 separadores fica em branco por trimspool)
+     as lignedetail1,  -- debut ligne (taille <= 4000)
     -- (compter 1 blanc de separation entre les 2 champs dans le spool)
     LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
      as lignedetail2
@@ -1680,203 +1644,164 @@ select
 -- N06: a partir de P_UTLF_SURETE_M1   
 ------------------------------------------------------------------------------------------------------------------------
 select
-        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
-       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --RPAD('C_BTR', 12)||
-       RPAD(C_ENR.APPLI_SOURCE, 12)||
-       -- FIN LFD
-       'M'||
-       :MASYSDATE||
-       'M1'||
-       RPAD(' ', 10)||  -- longueur : 1+2+7
-       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
-       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||
-       RPAD(NVL(C_ENR.ID_SURETE, ' '), 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 40)||
-       RPAD(' ', 20)||
-       RPAD(NVL(C_ENR.CD_NATOP_CPT, ' '), 12)||
-       -- NVL(CD_GRR, 'N')|| A checker
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 1)||
-	   RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-	   RPAD(' ', 13)||
-	   --FIN EMM
-       RPAD(NVL(C_ENR.ID_TIERS_CALC_GAR, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS_GAR,' '), 10)||
-       RPAD(' ', 10)||
-       RPAD(' ', 20)||
-       RPAD(' ', 10)||
-       RPAD(nvl(C_ENR.CD_LIEU_DEPOT,' '), 1)||
-       RPAD(' ', 20)||
-       NVL(C_ENR.CD_ETENDUE_SURETE, ' ')||
-       NVL(C_ENR.CD_ARROSAGE, ' ')||
-       RPAD(' ', 20)||
-       RPAD(NVL(C_ENR.CD_NATURE_SURETE,' '),7)||
-       RPAD(' ', 28)||    --2+2+2+2+20
-       -- 17/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE WHEN C_ENR.MNT_INITIAL>0 AND C_ENR.MNT_INITIAL<1 THEN pack_utilitaire.f_format_montant_bis2(1)
-    --ELSE pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_INITIAL),0)) END || 
-        pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INITIAL)||
-        -- FIN LFD
-       --pack_utilitaire.F_FORMAT_TAUX(nvl(C_ENR.POURCENT_INITIAL,0))||
-    RPAD(' ', 10)||
-        -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE WHEN C_ENR.VAL_GARANTIE>0 AND C_ENR.VAL_GARANTIE<1 THEN pack_utilitaire.f_format_montant_bis2(1)
-    --ELSE pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.VAL_GARANTIE),0) <0 THEN 0 else nvl((C_ENR.VAL_GARANTIE),0) END ) END ||
-        pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE)||
-        -- FIN LFD
-       RPAD(' ', 10)||
-       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||
-       --12/09/2018 - CDS ATOS (EMM) -  US 489
-       RPAD(NVL(to_char(C_ENR.DT_REV_MNT, 'YYYYMMDD'),' '),8)||
-       --Fin EMM
-       -- 07/02/2019 - CDS ATOS (LFD) - CRRV4.2 US 716
-       --RPAD(' ', 20)||
-       RPAD(NVL(C_ENR.CD_DEV_HYPO, ' '),3)||
-       RPAD(' ', 17)||
-       -- FIN LFD
-       RPAD(NVL(to_char(C_ENR.DT_DEB_EFFET, 'YYYYMMDD'), ' '),8)||
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --RPAD(NVL(to_char(C_ENR.DT_FIN_EFFET, 'YYYYMMDD'), '20991231'),8)||
-       RPAD(NVL(to_char(C_ENR.DT_FIN_EFFET, 'YYYYMMDD'), ' '),8)||
-       -- FIN LFD
-       nvl(C_ENR.ELIGIBILITE_SURETE_PERS,' ')||
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --NVL(C_ENR.cd_pays_recours, 'FR')||
-       NVL(C_ENR.cd_pays_recours, '  ')||
-       -- FIN LFD 
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --NVL(C_ENR.CD_RANG_SURETE, '1')||
-       NVL(C_ENR.CD_RANG_SURETE, ' ')||
-       -- FIN LFD
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       -- NVL(C_ENR.CD_SORTIE_RISQ_PAYS, '0')||
-       NVL(C_ENR.CD_SORTIE_RISQ_PAYS, ' ')||
-       -- FIN LFD
-       NVL(C_ENR.cd_methodo_valorisation, ' ')||
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --LPAD(NVL(C_ENR.CD_PERIODICITE, 30),5,0) ||
-       LPAD(C_ENR.CD_PERIODICITE,5,0) ||
-       -- FIN LFD
-       -- 07/02/2019 - CDS ATOS (LFD) - CRRV4.2 US 716
-       --RPAD(' ', 20)||
-       LPAD(TO_CHAR(C_ENR.EVT_DECL_GAR),2,0)||
-       --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(' ', 1)|| -- IND_MOB_ACTIF
-	   RPAD(' ', 17)||
-	   --FIN EMM
-       -- FIN LFD
-       RPAD(' ', 25)||   --1+1+1+1+1+20--------
-       RPAD(' ', 22)||   --1+16+2+3
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, '     '),-7,5) = 'SEC01'
-       --     THEN NVL(C_ENR.CD_BOURSE_COTATION, '  ')
-       --     ELSE '  '
-       --END||
-       NVL(C_ENR.CD_BOURSE_COTATION, '  ')||
-       -- FIN LFD
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, '     '),-7,5) = 'SEC01'
-       --     THEN NVL(C_ENR.TOP_COT_BAL_2, 'Y')
-       --     ELSE ' '
-       --END||
-       NVL(C_ENR.TOP_COT_BAL_2, ' ')||
-       -- FIN LFD
-       CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, '     '),-7,5) = 'SEC01'
-            THEN '1 '
-            ELSE '  '
-       END||
-       RPAD(' ', 68)||   ---12+1+10+8+5+2+20+10
-       RPAD(NVL(C_ENR.CD_NATIO_EMET, ' '), 2)||
-       NVL(C_ENR.CD_PER_LIQUID,' ')||
-       NVL(C_ENR.CD_PER_LIQUID2, ' ')||
-       RPAD(' ', 12)||    --2+1+4+2+2+1
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE,'   '),-7,3) in ('REE', 'TAS')
-       --            THEN RPAD(NVL(C_ENR.ANNEE_EVT_MIM, ' '),4)||
-       --                     RPAD(NVL(C_ENR.ANNEE_CONSTRUIT_BIEN, ' '),4)||
-       --                     NVL(C_ENR.CD_METHO_VAL_BIEN,' ')||
-       --                     NVL(C_ENR.CD_QUAL_MONTAGE,'2')||
-       --                     NVL(C_ENR.CD_QUAL_ACTIF,'3')
-       --    ELSE RPAD(' ', 11)
-       RPAD(NVL(C_ENR.ANNEE_EVT_MIM, ' '),4)||
-       RPAD(NVL(C_ENR.ANNEE_CONSTRUIT_BIEN, ' '),4)||
-       NVL(C_ENR.CD_METHO_VAL_BIEN,' ')||
-       NVL(C_ENR.CD_QUAL_MONTAGE,' ')||
-       NVL(C_ENR.CD_QUAL_ACTIF,' ')||
-       --FIN LFD
-       pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_HYPOTHEQUE),0) <0 THEN 0 else nvl((C_ENR.MNT_HYPOTHEQUE),0) END )||
-       -- 15/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, '   '),-7,3) in ('REE', 'TAS', 'IAS')
-       --     THEN NVL(C_ENR.CD_BORRO_BASE,'Y')
-       --     ELSE ' '
-       --END||
-       NVL(C_ENR.CD_BORRO_BASE,' ')||
-       -- FIN LFD
-       ' '||
-       -- 16/01/18 - CDS ATOS (LFD) - CRRV4.2 US 651
-       --CASE  WHEN substr(nvl(C_ENR.CD_NATURE_SURETE,'   '),-7,3) in ('GUA', 'CDE')
-       --     THEN 'FR'
-       --     ELSE '  '
-       --END||
-       NVL(C_ENR.CD_PAYS_LOCAL_GARANT,'  ')||
-       -- FIN LFD
-      --IFRS9: (longueur:1+1+16+2+3+2+40+40+5)
-       --RPAD(' ', 110)||
-      --IFRS9: modification de la taille
-       RPAD(' ', 98)||
-       RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)|| -- M1 7.16
-       RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)|| -- M1 7.17
-       --15/01/2018 CDS ATOS (EMM) Sprint 3 US 26 (M1 7.18)
-       RPAD(NVL(C_ENR.CD_NUTS, ' '),5)|| --M1 7.18
-       --Fin EMM
-       -- 07/02/2019 - CDS ATOS (LFD) - CRRV4.2 US 716
-       case when C_ENR.MNT_TITRES_RECUS is null  then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_TITRES_RECUS) end || --M1 8.43
-       RPAD(NVL(C_ENR.CD_DEV_MNT_TITRES_RECUS, ' '), 3)|| --M1 8.44
-       case when C_ENR.MNT_CCNE_RECUS_GAR is null  then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_CCNE_RECUS_GAR) end || --M1 8.45
-       RPAD(NVL(C_ENR.CD_DEV_MNT_CCNE_RECUS_GAR, ' '), 3)|| --M1 8.46
-	   --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT) || --M1 6.8 - B‚le 4 - MR12731 
-	   RPAD(' ', 19) || --M1 6.9
-	   RPAD(' ', 3) || --M1 6.10
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20) ||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'Syst√®me de gestion source' --M1 1.40
-	   RPAD(' ', 5) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 15) ||
-	   RPAD(' ', 40) ||
-	   RPAD(' ', 2) ||
-	   RPAD(' ', 11) ||
-	   RPAD(' ', 12) ||
-	   RPAD(' ', 1) ||
-	   RPAD(' ', 1) ||
-	   RPAD(' ', 1) ||
-	   RPAD(' ', 1) ||
-	   RPAD(' ', 100) ||
-	   RPAD(' ', 1) ||
-	   RPAD(' ', 50) ||
-	   -- 50 DONNEES COMPTABLES 
-	   RPAD(NVL(C_ENR.CD_DEVISE, ' '), 3)||
-	   RPAD('91290000', 12) ||                                      -- M1 50.2 :: valeur par defaut
-	   pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE) || -- M1 50.3 :: avant: RPAD(' ', 19) ||
-	   RPAD(' ',10)|| --M1 18.1 pos 1559 - VIDE
-	   RPAD(' ',1)|| --M1 13.11 pos 1569 - VIDE
-	   RPAD(' ',1)|| --M1 13.12 pos 1570 - VIDE
-	   RPAD(NVL(C_ENR.METHOD_BALE_GARANT, ' '),7)|| --M1 13.13 pos 1571 
-	   RPAD(NVL(C_ENR.METHOD_BALE_GARANT_CALC_SIMUL, ' '),7)|| --M1 13.14 pos 1578 
-	   RPAD(' ',40)|| --M1 21.73 pos 1585 - VIDE
-	   RPAD(' ',40)|| --M1 21.75 pos 1625 - VIDE
-     --RPAD (' ', 2241)   -- 4000 - 1559 - BALE4
-     RPAD (' ', 2335)   -- 4000 - 1665 - BALE4
+       to_char(C_ENR.dt_arrete, 'YYYYMMDD')||';'||   -- 0.1 (M1)     EXATO
+       RPAD(NVL(C_ENR.CD_CONSO_CPT,' '), 5)||';'||   -- 0.2 (M1)     EXATO
+       RPAD(C_ENR.APPLI_SOURCE, 12)||';'||   -- 0.3 (M1)     EXATO
+       'M'||';'||   -- 0.4 (M1)     EXATO
+       :MASYSDATE||';'||   -- 0.5 (M1)     EXATO
+       'M1'||';'||   -- 0.6 (M1)     EXATO
+       RPAD(' ', 1)||';'||   -- 0.7 (M1)     BRANCO
+       RPAD(' ', 2)||';'||   -- 0.8 (M1)     BRANCO
+       RPAD(' ', 4)||';'||   -- 0.9 (M1)     BRANCO
+       RPAD(' ', 3)||';'||   -- 0.99 (M1)    BRANCO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'||   -- 1.1 (M1)     EXATO
+       RPAD(' ', 10)||';'||   -- 1.2 (M1)     EXATO
+       RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||';'||   -- 1.4 (M1)     EXATO
+       RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||';'||   -- 1.6 (M1)     EXATO
+       RPAD(NVL(C_ENR.ID_SURETE, ' '), 40)||';'||   -- 1.8 (M1)     EXATO
+       RPAD(' ', 40)||';'||   -- 1.11 (M1)    EXATO
+       RPAD(' ', 40)||';'||   -- 1.16 (M1)    EXATO
+       RPAD(' ', 11)||';'||   -- 1.99 (M1)    BRANCO
+       RPAD(' ', 7)||';'||   -- 1.98 (M1)    BRANCO
+       RPAD(' ', 2)||';'||   -- 1.97 (M1)    BRANCO
+       RPAD(NVL(C_ENR.CD_NATOP_CPT, ' '), 12)||';'||   -- M1 2.3       EXATO
+       RPAD(' ', 1)||';'||   -- M1 2.4       EXATO
+       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||';'||   -- M1 2.5       EXATO
+       RPAD(' ', 13)||';'||   -- M1 2.99      EXATO
+       RPAD(NVL(C_ENR.ID_TIERS_CALC_GAR, ' '), 20)||';'||   -- M1 3.1       EXATO
+       RPAD(' ', 10)||';'||   -- M1 3.2       EXATO
+       RPAD(' ', 20)||';'||   -- M1 3.4       EXATO
+       RPAD(' ', 10)||';'||   -- M1 3.6       EXATO
+       RPAD(nvl(C_ENR.CD_LIEU_DEPOT,' '), 1)||';'||   -- M1 8.11      EXATO
+       RPAD(' ', 20)||';'||   -- M1 3.99      EXATO
+       NVL(C_ENR.CD_ETENDUE_SURETE, ' ')||';'||   -- M1 4.1       EXATO
+       NVL(C_ENR.CD_ARROSAGE, ' ')||';'||   -- M1 4.3       EXATO
+       RPAD(' ', 20)||';'||   -- M1 4.99      EXATO
+       RPAD(NVL(C_ENR.CD_NATURE_SURETE,' '),7)||';'||   -- M1 5.1       EXATO
+       RPAD(' ', 2)||';'||   -- M1 5.2       BRANCO
+       RPAD(' ', 2)||';'||   -- M1 5.3       BRANCO
+       RPAD(' ', 2)||';'||   -- M1 5.4       BRANCO
+       RPAD(' ', 2)||';'||   -- M1 5.5       BRANCO
+       RPAD(' ', 20)||';'||   -- M1 5.99      BRANCO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INITIAL)||';'||   -- M1 6.1       EXATO
+       RPAD(' ', 10)||';'||   -- M1 6.97      EXATO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE)||';'||   -- M1 6.3       EXATO
+       RPAD(' ', 10)||';'||   -- M1 6.98      EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '),3)||';'||   -- M1 6.5       EXATO
+       RPAD(NVL(to_char(C_ENR.DT_REV_MNT, 'YYYYMMDD'),' '),8)||';'||   -- M1 6.6       EXATO
+       RPAD(NVL(C_ENR.CD_DEV_HYPO, ' '),3)||';'||   -- M1 6.7       EXATO
+       RPAD(' ', 17)||';'||   -- M1 6.99      EXATO
+       RPAD(NVL(to_char(C_ENR.DT_DEB_EFFET, 'YYYYMMDD'), ' '),8)||';'||   -- M1 7.1       EXATO
+       RPAD(NVL(to_char(C_ENR.DT_FIN_EFFET, 'YYYYMMDD'), ' '),8)||';'||   -- M1 7.2       EXATO
+       nvl(C_ENR.ELIGIBILITE_SURETE_PERS,' ')||';'||   -- M1 7.5       EXATO
+       RPAD(NVL(C_ENR.cd_pays_recours, ' '), 2)||';'||   -- M1 7.6       REGRA
+       NVL(C_ENR.CD_RANG_SURETE, ' ')||';'||   -- M1 7.7       EXATO
+       NVL(C_ENR.CD_SORTIE_RISQ_PAYS, ' ')||';'||   -- M1 7.8       EXATO
+       NVL(C_ENR.cd_methodo_valorisation, ' ')||';'||   -- M1 7.9       EXATO
+       LPAD(C_ENR.CD_PERIODICITE,5,0)||';'||   -- M1 8.26      EXATO
+       LPAD(TO_CHAR(C_ENR.EVT_DECL_GAR),2,0)||';'||   -- M1 7.19      EXATO
+       RPAD(' ', 1)||';'||   -- M1 7.20      EXATO
+       RPAD(' ', 17)||';'||   -- M1 7.98      EXATO
+       RPAD(' ', 1)||';'||   -- M1 7.10      BRANCO
+       RPAD(' ', 1)||';'||   -- M1 7.11      BRANCO
+       RPAD(' ', 1)||';'||   -- M1 7.12      BRANCO
+       RPAD(' ', 1)||';'||   -- M1 7.13      BRANCO
+       RPAD(' ', 1)||';'||   -- M1 7.14      BRANCO
+       RPAD(' ', 20)||';'||   -- M1 7.99      BRANCO
+       RPAD(' ', 19)||';'||   -- M1 8.35      BRANCO
+       RPAD(' ', 3)||';'||   -- M1 8.36      BRANCO
+       RPAD(NVL(C_ENR.CD_BOURSE_COTATION, ' '), 2)||';'||   -- M1 8.31      REGRA
+       NVL(C_ENR.TOP_COT_BAL_2, ' ')||';'||   -- M1 8.32      EXATO
+       CASE WHEN substr(nvl(C_ENR.CD_NATURE_SURETE, ' '),-7,5) = 'SEC01' THEN '1 ' ELSE ' ' END||';'||   -- M1 8.1       EXATO
+       RPAD(' ', 12)||';'||   -- M1 8.2       BRANCO
+       RPAD(' ', 1)||';'||   -- M1 8.3       BRANCO
+       RPAD(' ', 10)||';'||   -- M1 8.4       BRANCO
+       RPAD(' ', 8)||';'||   -- M1 8.5       BRANCO
+       RPAD(' ', 5)||';'||   -- M1 8.6       BRANCO
+       RPAD(' ', 2)||';'||   -- M1 8.7       BRANCO
+       RPAD(' ', 20)||';'||   -- M1 8.8       BRANCO
+       RPAD(' ', 10)||';'||   -- M1 8.9       BRANCO
+       RPAD(NVL(C_ENR.CD_NATIO_EMET, ' '), 2)||';'||   -- M1 8.10      EXATO
+       NVL(C_ENR.CD_PER_LIQUID,' ')||';'||   -- M1 8.37      EXATO
+       NVL(C_ENR.CD_PER_LIQUID2, ' ')||';'||   -- M1 8.38      EXATO
+       RPAD(' ', 2)||';'||   -- M1 8.12      BRANCO
+       RPAD(' ', 1)||';'||   -- M1 8.13      BRANCO
+       RPAD(' ', 4)||';'||   -- M1 8.14      BRANCO
+       RPAD(' ', 2)||';'||   -- M1 8.15      BRANCO
+       RPAD(' ', 2)||';'||   -- M1 8.16      BRANCO
+       RPAD(' ', 1)||';'||   -- M1 8.17      BRANCO
+       RPAD(NVL(C_ENR.ANNEE_EVT_MIM, ' '),4)||';'||   -- M1 8.18      EXATO
+       RPAD(NVL(C_ENR.ANNEE_CONSTRUIT_BIEN, ' '),4)||';'||   -- M1 8.19      EXATO
+       NVL(C_ENR.CD_METHO_VAL_BIEN,' ')||';'||   -- M1 8.27      EXATO
+       NVL(C_ENR.CD_QUAL_MONTAGE,' ')||';'||   -- M1 8.28      EXATO
+       NVL(C_ENR.CD_QUAL_ACTIF,' ')||';'||   -- M1 8.29      EXATO
+       pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_HYPOTHEQUE),0) <0 THEN 0 else nvl((C_ENR.MNT_HYPOTHEQUE),0) END )||';'||   -- M1 8.34      EXATO
+       NVL(C_ENR.CD_BORRO_BASE,' ')||';'||   -- M1 8.39      EXATO
+       ' '||';'||   -- M1 8.42      EXATO
+       RPAD(NVL(C_ENR.CD_PAYS_LOCAL_GARANT, ' '), 2)||';'||   -- M1 9.1       REGRA
+       RPAD(' ', 20)||';'||   -- M1 9.99      BRANCO
+       RPAD(' ', 10)||';'||   -- M1 10.1      BRANCO
+       RPAD(' ', 10)||';'||   -- M1 10.2      BRANCO
+       RPAD(' ', 20)||';'||   -- M1 10.99     BRANCO
+       RPAD(' ', 1)||';'||   -- M1 11.1      BRANCO
+       RPAD(' ', 8)||';'||   -- M1 11.2      BRANCO
+       RPAD(' ', 5)||';'||   -- M1 11.3      BRANCO
+       RPAD(' ', 19)||';'||   -- M1 8.40      BRANCO
+       RPAD(' ', 3)||';'||   -- M1 8.41      BRANCO
+       RPAD(' ', 2)||';'||   -- M1 7.15      BRANCO
+       RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)||';'||   -- M1 7.16      EXATO
+       RPAD(NVL(C_ENR.ID_ENGAGEMENT, ' '), 40)||';'||   -- M1 7.17      EXATO
+       RPAD(NVL(C_ENR.CD_NUTS, ' '),5)||';'||   -- M1 7.18      EXATO
+       case when C_ENR.MNT_TITRES_RECUS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_TITRES_RECUS) end||';'||   -- M1 8.43      EXATO
+       RPAD(NVL(C_ENR.CD_DEV_MNT_TITRES_RECUS, ' '), 3)||';'||   -- M1 8.44      EXATO
+       case when C_ENR.MNT_CCNE_RECUS_GAR is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_CCNE_RECUS_GAR) end||';'||   -- M1 8.45      EXATO
+       RPAD(NVL(C_ENR.CD_DEV_MNT_CCNE_RECUS_GAR, ' '), 3)||';'||   -- M1 8.46      EXATO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT)||';'||   -- M1 6.8       EXATO
+       RPAD(' ', 19)||';'||   -- M1 6.9       EXATO
+       RPAD(' ', 3)||';'||   -- M1 6.10      EXATO
+       RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||';'||   -- M1 1.40      EXATO
+       RPAD(' ', 5)||';'||   -- M1 12.1      EXATO
+       RPAD(' ', 40)||';'||   -- M1 7.23      EXATO
+       RPAD(' ', 40)||';'||   -- M1 7.24      EXATO
+       RPAD(' ', 40)||';'||   -- M1 7.25      EXATO
+       RPAD(' ', 40)||';'||   -- M1 8.53      EXATO
+       RPAD(' ', 40)||';'||   -- M1 8.54      EXATO
+       RPAD(' ', 40)||';'||   -- M1 8.55      EXATO
+       RPAD(' ', 15)||';'||   -- M1 8.56      EXATO
+       RPAD(' ', 40)||';'||   -- M1 8.57      EXATO
+       RPAD(' ', 2)||';'||   -- M1 8.58      EXATO
+       RPAD(' ', 11)||';'||   -- M1 8.59      EXATO
+       RPAD(' ', 12)||';'||   -- M1 8.60      EXATO
+       RPAD(' ', 1)||';'||   -- M1 8.49      EXATO
+       RPAD(' ', 1)||';'||   -- M1 8.50      EXATO
+       RPAD(' ', 1)||';'||   -- M1 8.51      EXATO
+       RPAD(' ', 1)||';'||   -- M1 8.52      EXATO
+       RPAD(' ', 100)||';'||   -- M1 7.22      EXATO
+       RPAD(' ', 1)||';'||   -- M1 8.61      EXATO
+       RPAD(' ', 50)||';'||   -- M1 12.99     EXATO
+       RPAD(NVL(C_ENR.CD_DEVISE, ' '), 3)||';'||   -- M1 50.1      EXATO
+       RPAD('91290000', 12)||';'||   -- M1 50.2      EXATO
+       pack_utilitaire.f_format_montant_bis2(C_ENR.VAL_GARANTIE)||';'||   -- M1 50.3      EXATO
+       RPAD(' ',10)||';'||   -- M1 18.1      EXATO
+       RPAD(' ',1)||';'||   -- M1 13.11     EXATO
+       RPAD(' ',1)||';'||   -- M1 13.12     EXATO
+       RPAD(NVL(C_ENR.METHOD_BALE_GARANT, ' '),7)||';'||   -- M1 13.13     EXATO
+       RPAD(NVL(C_ENR.METHOD_BALE_GARANT_CALC_SIMUL, ' '),7)||';'||   -- M1 13.14     EXATO
+       RPAD(' ',40)||';'||   -- M1 21.73     EXATO
+       RPAD(' ',40)||';'||   -- M1 21.75     EXATO
+       RPAD(' ', 50)||';'||   -- M1 202       NOVO
+       RPAD(' ', 12)||';'||   -- M1 500       NOVO
+       RPAD(' ', 5)||';'||   -- M1 4.44      NOVO
+       RPAD(' ', 3)||';'||   -- M1 512       NOVO
+       RPAD(' ', 5)||';'||   -- M1 149       NOVO
+       RPAD(' ', 1)||';'||   -- M1 522       NOVO
+       RPAD(' ', 19)||';'||   -- M1 636       NOVO
+       RPAD(' ', 3)||';'||   -- M1 636.1     NOVO
+       RPAD(' ', 19)||';'||   -- M1 637       NOVO
+       RPAD(' ', 3)||';'||   -- M1 637.1     NOVO
+       RPAD(' ', 19)||';'||   -- M1 638       NOVO
+       RPAD(' ', 3)||';'||   -- M1 638.1     NOVO
+       RPAD(' ', 2037)     -- M1 99.99     FILLER (6037 - 157 separadores fica em branco por trimspool)
      as lignedetail1,  -- debut ligne (taille <= 4000)
      -- (compter 1 blanc de separation entre les 2 champs dans le spool)
        LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
@@ -1936,7 +1861,7 @@ select
        RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
        RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
-    as lignedetail1,  -- debut ligne (taille <= 4000)
+     as lignedetail1,  -- debut ligne (taille <= 4000)
     -- (compter 1 blanc de separation entre les 2 champs dans le spool)
     LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
     --Fin EMM
@@ -2073,7 +1998,7 @@ select
        RPAD(' ', 12)||';'||   -- P9 50.12     EXATO
        RPAD(' ', 19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
-  LPAD(' ', 3512) as lignedetail1                                               , -- debut ligne (taille <= 4000) :: 4000 - 488
+     as lignedetail1                                               , -- debut ligne (taille <= 4000) :: 4000 - 488
   --- compter 1 blanc de separation entre les 2 champs dans le spool
   LPAD(' ', 1098) as lignedetail2 -- fin de ligne -- Mantis 11841
  FROM provisions_decotes_p9 C_ENR
@@ -5521,7 +5446,7 @@ select
        RPAD(' ',12)||';'||   -- P9 50.12     EXATO
        RPAD(' ',19)||';'||   -- P9 50.13     EXATO
        RPAD(' ', 3475)     -- P9 99.99     FILLER (7475 - 38 separadores fica em branco por trimspool)
-		as lignedetail1,  -- debut ligne (taille <= 4000)
+     as lignedetail1,  -- debut ligne (taille <= 4000)
 		-- (compter 1 blanc de separation entre les 2 champs dans le spool)
 		LPAD(' ', 1098)   -- fin de ligne -- Mantis 11841 
 		as lignedetail2

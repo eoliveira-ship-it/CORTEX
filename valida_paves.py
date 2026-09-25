@@ -16,6 +16,7 @@ a do spool vPACT, byte a byte.
 
 Uso:  python valida_paves.py
 """
+import collections
 import io
 import sys
 
@@ -43,7 +44,7 @@ def esperado(pave):
 def medido(linhas, a, b):
     """[(largura, expressao)] do bloco gerado, ate ao 'as lignedetail1'."""
     c1, _ = GP.limites(linhas, a, b)
-    return [(t[1], t[2]) for t in MP.tokens(a, c1 - 1)]
+    return [(t[1], t[2]) for t in MP.tokens(a, c1)]
 
 
 def valores(linhas, a, b):
@@ -54,15 +55,19 @@ def valores(linhas, a, b):
     parte-se antes de comparar."""
     c1, _ = GP.limites(linhas, a, b)
     out = []
-    for _p, _w, raw, br in MP.tokens(a, c1 - 1):
+    for _p, _w, raw, br in MP.tokens(a, c1):
         if br or raw == "';'":
             continue
         s = raw.strip()
         partes = (MP.parte_concat(s[1:-1])
                   if s.startswith('(') and s.endswith(')') else [s])
         for x in partes:
-            if not MP.BRANCO.match(x.strip()):
-                out.append(re.sub(r'\s+', '', x))
+            y = x.strip()
+            # um literal so de brancos -- o ' ' que o C1 usa como filler -- nao e
+            # valor: se contasse, a correcao para RPAD(' ', 2) dava campo perdido
+            if MP.BRANCO.match(y) or re.fullmatch(r"' *'", y):
+                continue
+            out.append(re.sub(r'\s+', '', x))
     return sorted(out)
 
 
@@ -72,7 +77,7 @@ def confere(pave):
     caudas, vals = {}, {}
     for k, (a, b) in enumerate(blocos_fonte[pave]):
         c1, _ = GP.limites(fonte, a, b)
-        caudas[k] = fonte[c1 - 1:b]
+        caudas[k] = fonte[c1:b]              # depois da linha do 'as lignedetail1'
         vals[k] = valores(fonte, a, b)
 
     linhas, blocos = MP.carrega_fonte(GP.SAIDA)
@@ -100,15 +105,28 @@ def confere(pave):
             if re.sub(r'--.*$', '', ln).rstrip().endswith("';'"):
                 erros.append('%s bloco %d: linha acaba em separador: %s'
                              % (pave, k + 1, ln.strip()[:50]))
-        if linhas[c1 - 1:b] != caudas[k]:
+        # A coluna 2, o FROM e o WHERE ficam byte a byte. A linha do
+        # 'as lignedetail1' e a fronteira: nao pode sobrar nada antes dele (era
+        # onde um bloco do P9 guardava o filler antigo).
+        antes = re.split(r'as\s+lignedetail1', linhas[c1 - 1], flags=re.I)[0]
+        if antes.strip():
+            erros.append('%s bloco %d: sobra expressao antes do lignedetail1: %s'
+                         % (pave, k + 1, antes.strip()[:50]))
+        if linhas[c1:b] != caudas[k]:
             erros.append('%s bloco %d: a cauda mudou' % (pave, k + 1))
+        # Nenhuma expressao com valor se pode perder. Uma que a REGRA embrulhou
+        # -- 'NVL(col,\' \')' dentro de 'RPAD(NVL(col,\' \'), 2)' -- continua la,
+        # por isso aceita-se quando aparece dentro de uma expressao nova; o que
+        # nao se aceita e desaparecer.
         vn = valores(linhas, a, b)
-        if vn != vals[k]:
-            perdidos = [x for x in vals[k] if x not in vn]
-            novos = [x for x in vn if x not in vals[k]]
-            erros.append('%s bloco %d: %d expressoes perdidas, %d a mais'
-                         % (pave, k + 1, len(perdidos), len(novos)))
-            for x in (perdidos + novos)[:10]:
+        falta = collections.Counter(vals[k]) - collections.Counter(vn)
+        sobra = collections.Counter(vn) - collections.Counter(vals[k])
+        perdidos = [x for x in falta.elements()
+                    if not any(x in y for y in sobra)]
+        if perdidos:
+            erros.append('%s bloco %d: %d expressoes perdidas'
+                         % (pave, k + 1, len(perdidos)))
+            for x in perdidos[:10]:
                 erros.append('     %s' % x[:90])
     return esp, erros
 

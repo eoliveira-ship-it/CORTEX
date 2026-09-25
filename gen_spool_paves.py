@@ -49,6 +49,7 @@ import notice
 buf, _o = io.StringIO(), sys.stdout
 sys.stdout = buf
 import mapa_paves as MP               # noqa: E402  (tokens, regua, blocos)
+import casa_paves as CP               # noqa: E402  (alinhamento campo a campo)
 sys.stdout = _o
 
 import re                             # noqa: E402
@@ -59,10 +60,33 @@ SAIDA = '030_spool_Extract_CRRCORP_1222.sql'   # o mesmo ficheiro do P1
 
 # Paves gerados nesta corrida. Acrescenta-se um de cada vez, por isso a ordem:
 # primeiro os que nao levam REGRA nenhuma.
-PAVES = ('F2', 'F1', 'P9')
+PAVES = ('F2', 'F1', 'P9', 'P2', 'M1', 'C1')
 
 # Campos escritos a mao, por pave. Um por um, com a razao.
-REGRAS = {}
+#
+# Sao as sete unicas divergencias entre o spool e a Notice V45.02 nos seis paves,
+# e todas do mesmo genero: o spool escreve o campo mais estreito do que a notice
+# manda, e a partir dai tudo o que vem depois fica um octeto fora do sitio. Com o
+# ';' pelo meio isso deixa de ser invisivel, por isso corrigem-se aqui -- e vao
+# na lista de correcoes para a DSID, como o P1 21.65 do SIRL-1223.
+REGRAS = {
+    # Codigos de pais e de bolsa: a notice da-lhes 2, o spool escreve o valor da
+    # coluna sem RPAD, que da 1. O ficheiro de referencia confirma o 1 (a zona de
+    # dados do M1 acaba no octeto 1580 nas 65 559 linhas, e nao no 1583).
+    'M1': {
+        'M1 7.6':  "RPAD(NVL(C_ENR.cd_pays_recours, ' '), 2)",
+        'M1 8.31': "RPAD(NVL(C_ENR.CD_BOURSE_COTATION, ' '), 2)",
+        'M1 9.1':  "RPAD(NVL(C_ENR.CD_PAYS_LOCAL_GARANT, ' '), 2)",
+    },
+    # Quatro campos que o spool escreve como um literal de um branco, ' ', onde a
+    # notice pede 2, 2, 5 e 2. Ficam em branco, so com a largura certa.
+    'C1': {
+        'C1 4.9':  "RPAD(' ', 2)",
+        'C1 4.99': "RPAD(' ', 2)",
+        'C1 8.12': "RPAD(' ', 5)",
+        'C1 8.14': "RPAD(' ', 2)",
+    },
+}
 
 
 def limites(linhas, a, b):
@@ -74,23 +98,25 @@ def limites(linhas, a, b):
     return c1, c2
 
 
-def resolve(pave, campos, ts, i):
-    """(expressao, classe) para o campo i, ou (None, None) se nao se souber."""
-    ref, ini, ln = campos[i]
-    fim = ini + ln
-    r = REGRAS.get(pave, {}).get(ref)
+def resolve(pave, l):
+    """(expressao, classe) para uma linha do alinhamento do casa_paves.
+
+    O alinhamento vem de programacao dinamica, nao de sobreposicao por posicao:
+    e o que permite gerar o M1 e o C1, onde ha campos que o spool escreve mais
+    estreitos do que a notice manda e que punham tudo o que vem depois fora do
+    sitio."""
+    r = REGRAS.get(pave, {}).get(l['ref'])
     if r:
         return r, 'REGRA'
-    dentro = [t for t in ts if t[1] and t[0] < fim and t[0] + t[1] > ini]
-    if len(dentro) == 1 and dentro[0][0] == ini and dentro[0][1] == ln:
-        return dentro[0][2], 'EXATO'
-    # Branco antes de emenda: varios fillers seguidos valem um RPAD so, e assim
-    # o campo fica num token unico. Uma emenda de tokens com valor vai entre
-    # parenteses, senao o medidor torna a parti-la nos '||'.
-    if dentro and all(t[3] for t in dentro):
-        return "RPAD(' ', %d)" % ln, 'BRANCO'
-    if dentro and dentro[0][0] == ini and dentro[-1][0] + dentro[-1][1] == fim:
-        return '(%s)' % '||'.join(t[2] for t in dentro), 'EMENDA'
+    if l['estado'] == 'igual':
+        return l['raw'][0], 'EXATO'
+    if l['estado'] == 'emenda':
+        # entre parenteses, senao o medidor torna a parti-la nos '||'
+        return '(%s)' % '||'.join(l['raw']), 'EMENDA'
+    if l['estado'] == 'junta':
+        return "RPAD(' ', %d)" % l['len'], 'BRANCO'
+    if l['estado'] == 'NOVO':
+        return "RPAD(' ', %d)" % l['len'], 'NOVO'
     return None, None
 
 
@@ -98,25 +124,31 @@ def bloco(linhas, pave, a, b):
     """O texto novo do bloco, e o censo das classes."""
     campos = MP.regua(pave)
     c1, _c2 = limites(linhas, a, b)
-    ts = MP.tokens(a, c1 - 1)
     nfim = len(campos) - 1                    # indice do filler final
     if not campos[nfim][0].endswith('99.99'):
         raise SystemExit('%s: o ultimo campo da notice nao e o filler: %s'
                          % (pave, campos[nfim][0]))
 
     corpo, censo, faltam = [], collections.Counter(), []
-    for i in range(nfim):
-        e, cl = resolve(pave, campos, ts, i)
+    for l in CP.casa(pave, a, b):
+        if l['ref'] == campos[nfim][0]:
+            continue                          # o filler final vai no fim
+        e, cl = resolve(pave, l)
         if e is None:
-            faltam.append(campos[i])
+            faltam.append(l)
             continue
         censo[cl] += 1
-        corpo.append("       %s||';'||   -- %-12s %s" % (e, campos[i][0], cl))
+        corpo.append("       %s||';'||   -- %-12s %s" % (e, l['ref'], cl))
     if faltam:
         print('%s: %d campos sem regra' % (pave, len(faltam)))
-        for ref, ini, ln in faltam[:20]:
-            print('   %-12s pos %-5d len %d' % (ref, ini, ln))
+        for l in faltam[:20]:
+            print('   %-8s %-12s spool %s notice %d  %s'
+                  % (l['estado'], l['ref'], l['w'], l['len'],
+                     (l['raw'][0] if l['raw'] else '')[:60]))
         raise SystemExit(1)
+    if len(corpo) != nfim:
+        raise SystemExit('%s: %d campos escritos, a notice tem %d'
+                         % (pave, len(corpo), nfim))
 
     dados = sum(c[2] for c in campos[:nfim])
     sep = nfim                                # um ';' depois de cada campo
@@ -128,7 +160,12 @@ def bloco(linhas, pave, a, b):
                  " fica em branco por trimspool)"
                  % (resto, campos[nfim][0], campos[nfim][2], sep))
 
-    cauda = linhas[c1 - 1:b]                  # 'as lignedetail1' ate ao ';'
+    # A coluna 1 acaba no 'as lignedetail1', que pode nao estar sozinho na linha:
+    # num dos blocos do P9 o filler que fechava os 4000 esta escrito na mesma
+    # linha ('LPAD(\' \', 3512) as lignedetail1'). Cortar a linha anterior deixava
+    # esse filler de pe ao lado do novo -- 7512 octetos e um erro de sintaxe.
+    resto_linha = re.search(r'as\s+lignedetail1.*$', linhas[c1 - 1], re.I)
+    cauda = ['     ' + resto_linha.group(0)] + linhas[c1:b]
     return ['select'] + corpo + cauda, censo, dados, sep, resto
 
 
