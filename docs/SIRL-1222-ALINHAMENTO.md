@@ -660,3 +660,52 @@ No campo que causou tudo isto, medido nas 40 856 linhas C1:
 As 2 121 são exactamente as que antes escreviam `00000 `.
 
 O `CRRCORP.dat` está fechado. Falta o Adapté.
+
+## As ferramentas antigas, postas a par do formato novo (27/09)
+
+O `;` desloca tudo o que vem a seguir ao primeiro campo. Quem conta posições
+passa a contar mal — e, pior, **sem se queixar**.
+
+| campo | sem `;` | com `;` |
+|---|---|---|
+| `0.1` Date d'arrêté (8) | 1-8 | 1-8 |
+| `0.2` Entité (5) | 9-13 | 10-14 |
+| `0.3` Application (12) | 14-25 | 16-27 |
+| `0.4` Fréquence (1) | 26 | 29 |
+| `0.5` Date/Heure (12) | 27-38 | 31-42 |
+| `0.6` **Type d'enregistrement** (2) | **39-40** | **44-45** |
+
+### `comparar_ficheiros.sh`
+
+Fazia o censo por pavé com `cut -c39-40` e mascarava o horodatage com
+`.\{26\}.\{12\}`. Num ficheiro com `;`, os octetos 39-40 caem no meio do
+horodatage. Medido numa amostra de 400 linhas C1:
+
+```
+$ cut -c39-40 novo.dat | sort | uniq -c
+      1 00
+    399 21          <- um pavé "21", que não existe
+```
+
+Uma contagem errada, sem erro nem aviso. Agora o formato é **detectado**, não
+assumido: no formato novo o octeto 9 é o `;` que fecha a data de arrêté, no
+antigo é o primeiro algarismo da entidade. Lê-se na linha 2, porque a linha 1 é
+o cabeçalho, que tem `;` nos dois formatos.
+
+Com os dois ficheiros no mesmo formato, usa as posições certas. Com um de cada,
+**recusa-se e diz porquê** — comparar octeto a octeto dois formatos diferentes
+acusava as 554 045 linhas, e o que serve nesse caso é o `comparar_1222.py`, que
+reconstrói cada linha no formato antigo antes de comparar.
+
+O censo passou também a excluir o cabeçalho e o rodapé: nessas duas linhas os
+octetos do código do pavé não são um código de pavé, e apareciam no censo como
+um pavé inventado.
+
+### `comparar_1223.py`
+
+É a não-regressão de um chamado fechado, sobre o formato sem separador: conta com
+o pavé nos 39-40, o MASYSDATE nos 27-38 e o `P1 21.65` no 5217. Passa a recusar
+um ficheiro com `;` em vez de o ler pelas posições erradas.
+
+Não há nenhum `.bat` no repo — a ferramenta de split que estava na lista não
+existe.

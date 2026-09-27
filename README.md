@@ -112,7 +112,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `explicacao.md` | Como a tabela sai da Notice, e a fórmula de Excel explicada passo a passo |
 | `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
-| `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas |
+| `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas. **Deteta o formato** (com ou sem `;`) e recusa-se a comparar um de cada |
 | `gen_spool_1222.py` | SIRL-1222: gera o pave P1 com `;` entre todos os campos, a partir da Notice |
 | `comparar_1222.py` | SIRL-1222: valida o `.dat` gerado (censo, `;` nas posicoes da Notice, cauda em branco) e compara o P1 com o ficheiro de referencia |
 | `valida_1222.py` | Confere, sem base de dados, que cada expressao emite o tamanho do campo e que a linha da 8000 |
@@ -123,7 +123,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `gen_spool_paves.py` | SIRL-1222: gera os outros seis paves (F2, F1, P9, P2, M1, C1) com `;` entre os campos |
 | `valida_paves.py` | Confere os seis paves gerados: larguras da Notice, `;` no lugar, coluna 1 a fechar 4000, cauda intacta e nenhuma expressao perdida |
 | `VALIDAR_1223_P3.sql` | Gera o ficheiro do pave P3 antes e depois da alteracao, com nome proprio |
-| `comparar_1223.py` | Nao-regressao do SIRL-1223: aplica o alargamento ao ficheiro de antes e compara com o de depois |
+| `comparar_1223.py` | Nao-regressao do SIRL-1223: aplica o alargamento ao ficheiro de antes e compara com o de depois. Recusa um ficheiro com `;` |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |

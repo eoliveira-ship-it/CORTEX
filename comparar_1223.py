@@ -38,7 +38,27 @@ def h(b):
     return hashlib.md5(b).digest()
 
 
+def sem_separador(caminho):
+    """Recusa-se a ler um CRRCORP com ';' entre os campos (SIRL-1222).
+
+    Este script conta com as posicoes do formato sem separador: o pave nos
+    bytes 39-40, o MASYSDATE nos 27-38, o P1 21.65 no 5217. Com ';' tudo o que
+    vem a seguir ao primeiro campo esta noutro sitio, e nada disto se queixava
+    -- lia outros bytes e dava um resultado errado com ar de certo.
+    """
+    with open(caminho, 'rb') as f:
+        f.readline()                       # o cabecalho tem ';' nos dois formatos
+        ln = f.readline()
+    if ln[8:9] == b';':
+        raise SystemExit(
+            '%s esta no formato do SIRL-1222, com ";" entre os campos.\n'
+            'Este script e a nao-regressao do 1223, sobre o formato sem\n'
+            'separador. Para o formato novo use o comparar_1222.py.' % caminho)
+
+
 def crrcorp(antes, depois):
+    sem_separador(antes)
+    sem_separador(depois)
     esperado, obtido = collections.Counter(), collections.Counter()
     exemplo = {}
     censo = collections.Counter()
