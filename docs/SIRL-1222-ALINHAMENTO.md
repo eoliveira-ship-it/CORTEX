@@ -1170,6 +1170,58 @@ Correr no DEV2. Não há corrida do Adapté com `;` ainda, e é o que fecha o
 
 ---
 
+## O Adapté fechado (28/09, 00:20) — a corrida que prova
+
+Quarta corrida, com o spool certo no lugar certo. `python comparar_adap.py`:
+
+```
+=== 1) separadores por registo
+  ENTETE       1 linhas   ";" {14: 1}      notice  14   ok
+  A1        1774 linhas   ";" {90: 1774}   notice  90   ok
+  Z9           1 linhas   ";" {8: 1}       notice   8   ok
+  ENQUEUE      1 linhas   ";" {2: 1}       notice   2   ok
+
+=== 2) larguras dos 91 campos, nas 1774 linhas de detalhe
+  todas as larguras batem com a notice
+
+=== 3) reconstruido sem ";" contra a referencia
+  linhas A1: 1774 no novo, 1774 na referencia
+  filler: 929 na notice + 90 separadores = 1019 na referencia
+  IDENTICAS: a unica mudanca e o ";".
+
+erros: 0
+```
+
+O teste 3 é o que conta. Partem-se as linhas novas pelos `;`, colam-se outra vez
+sem separador, põe-se o filler antigo (1019 = 929 + 90) e compara-se com o
+ficheiro de 22/09, com o `MASYSDATE` mascarado. **Nenhuma das 1774 linhas
+difere.** Entrou o `;` e mais nada.
+
+### O `Z9`, campo a campo
+
+```
+novo : 20250531;00370;C_BTR       ;M;202609280020;Z9;          ;000000001774;...
+velho: 2025053100370C_BTR       M202609221751Z9          000000001774   ...
+```
+
+Os nove campos têm a largura da notice, incluindo o filler em **1930** (era 1938,
+menos os 8 separadores). Reconstruído sem `;`, é o `Z9` antigo ao octeto.
+
+### As contagens
+
+| | |
+|---|---|
+| ficheiro | 1777 linhas de 2000 octetos |
+| rodapé `99;` conta | `0000001777` = as 1777 linhas ✔ |
+| `Z9 1.1` conta | `000000001774` = as 1774 linhas `A1` ✔ |
+
+Os dois contadores continuam certos depois da mudança — o `Z9` conta as linhas do
+ficheiro menos o cabeçalho, e o rodapé conta tudo mais ele próprio.
+
+**O `CRRADAPT` está fechado**, como a `00025` fechou o `CRRCORP`.
+
+---
+
 ## As corridas do Adapté de 27/09 — o shell entrou, o spool não
 
 Três corridas, 22:30, 23:24 e 00:15. Todas com o mesmo resultado:
