@@ -64,14 +64,11 @@ perdem um campo cada; se ficam em branco, o tamanho não muda.
 
 </details>
 
-### 3. O `P1 621` entra no ficheiro? — REFORMULADA (27/09)
-
-Era *"o filler do P1 não fecha em 8000"*. O PDF do ticket mudou-lhe a natureza: há
-**duas leituras coerentes**, e ele aponta para a que eu não escolhi.
+### 3. A tabela do ticket diz 661 `;` no P1, nós geramos 662 — DATADA (27/09)
 
 A tabela do ticket dá o número de `;` por registo. Bate em tudo menos no P1:
 
-| | ticket | o que geramos | |
+| | ticket | geramos | |
 |---|---|---|---|
 | cabeçalho | 14 | 14 | ✓ |
 | rodapé | 2 | 2 | ✓ |
@@ -83,47 +80,38 @@ A tabela do ticket dá o número de `;` por registo. Bate em tudo menos no P1:
 | **P1** | **661** | **662** | **✗** |
 
 A diferença é um campo: o **`P1 621` — *Intention de gestion de l'opération***
-(ALPHA/8), criado na versão 45.01.
+(ALPHA/8). E a folha *Suivi des versions* da Notice diz quando ele entrou:
+
+| versão | data | |
+|---|---|---|
+| 45.00 | 2025-12-23 | introduz os `;` entre campos |
+| **45.01** | **2026-05-07** | **"Ajout d'une donnée"** — o `P1 621` |
+| 45.02 | 2026-07-17 | "Modification de définitions, règles de gestion et contrôles pour les données **`P1 621` et `P1 622`**" |
+
+As duas contas fecham em 8000, cada uma na sua versão:
 
 ```
-com ele : 663 campos + 662 ';' + filler 1185 = 8009
-sem ele : 662 campos + 661 ';' + filler 1185 = 8000   <- fecha exacto
+45.00 :  662 campos + 661 ';' + filler 1185 = 8000   <- a tabela do ticket
+45.02 :  663 campos + 662 ';' + filler 1176 = 8000   <- o que geramos
 ```
 
-| | campos | `;` | filler | total |
-|---|---|---|---|---|
-| **A** — o que está implementado | 663 | 662 | **1176** | 8000 |
-| **B** — o que o ticket descreve | 662 | **661** | **1185** | 8000 |
+O ticket foi criado a **10 de Julho de 2026**, dois meses depois de o campo entrar,
+e uma semana antes de a 45.02 lhe afinar as regras de gestão. **Tudo indica que a
+tabela ficou na 45.00 e nunca foi refeita** -- o mesmo descuido que deixou o filler
+do P1 em 1185 quando a linha passou a dar 8009.
 
-O ticket aponta para **B** em três sítios independentes: a tabela diz 661; o texto
-diz *"le filler doit impérativement avoir la longueur définie dans la notice"*
-(1185, não 1176); e *"la longueur totale d'une ligne d'en-tête, d'enregistrement
-de détail et d'en-queue doit être la même"* (8000).
+**Pergunta:** confirmam que a tabela do ticket ficou na 45.00, e que o P1 leva
+**663 campos, 662 `;` e filler 1176**, como está implementado?
 
-Mas a Notice V45.02 **define** o `P1 621`, e é a Notice que o ticket anexa. Uma
-das duas coisas está desactualizada, e não se adivinha qual.
+Se a resposta for não -- se o `P1 621` fica mesmo de fora -- é retrabalho no P1:
+tudo o que vem depois dele recua 9 octetos, nos 122 225 registos.
 
-**Pergunta:** o `P1 621` entra no `CRRCORP.dat`?
+### 3c. ~~Pedido: a Notice filtrada que o ticket anexa~~ — CHEGOU (27/09)
 
-- **Se não entra** (B): o P1 passa a 662 campos e 661 `;`, o filler fica nos 1185
-  da Notice, e tudo o que vem depois do `P1 621` recua 9 octetos. Mexe nos
-  122 225 registos P1.
-- **Se entra** (A): fica como está, e é a tabela do ticket que precisa de ser
-  corrigida para 661 -> 662.
-
-Está implementado **A**, e não se muda sem resposta.
-
-### 3b. O C1 não tem linha na tabela do ticket
-
-A tabela lista P1, P2, F1, F2, M1 e P9. **O C1 não aparece**, e são 40 856 linhas
-do ficheiro. Geramos 97 `;` (98 campos). Confirmar o número, e que a ausência é
-esquecimento e não outra coisa.
-
-### 3c. Pedido: a Notice filtrada que o ticket anexa
-
-O ticket refere `Notice PACTV4.5_Grande Clientele_Corporate_V45.02_SIRL_1222.xlsx`
--- a Notice filtrada para este chamado, com os exemplos dos fillers. Não a temos.
-É capaz de responder sozinha à 3 e à 3b.
+O `Notice PACTV4.5_Grande Clientele_Corporate_V45.02_SIRL_1222.xlsx` é **idêntico,
+célula a célula**, ao V45.02 que já tínhamos: 1512 linhas, zero diferenças. Só
+traz um filtro gravado. Não responde à 3 nem à 3b -- mas confirma que a Notice
+que o ticket anexa **tem** o `P1 621`, o que é o lado dela da questão.
 
 ### 4. Cabeçalho (`00;`) e rodapé (`99;`)
 
@@ -162,6 +150,11 @@ mudar conteúdo.
 
 A nossa leitura é que o `N` sempre foi para o indicador e está um octeto ao lado
 há muito. Mas é alteração de conteúdo, e por isso confirma-se antes.
+
+**Contexto, da folha de versões da Notice:** a 45.02 (17/07/2026) traz *"Retrait de
+l'usage CALCULS PRUDENTIELS des données P1 30.x"*. Os campos do netting são o
+`P1 30.22` a `30.26`, e hoje têm `usage = MREL`. A DSID mexeu nesta zona exacta na
+última versão, o que torna a pergunta mais oportuna.
 
 Nota, por não ser assunto deste chamado: o `N` é um literal fixo, tanto no spool
 como na procedure de alimentação (`'N' AS P1_30_23`). Ou seja, o CORTEX declara

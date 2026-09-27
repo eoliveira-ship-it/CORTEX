@@ -870,11 +870,24 @@ O ticket traz o número de separadores por registo. Bate em tudo menos no P1:
 | **P1** | **661** | **662** | **✗** |
 | **C1** | **sem linha na tabela** | 97 | — |
 
-A diferença do P1 é um campo, e é o mesmo que fazia a conta dar 8009: o
-`P1 621`, criado na 45.01. Ver [PERGUNTAS-DSID.md](PERGUNTAS-DSID.md), ponto 3,
-onde a pergunta foi reformulada — deixou de ser *"o filler está mal calculado"* e
-passou a ser *"o `P1 621` entra no ficheiro?"*, que é a pergunta honesta: há duas
-leituras que fecham em 8000, e o ticket aponta para a que não escolhi.
+A diferença do P1 é um campo, e é o mesmo que fazia a conta dar 8009: o `P1 621`.
+A folha *Suivi des versions* da Notice data-o: entrou na **45.01, a 2026-05-07**
+(*"Ajout d'une donnée"*), e a 45.02 (2026-07-17) ainda lhe afinou as regras de
+gestão. O ticket foi criado a **10 de Julho de 2026**.
+
+```
+45.00 :  662 campos + 661 ';' + filler 1185 = 8000   <- a tabela do ticket
+45.02 :  663 campos + 662 ';' + filler 1176 = 8000   <- o que geramos
+```
+
+As duas fecham em 8000, cada uma na sua versão — e a do ticket é a de 45.00, a
+versão que introduziu os separadores. **A tabela ficou para trás**, o mesmo
+descuido que deixou o filler em 1185 quando a linha passou a dar 8009. Fica como
+confirmação a pedir, não como decisão em aberto: [PERGUNTAS-DSID.md](PERGUNTAS-DSID.md),
+ponto 3.
+
+A Notice filtrada que o ticket anexa chegou a 27/09 e é **idêntica célula a
+célula** à V45.02 que já tínhamos — confirma o `P1 621` do lado da Notice.
 
 ### O Adapté
 
