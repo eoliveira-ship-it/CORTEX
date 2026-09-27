@@ -1,0 +1,19 @@
+Bonjour,
+
+Voici des précisions suite à des questions MOE leasing+ factoring:
+
+les longueurs de lignes de nouveaux fichiers avec points virgules doivent conserver la même longueur aujourd'hui (Par Exemple 8000 dans PACT CORPORATE) ?
+
+Réponse : OUI.
+
+Pour le cas où on trouve des points virgules dans les données, qu'est-ce qu'on doit faire pour gérer ça ?
+
+Réponse : Faire une analyse du stock à chaque fois.
+
+Solution la plus simple de remplacer les ; (point-virgule) avec un . (point)
+
+Longueurs exactes : doit‑on respecter strictement les longueurs indiquées dans la spécification (taille du filler + nombre de « ; »), ou s’agit-il d’une taille maximale ?
+
+Réponse : on doit respecter strictement les longueurs indiquées dans la notice, pour chaque champ + nombre de « ; » et la somme doit correspondre à la taille maximale indiquée.
+
+J’ajoute en PJ, l’échange mail sur ces questions.
