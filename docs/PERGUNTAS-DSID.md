@@ -6,7 +6,7 @@ acontece com cada resposta**.
 
 Atualizado em 2026-09-27.
 
-**Estado:** respondidas a 1, a 3c e a 4; decididas a 2 e a 5 (fica como está). Em aberto: a **3** (os 661 vs 662 do P1, já datada), a **3b** (o C1 sem linha na tabela) e a **6** (a régua do Adapté, que bloqueia o `CRRADAPT`).
+**Estado:** respondidas a 1, a 3c, a 4 e a **6** (a notice do Adapté estava no repo desde o dia 27, e é a régua completa); decididas a 2 e a 5 (fica como está). Em aberto: a **3** (os 661 vs 662 do P1, já datada) e a **3b** (o C1 sem linha na tabela). **Nenhuma das duas bloqueia nada** — o `CRRCORP` está fechado e o `CRRADAPT` já tem régua.
 
 ---
 
@@ -184,62 +184,54 @@ O layout bate **exactamente** com o pavé `Z9` da Notice do Corporate: cabeçalh
 comum 8+5+12+1+12+2, filler de 10, contagem em 12 = 62 octetos. O `CRRCORP.dat`
 não o produz; o `CRRADAPT.dat` produz.
 
-Não é pendência — a régua dele já existe, na Notice que temos. Fica registado para
-quando o Adapté avançar: o `Z9` também leva `;`, e a tabela do ticket não lhe dá
-linha, como não dá ao C1.
+Não é pendência. A notice do Adapté (ver a 6) traz o `Z9` com **9 campos, soma
+1992, 8 `;` = 2000**, e o layout é o mesmo do `Z9` do Corporate. A tabela do ticket
+não lhe dá linha, como não dá ao C1, mas a régua está fechada.
 
-### 6. Notice do Adapté — **o que bloqueia o resto do chamado**
+### 6. ~~Notice do Adapté~~ — CHEGOU (27/09), e fecha a pergunta
 
-O chamado inclui o `CRRADAPT.dat`, e o `030_spool_Extract_CRRADAP.sql` declara no
-cabeçalho a notice `CRRAV4.4_Adapté_Adapted_V44.02.xlsx`. **Não a temos**, e não
-há nenhuma indicação de que esteja a caminho nem de que exista uma versão V45.
+O ficheiro `Notice PACTV4.5_Adapté_Adapted_V45.00 -mapping.xlsx` estava no repo
+desde o commit `72a7fd0` e não tinha sido aberto. **É a régua completa**, na aba
+`A1 Alimentation Adaptée`, com as mesmas colunas da Notice do Corporate.
 
-Sem ela não dá para separar por campo:
+| registo | campos | soma das larguras | `;` | total |
+|---|---|---|---|---|
+| cabeçalho (`A1 H.*`) | 15 | 1986 | 14 | **2000** |
+| **detalhe `A1`** | **91** | **1910** | **90** | **2000** |
+| `Z9` | 9 | 1992 | 8 | **2000** |
+| rodapé (`A1 F.*`) | 3 | 1998 | 2 | **2000** |
 
-- os dois Excel que temos têm só a aba `PACT Corp`;
-- o spool não serve de régua — traz referências de campo em meia dúzia de linhas
-  (`A1 4.6`, `A1 7.3`) e fillers como `RPAD(' ', 130)`, que tanto podem tapar um
-  campo como quarenta. Sem saber quantos, não se sabe quantos `;` lá vão dentro.
+Os quatro fecham em 2000 ao octeto, e os 91/90 do detalhe são exactamente o que
+a tabela do ticket e a SFG anunciam. A régua foi **conferida contra os dados
+reais** (`python valida_adap.py CRRADAP.dat`): cortando as 1774 linhas `A1` pelas
+larguras da notice, todos os campos com valor caem no sítio — o arrêté em
+`20250531`, os montantes com o sinal à frente, o `A1 3.3` em `EUR`. Se a régua
+estivesse deslocada um só octeto isso não acontecia.
 
-**Pedido:** a notice do Adapté, na versão que o ficheiro deve passar a seguir. Se
-não existir V45, dizer qual usar.
+A régua cobre 1910 octetos dos 2000. Os 90 que faltam são os separadores: o
+filler final (`A1 99.99`) vem da notice com **929** e no ficheiro de hoje ocupa
+**1019** = 929 + 90. Encolhe exactamente o número de `;`, como no Corporate.
 
-**O que o PDF do ticket já deu (27/09):**
+**Os 31 campos que faltavam eram estes:** 42 dos 91 estão sempre em branco no
+ficheiro de hoje, e é por isso que não se podiam adivinhar dos dados — num
+ficheiro sem `;` um campo em branco não se distingue do filler ao lado. Os
+últimos 18 da régua são os que a V45 mexe, e a notice traz o mapeamento deles:
 
-| PACT Adapté | tamanho | `;` |
-|---|---|---|
-| cabeçalho | 2000 | 14 |
-| **detalhe** | **2000** | **90** |
-| rodapé | 2000 | 2 |
+- **12 campos `Ne pas alimenter`** — ficam em branco, sem coluna criada
+  (`A1 523`, `A1 86`, `A1 86.1`, `A1 86.4`, `A1 86.5`, `A1 22.56`, `A1 22.16`,
+  `A1 83`, `A1 530`, `A1 531`);
+- **5 campos do ficheiro da MERCA**, tabela `A1_DEGRADE_GMBH`, coluna nova a
+  criar na integração: `A1 2.0` (RISKTYPE), `A1 86.2` (REFERENCEOFNATIONALID),
+  `A1 86.3` (NATIONALID), `A1 29` (COMMITMENTDATE), `A1 30` (CONTRACTVALUEDATE),
+  `A1 31` (MATURITYDATE);
+- **1 campo em clarificação**: `A1 500`, *Plan Produit Liquidité*.
 
-São **91 campos** numa linha de 2000, e bate com o spool: os três blocos fecham em
-835 octetos de dados mais `LPAD(' ', 1164)`, e havia 1 token por bloco sem largura
-medida -- o octeto que falta para os 2000.
+Ficheiros novos no repo: `notice_adap.py` (lê a régua) e `valida_adap.py`
+(confere-a contra um `CRRADAP.dat`).
 
-**E quanto falta, ao certo** — medido com os dados reais do `CRRADAP.7z`, que
-estavam no repo: 1777 linhas de 2000 octetos, 1774 do tipo `A1`.
-
-| | |
-|---|---|
-| campos que o ticket diz | **91** |
-| campos com valor no spool, de largura conhecida | 59 |
-| filler final | 1 |
-| **escondidos dentro de 13 fillers brancos** | **31** |
-
-Um terço dos campos não é identificável. Um `RPAD(' ', 130)` tanto pode ser um
-campo de 130 como treze de 10, e os dados reais não distinguem — são brancos nos
-dois casos (22 corridas de brancos em todas as 1774 linhas).
-
-Sabe-se ainda: os dados vão até ao octeto **823**, o resto é filler; e os primeiros
-6 campos são os mesmos do Corporate (arrêté 8, entidade 5, aplicação 12, frequência
-1, data/hora 12, tipo 2), verificado contra os dados.
-
-Testou-se a hipótese de as referências `A1 x.y` corresponderem às do Corporate:
-**não correspondem**. O `A1 4.6` é uma taxa de 10, o `P1 4.6` um montante de 19, o
-`C1 4.6` uma categoria de 5. Esquema próprio, notice própria.
-
-**Não precisa de ser a notice formal:** basta uma lista dos 91 campos com as
-larguras.
+**O que fica em aberto, e é outra pergunta:** o `A1 500` está "en attente de
+clarification" na própria notice. Não bloqueia o `;` — o campo tem 12 octetos de
+largura fixa e sai em branco como sai hoje.
 
 ---
 

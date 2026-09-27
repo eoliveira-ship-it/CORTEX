@@ -902,7 +902,137 @@ célula** à V45.02 que já tínhamos — confirma o `P1 621` do lado da Notice.
 a régua — ~70 tokens para 91 campos, uns 20 escondidos nos fillers — mas agora há
 um alvo contra o qual verificar.
 
-## O Adapté, medido (27/09) — falta um terço dos campos
+## A corrida 00025 (27/09, 17:12) — o `TRANSLATE` confirmado
+
+A última pendência do `CRRCORP` era provar, no DEV2, que o `TRANSLATE(x, ';', '.')`
+posto nos 1024 campos de texto não mexe em nada quando não há `;` nos dados.
+
+Comparada com a corrida `00024`, que já estava validada, com o `MASYSDATE`
+mascarado e sem a linha de cabeçalho:
+
+```
+linhas 00024: 554044   00025: 554044
+censo igual: True
+  C1 40856  F1 122474  F2 122474  M1 65559  P1 122225  P2 4081  P9 76374
+so no 00024: 0   so no 00025: 0
+
+IDENTICOS. O TRANSLATE nao mexeu em nenhuma linha.
+```
+
+Os dois ficheiros têm o mesmo tamanho ao octeto (4 432 914 045) e o cabeçalho só
+difere no horodatage e no número de envio, como tem de ser. **O `CRRCORP` está
+fechado.**
+
+---
+
+## O Adapté, com régua (27/09) — a notice estava no repo
+
+A `Notice PACTV4.5_Adapté_Adapted_V45.00 -mapping.xlsx` entrou no repo no commit
+`72a7fd0` e não tinha sido aberta. Tem a aba `A1 Alimentation Adaptée`, com as
+mesmas colunas da Notice do Corporate — por isso o `notice.carrega` lê-a como
+está, só o agrupamento é que tem de ser outro: no Adapté o cabeçalho, o detalhe e
+o rodapé levam todos a referência `A1`, e caíam no mesmo saco (15 + 91 + 3 = 109).
+É o que o `notice_adap.py` faz.
+
+| registo | campos | soma | `;` | total |
+|---|---|---|---|---|
+| cabeçalho (`A1 H.*`) | 15 | 1986 | 14 | **2000** |
+| **detalhe `A1`** | **91** | **1910** | **90** | **2000** |
+| `Z9` | 9 | 1992 | 8 | **2000** |
+| rodapé (`A1 F.*`) | 3 | 1998 | 2 | **2000** |
+
+Os 91 campos e 90 `;` do detalhe são exactamente o que o ticket e a SFG anunciam
+para o PACT Adapté.
+
+### A régua conferida contra os dados
+
+`python valida_adap.py CRRADAP.dat` corta as 1774 linhas `A1` pelas larguras da
+notice e escreve, campo a campo, o que lá está. Todos os campos com valor caem no
+sítio:
+
+```
+ 1  0.1 (A1)   Date d'arrêté                 ALPHA   8  valor  20250531
+ 6  0.6 (A1)   Type d'enregistrement         ALPHA   2  valor  A1
+11  A1 1.11    Identifiant de l'engagement   ALPHA  40  valor  I01821B50_C
+25  A1 3.3     Devise de liasse              ALPHA   3  valor  EUR
+41  A1 4.9     Montant du PCCO 1             NUM    19  valor  +000000000190000000
+44  A1 4.12    IFT - Assiette réglementaire  NUM    19  valor  -000000000001626687
+91  A1 99.99   Filler                        ALPHA 929  BRANCO
+```
+
+Se a régua estivesse deslocada um só octeto os montantes apareciam sem o sinal à
+frente e as datas partidas. A leitura é o teste.
+
+A régua cobre 1910 dos 2000 octetos. Os 90 que faltam são os separadores: o filler
+final vem da notice com **929** e no ficheiro de hoje ocupa **1019** = 929 + 90.
+Encolhe exactamente o número de `;`, como no Corporate.
+
+### Por que os 31 campos que faltavam não se podiam adivinhar
+
+**42 dos 91 estão sempre em branco** nas 1774 linhas. Num ficheiro sem `;` um
+campo em branco não se distingue do filler ao lado, e um `RPAD(' ', 130)` tanto
+podia ser um campo de 130 como treze de 10. A régua tinha de vir da notice, e veio.
+
+### Os 18 campos que a V45 mexe
+
+A notice do Adapté traz colunas de mapeamento que a do Corporate não tem
+(`Provenance`, `Table DDR`, `RG`), preenchidas só nesses 18:
+
+- **12 `Ne pas alimenter`**, sem coluna criada: `A1 523`, `A1 86`, `A1 86.1`,
+  `A1 86.4`, `A1 86.5`, `A1 22.56`, `A1 22.16`, `A1 83`, `A1 530`, `A1 531`;
+- **6 do ficheiro da MERCA**, tabela `A1_DEGRADE_GMBH`, coluna nova a criar na
+  integração: `A1 2.0` (RISKTYPE), `A1 86.2` (REFERENCEOFNATIONALID),
+  `A1 86.3` (NATIONALID), `A1 29` (COMMITMENTDATE), `A1 30` (CONTRACTVALUEDATE),
+  `A1 31` (MATURITYDATE);
+- **1 em clarificação**: `A1 500`, *Plan Produit Liquidité*.
+
+Nenhum deles muda o número de `;`: os 91 campos já contam com eles, e os que não
+se alimentam saem em branco na largura da notice.
+
+---
+
+## A SFG V0.4 (27/09) — o que confirma
+
+O `SFG CORTEX PACT 4.5-SFG V0.4.docx` entrou no repo no mesmo commit. É o dossier
+de especificação funcional do projecto, ainda em redacção (as secções 3 e
+seguintes são o modelo em branco), mas a secção **E04-01-01 – Séparateurs et
+Fillers** confirma três coisas que estavam por confirmar:
+
+**1. A regra do filler final, dita por escrito:**
+
+> «Pour les flux en format fixe : les champs "Filler" en fin d'enregistrement sont
+> à alimenter avec des blancs et ne doivent pas être suivis du séparateur ";"»
+
+É exactamente o que geramos, e casa com a resposta da DSID de que a linha continua
+com 8000 (`respostas.txt`). Para os fluxos em formato **variável** a regra é a
+oposta — o filler de fim de linha não se alimenta — mas o Corporate e o Adapté não
+são desses.
+
+**2. O `;` nos dados é preocupação declarada do projecto:**
+
+> «Point d'attention : vérifier s'il y a des adresses, raisons sociales et des
+> données contenant des points-virgules.»
+
+É a pergunta que a DSID respondeu com «remplacer les ; avec un .», e que o
+`TRANSLATE` implementa.
+
+**3. A tabela dos separadores — e o C1 continua a faltar.** A SFG traz a mesma
+tabela do ticket, com os mesmos números (P1 661, P2 397, F1 72, F2 45, M1 157,
+P9 38) e **sem linha para o C1**. Já não é um esquecimento do ticket: é o mesmo
+esquecimento nos dois documentos. Reforça a pergunta 3b.
+
+A SFG dá ainda o PACT Adapté em 2000 / 14 / **90** / 2, que é a régua que se
+confirmou acima, e anuncia um fluxo novo, o **FPCR (Flux Pivot Crédit)**: 2050
+octetos, cabeçalho 14 `;`, detalhe **148**, rodapé 2, em seis ficheiros
+(CORP P1 P2 e P3C para 370, 472, 357, 399, 936). Não é o SIRL-1222 — é a exigência
+E03 do projecto — mas fica registado.
+
+---
+
+## O Adapté, medido antes da notice (27/09) — deixado como registo
+
+*Esta secção é anterior à leitura da notice do Adapté, acima. Fica como
+registo do que se conseguiu medir sem ela, e de quanto faltava.*
 
 Os dados reais do Adapté estavam no repo (`CRRADAP.7z`): **1777 linhas de 2000
 octetos**, 1774 do tipo `A1`, mais um registo `Z9` e o rodapé `99;`.
