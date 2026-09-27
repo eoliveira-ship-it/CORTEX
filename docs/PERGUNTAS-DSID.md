@@ -1,5 +1,10 @@
 # Perguntas em aberto para a DSID
 
+> **Para levar a uma reunião, use antes
+> [`perguntas/PERGUNTAS-PARA-A-DSID.md`](../perguntas/PERGUNTAS-PARA-A-DSID.md).**
+> Este ficheiro é o registo de trabalho: tem também as perguntas já
+> respondidas e o caminho que levou a cada uma.
+
 Ficheiro único com o que está à espera de resposta, para levar a uma reunião ou
 a um e-mail. Cada ponto diz **o que é**, **por que é preciso decidir** e **o que
 acontece com cada resposta**.

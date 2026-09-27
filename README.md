@@ -1,5 +1,23 @@
 # CORTEX — CRR Corporate / PACT V4.5
 
+## Por onde começar
+
+| se quer | vá a |
+|---|---|
+| **entender o que foi feito, em 5 minutos** | [`documentação/RESUMO-DOS-3-CHAMADOS.md`](documentação/RESUMO-DOS-3-CHAMADOS.md) |
+| **instalar** | [`chamados/final/INSTALACAO.md`](chamados/final/INSTALACAO.md) |
+| o detalhe de um chamado | [`documentação/SIRL-1222.md`](documentação/SIRL-1222.md) · [`SIRL-1223.md`](documentação/SIRL-1223.md) · [`SIRL-1224.md`](documentação/SIRL-1224.md) |
+| o que perguntar à DSID | [`perguntas/PERGUNTAS-PARA-A-DSID.md`](perguntas/PERGUNTAS-PARA-A-DSID.md) |
+| os ficheiros de um chamado só | [`chamados/SIRL-1222/`](chamados/SIRL-1222/) · [`SIRL-1223/`](chamados/SIRL-1223/) · [`SIRL-1224/`](chamados/SIRL-1224/) |
+| os ficheiros gerados no DEV2 que serviram de prova | [`ficheiros-testados/`](ficheiros-testados/) |
+| o histórico completo, com todas as investigações | [`docs/`](docs/) |
+
+> As pastas `chamados/` são **cópias** dos ficheiros da raiz, montadas pelo
+> [`montar_entrega.py`](montar_entrega.py). A raiz é a fonte de verdade: é lá
+> que os geradores leem e escrevem. `python montar_entrega.py --conferir` diz se
+> alguma cópia divergiu.
+
+
 Trabalho sobre a cadeia de declaração de riscos **CRR Corporate** (Oracle PL/SQL + spool),
 cobrindo três tickets SIRL. O objetivo central (SIRL-1224) é **tirar as regras de negócio
 de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
@@ -99,6 +117,10 @@ No SQL Developer usar **F5** (Run Script), não F9.
 ## Ficheiros
 
 ### Entregáveis (produzidos)
+
+> A versão pronta a instalar de cada um está em
+> [`chamados/final/`](chamados/final/), já com o nome que tem de ter no
+> servidor.
 
 | Ficheiro | Conteúdo |
 |---|---|
