@@ -6,6 +6,8 @@ acontece com cada resposta**.
 
 Atualizado em 2026-09-27.
 
+**Estado:** respondidas a 1, a 3c e a 4; decididas a 2 e a 5 (fica como está). Em aberto: a **3** (os 661 vs 662 do P1, já datada), a **3b** (o C1 sem linha na tabela) e a **6** (a régua do Adapté, que bloqueia o `CRRADAPT`).
+
 ---
 
 ## SIRL-1222 — separador `;`
@@ -44,25 +46,20 @@ byte do ficheiro; só existem de facto quando o separador entrar.
 meio da linha e filler final. O filler final é o último campo, precedido de `;`
 e sem `;` depois dele, como já se faz hoje no ficheiro do P3 (C3RD).
 
-### 2. Os campos obsoletos saem ou ficam em branco?
+### 2. ~~Os campos obsoletos saem ou ficam em branco?~~ — DECIDIDO (27/09)
 
-A V45.02 marca três campos com última aparição:
+**Ficam, em branco, com a largura da Notice** — que é como já estão. Nada foi
+pedido a este respeito, e o âmbito do chamado é outro: passar os `select` do spool
+a `insert` na tabela nova (SIRL-1224) e gerar o spool a partir dela com `;`
+(SIRL-1222). Tirar campos nunca esteve no pedido.
 
-| Campo | Última aparição | Tamanho |
-|---|---|---|
-| `P1 22.2` | 44.09 | 1 |
-| `P2 22.2` | 44.09 | 1 |
-| `M1 512` | 45 | 3 |
+São o `P1 22.2` e o `P2 22.2` (*Indicateur niveau de risque*, última aparição
+44.09) e o `M1 512` (*Segment de Clientèle au sens de la liquidité*, criado e
+retirado na 45).
 
-Os três estão na régua da notice. Se saem do ficheiro, as linhas P1, P2 e M1
-perdem um campo cada; se ficam em branco, o tamanho não muda.
-
-| Resposta | Consequência |
-|---|---|
-| Sair do ficheiro | menos um campo em cada linha P1 e P2; desloca os seguintes |
-| Ficar em branco | a linha não muda de tamanho |
-
-</details>
+Fica a nota de uma incoerência, para quando alguém lhes tocar: o `P2 22.2` sai com
+o valor da coluna `IND_NIV_RISQUE` e o `P1 22.2` sai em branco, sendo o mesmo
+campo.
 
 ### 3. A tabela do ticket diz 661 `;` no P1, nós geramos 662 — DATADA (27/09)
 
@@ -106,6 +103,18 @@ do P1 em 1185 quando a linha passou a dar 8009.
 Se a resposta for não -- se o `P1 621` fica mesmo de fora -- é retrabalho no P1:
 tudo o que vem depois dele recua 9 octetos, nos 122 225 registos.
 
+### 3b. O C1 não tem linha na tabela do ticket
+
+A tabela lista P1, P2, F1, F2, M1 e P9. **O C1 não aparece.**
+
+O C1 é o pavé da contraparte — o *tiers* — e vem da `tie_tiers_c1_c5`: nome, país,
+notação, categoria de contraparte, número de empregados (foi o `C1 4.35`, *Nombre
+de salariés*, que deu o problema do `00000`). São **40 856 linhas** do
+`CRRCORP.dat`, e geramos **97 `;`** (98 campos pela Notice).
+
+Como não há linha na tabela, não há contra o que confirmar. Confirmar o número, e
+que a ausência é esquecimento.
+
 ### 3c. ~~Pedido: a Notice filtrada que o ticket anexa~~ — CHEGOU (27/09)
 
 O `Notice PACTV4.5_Grande Clientele_Corporate_V45.02_SIRL_1222.xlsx` é **idêntico,
@@ -119,7 +128,7 @@ O ticket diz "modifications à identifier/valider" para o en-tête e o en-queue,
 sem dizer o quê. Hoje as duas linhas **já** têm `;`. Confirmar que ficam como
 estão.
 
-### 5. O `N` do indicador de netting está um octeto ao lado
+### 5. O `N` do netting está um octeto ao lado — FICA ASSIM (27/09)
 
 Levantado em 27/09, ao gerar o ficheiro com separador.
 
@@ -139,9 +148,10 @@ Sem separador ninguém vê: é um `N` num campo de texto, num mar de brancos. Co
 `;` passa a ler-se, sem ambiguidade, que a referência do contrato-quadro é `N` e
 que não há indicador de netting.
 
-**Não mexemos nisto.** O ficheiro que entregamos escreve o `N` onde ele está hoje,
-variante por variante — o chamado pede o separador, e o separador não obriga a
-mudar conteúdo.
+**Não mexemos nisto, e fica assim** (decidido em 27/09). O ficheiro que entregamos
+escreve o `N` onde ele está hoje, variante por variante — o chamado pede o
+separador, e o separador não obriga a mudar conteúdo. Se estiver errado, é a DSID
+que o dirá; a régua está toda mapeada e a correcção são três linhas no gerador.
 
 | Resposta | Consequência |
 |---|---|
@@ -160,6 +170,23 @@ Nota, por não ser assunto deste chamado: o `N` é um literal fixo, tanto no spo
 como na procedure de alimentação (`'N' AS P1_30_23`). Ou seja, o CORTEX declara
 "sem acordo de netting" em todos os registos, por decisão de código. Se há
 contratos de netting a declarar, a informação não está a chegar.
+
+### 5b. O registo `Z9` do Adapté
+
+Achado ao medir os dados reais: o `CRRADAPT.dat` tem, entre as linhas de detalhe,
+um registo `Z9` que conta os registos.
+
+```
+20250531 00370 C_BTR        M 202609221901 Z9          000000001774
+```
+
+O layout bate **exactamente** com o pavé `Z9` da Notice do Corporate: cabeçalho
+comum 8+5+12+1+12+2, filler de 10, contagem em 12 = 62 octetos. O `CRRCORP.dat`
+não o produz; o `CRRADAPT.dat` produz.
+
+Não é pendência — a régua dele já existe, na Notice que temos. Fica registado para
+quando o Adapté avançar: o `Z9` também leva `;`, e a tabela do ticket não lhe dá
+linha, como não dá ao C1.
 
 ### 6. Notice do Adapté — **o que bloqueia o resto do chamado**
 
@@ -189,9 +216,30 @@ São **91 campos** numa linha de 2000, e bate com o spool: os três blocos fecha
 835 octetos de dados mais `LPAD(' ', 1164)`, e havia 1 token por bloco sem largura
 medida -- o octeto que falta para os 2000.
 
-Isto não resolve o problema (continuam a faltar as fronteiras: ~70 tokens para 91
-campos, ou seja uns 20 campos escondidos nos fillers brancos) mas dá-lhe um alvo:
-qualquer reconstrução passa a ser verificável contra o 90.
+**E quanto falta, ao certo** — medido com os dados reais do `CRRADAP.7z`, que
+estavam no repo: 1777 linhas de 2000 octetos, 1774 do tipo `A1`.
+
+| | |
+|---|---|
+| campos que o ticket diz | **91** |
+| campos com valor no spool, de largura conhecida | 59 |
+| filler final | 1 |
+| **escondidos dentro de 13 fillers brancos** | **31** |
+
+Um terço dos campos não é identificável. Um `RPAD(' ', 130)` tanto pode ser um
+campo de 130 como treze de 10, e os dados reais não distinguem — são brancos nos
+dois casos (22 corridas de brancos em todas as 1774 linhas).
+
+Sabe-se ainda: os dados vão até ao octeto **823**, o resto é filler; e os primeiros
+6 campos são os mesmos do Corporate (arrêté 8, entidade 5, aplicação 12, frequência
+1, data/hora 12, tipo 2), verificado contra os dados.
+
+Testou-se a hipótese de as referências `A1 x.y` corresponderem às do Corporate:
+**não correspondem**. O `A1 4.6` é uma taxa de 10, o `P1 4.6` um montante de 19, o
+`C1 4.6` uma categoria de 5. Esquema próprio, notice própria.
+
+**Não precisa de ser a notice formal:** basta uma lista dos 91 campos com as
+larguras.
 
 ---
 

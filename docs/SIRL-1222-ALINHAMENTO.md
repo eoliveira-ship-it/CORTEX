@@ -901,3 +901,44 @@ célula** à V45.02 que já tínhamos — confirma o `P1 621` do lado da Notice.
 + `LPAD(' ', 1164)`, com 1 token por bloco sem largura medida). Continua a faltar
 a régua — ~70 tokens para 91 campos, uns 20 escondidos nos fillers — mas agora há
 um alvo contra o qual verificar.
+
+## O Adapté, medido (27/09) — falta um terço dos campos
+
+Os dados reais do Adapté estavam no repo (`CRRADAP.7z`): **1777 linhas de 2000
+octetos**, 1774 do tipo `A1`, mais um registo `Z9` e o rodapé `99;`.
+
+Com o número de separadores que o ticket dá (90, logo 91 campos), a conta fecha
+assim:
+
+| | |
+|---|---|
+| campos que o ticket diz | **91** |
+| campos com valor no spool, de largura conhecida | 59 |
+| filler final | 1 |
+| **escondidos dentro de 13 fillers brancos** | **31** |
+
+**Um terço dos campos não é identificável.** Um `RPAD(' ', 130)` tanto pode ser um
+campo de 130 como treze de 10, e os dados reais não distinguem — são brancos nos
+dois casos (22 corridas de brancos em todas as 1774 linhas).
+
+O que se sabe: os dados vão até ao octeto 823 e o resto é filler; os primeiros seis
+campos são os mesmos do Corporate (arrêté 8, entidade 5, aplicação 12, frequência 1,
+data/hora 12, tipo 2), verificado contra os dados.
+
+Testou-se a hipótese de as referências `A1 x.y` do spool corresponderem às do
+Corporate. **Não correspondem:** o `A1 4.6` é uma taxa de 10, o `P1 4.6` um montante
+de 19, o `C1 4.6` uma categoria de 5. Esquema próprio, notice própria.
+
+Basta uma lista dos 91 campos com as larguras — não tem de ser a notice formal.
+
+### O registo `Z9`
+
+O `CRRADAPT.dat` tem, entre as linhas de detalhe, um contador de registos:
+
+```
+20250531 00370 C_BTR        M 202609221901 Z9          000000001774
+```
+
+O layout bate **exactamente** com o pavé `Z9` que está na Notice do Corporate —
+cabeçalho comum 8+5+12+1+12+2, filler de 10, contagem em 12 = 62 octetos. O
+`CRRCORP.dat` não o produz; o `CRRADAPT.dat` produz. A régua dele já a temos.
