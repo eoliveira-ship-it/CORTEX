@@ -991,6 +991,76 @@ se alimentam saem em branco na largura da notice.
 
 ---
 
+## O spool do Adapté alinhado com a régua (27/09) — 2 anomalias
+
+Com a régua na mão, o `030_spool_Extract_CRRADAP.sql` passou pelo mesmo
+alinhamento que os pavés do Corporate (`casa_adap.py`, que reusa o
+`casa_paves.alinha` — programação dinâmica, não guloso).
+
+O spool tem **três blocos**, um por tabela de origem, todos com a mesma régua e
+todos a escrever a linha numa **só coluna** (`as lignedetail`): os 2000 octetos
+cabem nos 4000 de uma expressão SQL, por isso não há COLSEP nem campo partido
+entre colunas — ao contrário do Corporate.
+
+```
+regua: 90 campos (981 octetos) + o filler final
+
+A1_CRRV4_DEGRADE   linhas  82-174 : 71 tokens (835 octetos)  NOVO 17  igual 70  junta 3
+A1_DEGRADE_AUTO    linhas 185-277 : 69 tokens (835 octetos)  NOVO 17  PARTE 2  igual 66  junta 5
+A1_DEGRADE_GMBH    linhas 287-362 : 68 tokens (835 octetos)  NOVO 17  igual 66  junta 7
+
+anomalias: 2
+```
+
+- **`igual`** — o token do spool tem a largura que a notice dá ao campo;
+- **`junta`** — um `RPAD(' ', n)` do spool cobre vários campos brancos seguidos;
+  parte-se em n campos com `;` entre eles, de graça;
+- **`NOVO`** — os 17 campos criados na V45, que o spool V44 não escreve. Saem em
+  branco na largura da notice (ver a lista deles na pergunta 6);
+- **`PARTE`** — um token **com valor** que cobre mais de um campo. É o único caso
+  que tem de ser escrito à mão.
+
+### As 2 anomalias são a mesma, e só num dos três blocos
+
+```
+PARTE  A1 3.5   spool 7  notice 2   RPAD( NVL(C_ENR.CD_MOTEUR, ' '), 7 )
+PARTE  A1 3.98  spool 7  notice 5   RPAD( NVL(C_ENR.CD_MOTEUR, ' '), 7 )
+```
+
+O `A1_DEGRADE_AUTO` escreve `CD_MOTEUR` num `RPAD` de **7**, tapando dois campos:
+o `A1 3.5` (2) e a zona livre `A1 3.98` (5). Os outros dois blocos já os escrevem
+separados — o `A1_CRRV4_DEGRADE` com `RPAD(NVL(CD_MOTEUR,' '), 2) || RPAD(' ', 5)`
+e o `A1_DEGRADE_GMBH` com `RPAD('01', 2) || RPAD(' ', 5)`. É uma inconsistência
+que já existe hoje, entre blocos do mesmo ficheiro.
+
+**Partir é seguro, e os dados provam-no.** Nas 1774 linhas do `CRRADAP.dat`:
+
+| campo | posição | valor |
+|---|---|---|
+| `A1 3.5` | 360-361 | `01` nas **1774** linhas |
+| `A1 3.98` | 362-366 | 5 brancos nas **1774** linhas |
+
+O `CD_MOTEUR` nunca passa de 2 caracteres, e o bloco 1 já o truncaria a 2 se
+passasse. Escrever `RPAD(NVL(CD_MOTEUR,' '), 2) || ';' || RPAD(' ', 5)` dá
+exactamente o que está no ficheiro de hoje, e põe os três blocos a dizer o mesmo.
+
+### A conta do Adapté, fechada
+
+| | octetos |
+|---|---|
+| os 90 campos da régua | 981 |
+| o que o spool escreve hoje | 835 |
+| os 17 campos novos da V45, que ele não escreve | 146 |
+| **981 − 146** | **835** ✔ |
+
+O spool fecha a linha com `LPAD(' ', 1164)`: 835 + 1164 = 2000. No formato novo o
+filler passa a **929** e entram os **90 `;`**: 981 + 929 + 90 = 2000.
+
+Nenhum token ficou sem largura medida nos três blocos, o que no Corporate foi
+sempre o sinal de que a régua estava a ser lida certa.
+
+---
+
 ## A SFG V0.4 (27/09) — o que confirma
 
 O `SFG CORTEX PACT 4.5-SFG V0.4.docx` entrou no repo no mesmo commit. É o dossier

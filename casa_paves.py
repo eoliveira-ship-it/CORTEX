@@ -55,7 +55,19 @@ MAX_TOKENS = 8       # tokens que podem fazer um campo (emenda)
 
 
 def casa(pave, a, b):
+    """O alinhamento de um bloco do spool do Corporate contra a Notice V45.02."""
+    return alinha(campos(pave), tokens_uteis(pave, a, b))
+
+
+def alinha(cs, ts):
     """[(estado, ref, largura do token, tamanho do campo, nota)].
+
+    cs  [(ref, largura, novo_v45, modif)] -- a regua, na ordem da notice
+    ts  [(.., largura, raw, e_branco)]    -- os tokens do bloco, pela ordem
+
+    Recebe a regua e os tokens em vez de os ir buscar: o mesmo alinhamento serve
+    o Corporate (casa) e o Adapte (casa_adap.py), que tem outra notice e outro
+    spool.
 
     Alinhamento global por programacao dinamica, e nao guloso: um passo guloso
     dessincroniza na primeira divergencia e a partir dai acusa tudo (no P2 dava
@@ -70,7 +82,6 @@ def casa(pave, a, b):
       SOBRA   token do spool sem campo na notice
       DIVERGE token e campo no mesmo lugar com tamanhos diferentes
     """
-    cs, ts = campos(pave), tokens_uteis(pave, a, b)
     n, m = len(ts), len(cs)
     larg = [t[1] if t[1] is not None else -1 for t in ts]
     INF = float('inf')

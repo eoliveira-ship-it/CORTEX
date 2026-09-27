@@ -134,7 +134,9 @@ def tokenize(a, b):
     out = []
     for s, e, t in toks:
         t = re.sub(r'^\s*select\s+', '', t, flags=re.I)
-        for part in re.split(r'\bas\s+lignedetail\d\s*,?', t, flags=re.I):
+        # o '\d?': o spool do Corporate numera as colunas ('as lignedetail1'),
+        # o do Adapte escreve a linha toda numa so ('as lignedetail', sem numero)
+        for part in re.split(r'\bas\s+lignedetail\d?\s*,?', t, flags=re.I):
             p = part.strip().rstrip(',').strip()
             if not p or re.match(r'^(from|where)\b', p, re.I):
                 continue
