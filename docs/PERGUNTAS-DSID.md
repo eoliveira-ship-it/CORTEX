@@ -105,7 +105,7 @@ como na procedure de alimentação (`'N' AS P1_30_23`). Ou seja, o CORTEX declar
 "sem acordo de netting" em todos os registos, por decisão de código. Se há
 contratos de netting a declarar, a informação não está a chegar.
 
-### 6. Notice do Adapté
+### 6. Notice do Adapté — **o que bloqueia o resto do chamado**
 
 O `030_spool_Extract_CRRADAP.sql` implementa a notice
 `CRRAV4.4_Adapté_Adapted_V44.02.xlsx`, que **não temos**. Sem ela não dá para

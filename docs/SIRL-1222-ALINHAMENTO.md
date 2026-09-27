@@ -709,3 +709,48 @@ um ficheiro com `;` em vez de o ler pelas posições erradas.
 
 Não há nenhum `.bat` no repo — a ferramenta de split que estava na lista não
 existe.
+
+## A corrida que fecha o CRRCORP (27/09, 15:33)
+
+Envio `00024`, com o `N` do netting recuado e o `C1 4.35` corrigido. Primeira
+corrida em que não sobra nada por explicar:
+
+```
+problemas: nenhum
+outros paves: 431820 linhas novas, 431820 na referencia
+  so no novo: {'00': 1, '99': 1}          <- cabecalho e rodape
+P1: 122225 linhas, sem par 0, chave ambigua 0
+  IDENTICO   122225
+```
+
+**Nenhuma linha de dados difere, em nenhum dos sete pavés.** O ficheiro entregue
+é o de 22/09 mais os `;`, e só isso.
+
+Cabeçalho: difere em 8 octetos, a data de geração e o nº de envio
+(`00016` → `00024`). Rodapé: byte a byte igual.
+
+A zona do netting, medida nas 122 225 linhas P1:
+
+| `P1 30.22`, `P1 30.23` | linhas |
+|---|---|
+| `N`, branco — variantes 1, 4, 5, 6, 7 | 122 180 |
+| branco, `N` — variante 8 | 45 |
+
+Como no ficheiro de 22/09. O recuo de 27/09 está confirmado nos dados.
+
+### A premissa do `CHR()` confirmada
+
+```sql
+SELECT value FROM nls_database_parameters WHERE parameter = 'NLS_CHARACTERSET';
+-- WE8MSWIN1252
+```
+
+O `translate(upper(NOM_TIERS), CHR(192)||CHR(194)||…)` do C1 dá as letras
+acentuadas que o francês pede. Não é preciso `UNISTR`.
+
+### O que falta no SIRL-1222
+
+Só o **Adapté**: o `CRRADAPT.dat` espera a Notice
+`CRRAV4.4_Adapté_Adapted_V44.02.xlsx`, que não temos. E as respostas da DSID em
+[PERGUNTAS-DSID.md](PERGUNTAS-DSID.md), duas das quais mudam o ficheiro: o filler
+do P1 (1176 vs 8009) e os campos obsoletos.
