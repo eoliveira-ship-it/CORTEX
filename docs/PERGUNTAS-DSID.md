@@ -4,7 +4,7 @@ Ficheiro único com o que está à espera de resposta, para levar a uma reunião
 a um e-mail. Cada ponto diz **o que é**, **por que é preciso decidir** e **o que
 acontece com cada resposta**.
 
-Atualizado em 2026-09-23.
+Atualizado em 2026-09-27.
 
 ---
 
@@ -68,7 +68,44 @@ O ticket diz "modifications à identifier/valider" para o en-tête e o en-queue,
 sem dizer o quê. Hoje as duas linhas **já** têm `;`. Confirmar que ficam como
 estão.
 
-### 5. Notice do Adapté
+### 5. O `N` do indicador de netting está um octeto ao lado
+
+Levantado em 27/09, ao gerar o ficheiro com separador.
+
+O `P1 30.23` — *Indicateur accord de netting* (ALPHA/1) — leva `N` em todos os
+registos. Mas em **cinco das seis variantes** esse `N` está escrito no último
+octeto do campo anterior, o `P1 30.22` *Référence du contrat cadre* (25), e o
+`P1 30.23` sai em branco. A variante 8 escreve-o no sítio.
+
+```sql
+-- variantes 1, 4, 5, 6, 7        -- variante 8
+RPAD(' ', 6)||                    RPAD(' ', 25)||
+'N'||        <- 3981              'N'||         <- 3982
+RPAD(' ', 18)                     RPAD(' ', 17)
+```
+
+Sem separador ninguém vê: é um `N` num campo de texto, num mar de brancos. Com
+`;` passa a ler-se, sem ambiguidade, que a referência do contrato-quadro é `N` e
+que não há indicador de netting.
+
+**Não mexemos nisto.** O ficheiro que entregamos escreve o `N` onde ele está hoje,
+variante por variante — o chamado pede o separador, e o separador não obriga a
+mudar conteúdo.
+
+| Resposta | Consequência |
+|---|---|
+| Fica como está | o ficheiro é o de 22/09 mais os `;`; a variante 8 continua diferente das outras cinco |
+| O `N` passa ao `P1 30.23` | muda o conteúdo de **122 180 registos**; o indicador passa a estar declarado e o contrato-quadro deixa de dizer `N` |
+
+A nossa leitura é que o `N` sempre foi para o indicador e está um octeto ao lado
+há muito. Mas é alteração de conteúdo, e por isso confirma-se antes.
+
+Nota, por não ser assunto deste chamado: o `N` é um literal fixo, tanto no spool
+como na procedure de alimentação (`'N' AS P1_30_23`). Ou seja, o CORTEX declara
+"sem acordo de netting" em todos os registos, por decisão de código. Se há
+contratos de netting a declarar, a informação não está a chegar.
+
+### 6. Notice do Adapté
 
 O `030_spool_Extract_CRRADAP.sql` implementa a notice
 `CRRAV4.4_Adapté_Adapted_V44.02.xlsx`, que **não temos**. Sem ela não dá para

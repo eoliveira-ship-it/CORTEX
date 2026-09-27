@@ -107,13 +107,19 @@ REGRAS = {
     'P1 4.15':  "CASE WHEN P1_4_15 IS NULL THEN RPAD(' ', 3) ELSE RPAD(P1_4_15, 3) END",
     # A regua de hoje tem o 21.65 com 5; o vPACT ja o escreve com 50 (SIRL-1223)
     'P1 21.65': "RPAD(' ', 50)",
-    # Reference du contrat cadre: em cinco das seis variantes o spool punha aqui,
-    # no ultimo byte (3982), o 'N' do netting. O 'N' passa para o P1 30.23, que e
-    # o campo indicador -- e onde a variante 8 ja o escrevia. Os tres campos vao
-    # escritos a mao porque e aqui que cai o espaco do COLSEP do spool antigo, e
-    # a posicao lida do spool nao serve para os separar.
-    'P1 30.22': "RPAD(' ', 25)",
-    'P1 30.23': "'N'",
+    # A zona do netting vai escrita a mao porque e aqui que cai o espaco do COLSEP
+    # do spool antigo: a posicao lida do spool nao serve para separar estes campos.
+    # Escreve-se o que o spool escreve HOJE, variante por variante -- em cinco
+    # delas o 'N' do indicador de netting esta no ultimo octeto do campo anterior
+    # (Reference du contrat cadre), um octeto antes do P1 30.23 que a notice lhe
+    # da; na variante 8 esta no sitio.
+    #
+    # NAO se corrige aqui. O SIRL-1222 pede o separador, e o separador nao obriga
+    # a isto: o ';' entra nas fronteiras da notice, o conteudo de cada campo e
+    # independente. Mover o 'N' e alteracao de conteudo em 122 180 registos e vai
+    # como pergunta para a DSID, nao como decisao nossa.
+    'P1 30.22': {8: "RPAD(' ', 25)", None: "RPAD(' ', 24)||'N'"},
+    'P1 30.23': {8: "'N'", None: "' '"},
     'P1 30.24': "RPAD(' ', 25)",
 }
 
@@ -167,7 +173,11 @@ def expressao(c, var):
     if c['fim']:
         return "RPAD(' ', %d)" % c['len'], 'FILLER'
     if c['ref'] in REGRAS:
-        return REGRAS[c['ref']], 'REGRA'
+        r = REGRAS[c['ref']]
+        # uma regra pode depender da variante: {8: ..., None: <as outras>}
+        if isinstance(r, dict):
+            r = r[var] if var in r else r[None]
+        return r, 'REGRA'
     if c['novo_v45']:
         col = 'P1_' + c['ref'].split(' ', 1)[1].replace('.', '_')
         if col in COLS:
@@ -302,12 +312,12 @@ CAB = [
     '-- Os outros seis paves (P2, M1, C1, F1, F2, P9) levam o ";" pelo',
     '-- gen_spool_paves.py, que corre depois deste sobre o mesmo ficheiro.',
     '--',
-    '-- VERSAO 2026-09-25c : os SETE paves com ";" entre todos os campos. O P1',
-    '--                      com o netting no P1 30.23 nas 6 variantes; os outros',
-    '--                      seis com cada campo a sair na largura da Notice',
-    '--                      (RPAD) e os campos criados na V45 em branco.',
-    '--                      Confirmar no servidor com:',
-    '--                          grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql',
+    '-- VERSAO 2026-09-27 : os SETE paves com ";" entre todos os campos, e SO',
+    '--                     isso: nenhum campo muda de valor nem de posicao. Os',
+    '--                     seis paves com cada campo a sair na largura da',
+    '--                     Notice (RPAD) e os campos criados na V45 em branco.',
+    '--                     Confirmar no servidor com:',
+    '--                         grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql',
     '--',
     '-- GERADO por gen_spool_1222.py e gen_spool_paves.py -- nao editar a mao.',
     '-- =====================================================================',

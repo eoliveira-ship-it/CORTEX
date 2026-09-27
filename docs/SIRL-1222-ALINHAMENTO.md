@@ -87,16 +87,41 @@ anterior, um byte antes do sítio. O segundo está no sítio certo. E isto só
 acontece em **cinco das seis variantes**: a variante 8 já escreve o `N` no 3983,
 onde a Notice o põe.
 
-Como é invisível (um `N` deslocado um byte num mar de brancos), passou. Com `;`
-a ambiguidade desaparece por construção, e os três campos vão escritos à mão no
-gerador — `P1 30.22` e `P1 30.24` em branco, `P1 30.23` com o `'N'` — para as
-seis variantes ficarem iguais.
+Como é invisível (um `N` deslocado um byte num mar de brancos), passou.
+
+### E fica como está — REVISTO (27/09)
+
+A primeira versão desta secção corrigia isto: punha o `N` no `P1 30.23` nas seis
+variantes. **Foi recuado.** O SIRL-1222 pede o separador, e o separador não obriga
+a esta mudança: o `;` entra nas fronteiras que a Notice define, e o que cada campo
+*contém* é independente disso. Para deixar o `N` onde está basta escrevê-lo onde
+está:
+
+```sql
+-- variantes 1, 4, 5, 6, 7
+RPAD(' ', 24)||'N'||';'||   -- P1 30.22   Référence du contrat cadre
+' '||';'||                  -- P1 30.23   Indicateur accord de netting
+
+-- variante 8
+RPAD(' ', 25)||';'||        -- P1 30.22
+'N'||';'||                  -- P1 30.23
+```
+
+Os três campos continuam escritos à mão no gerador, mas por outra razão: é aqui
+que cai o espaço do COLSEP do spool antigo, e a posição lida do spool não serve
+para os separar. Isso obriga a escrevê-los; não obriga a mudá-los.
+
+Mover o `N` é **alteração de conteúdo em 122 180 registos**, e não foi pedida. Vai
+como pergunta para a DSID.
+
+O que o `;` faz é tornar a anomalia explícita: passa a ler-se, sem ambiguidade,
+que o `N` está declarado dentro da *Référence du contrat cadre*. Visível não é o
+mesmo que incompatível.
 
 ## Consequência para a validação
 
-**O ficheiro novo não vai ser "o ficheiro velho mais os `;`".** Há uma correção
-de conteúdo: o `N` do primeiro indicador de netting passa do byte 3982 para o
-3983.
+**O ficheiro novo é "o ficheiro velho mais os `;`".** Nenhum campo muda de valor
+nem de posição.
 
 Portanto a validação do SIRL-1222 não pode ser *"tirar os `;` e ver se fica
 igual ao ficheiro de referência"*. Tem de ser:
@@ -280,9 +305,9 @@ variante 8 já escrevia o `N` no sítio certo, a posição lida do spool punha-o
 
 ### A lista de correções para a DSID
 
-1. **`P1 30.23`** — o `N` do indicador de netting contratual passa do byte 3982
-   (último byte do `P1 30.22`) para o 3983, o campo que a Notice define.
-   122 180 linhas. A variante 8 não muda.
+1. ~~**`P1 30.23`** — o `N` do netting passa do byte 3982 para o 3983.~~
+   **Recuado em 27/09**: não foi pedido, e o `;` não obriga. O `N` fica onde
+   está, e a questão vai como pergunta — ver *E fica como está* acima.
 2. **Os 51 campos criados na V45**, escritos em branco no fim da linha, e o
    filler final reduzido a 1176 (ver [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)).
 
@@ -320,18 +345,18 @@ O que isto prova, ponto por ponto:
   dele e nenhum depois.
 - **Os outros seis pavés não foram tocados**: 431 820 linhas iguais byte a byte.
   A única diferença é a data de geração no cabeçalho, que muda a cada corrida.
-- **No P1, uma única diferença de conteúdo**, e é a que o chamado pede.
+- **No P1, uma única diferença de conteúdo**: o `N` do netting, deslocado um byte.
+  **Recuado em 27/09** — ver *E fica como está* acima. As corridas de 25/09
+  correram com o `N` mudado, e é por isso que aparece nos resultados abaixo.
 
 ### A lista de correções, para a DSID
 
 | | O que muda | Linhas |
 |---|---|---|
-| 1 | O `N` do indicador de netting contratual passa do byte 3982 (último byte do `P1 30.22`, *Référence du contrat cadre*) para o byte 3983, o campo `P1 30.23` que a Notice define | 122 180 |
-| 2 | Os 51 campos criados na V45 escritos em branco no fim da linha, e o filler final reduzido de 1185 para 1176 ([QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)) | todas |
+| 1 | Os 51 campos criados na V45 escritos em branco no fim da linha, e o filler final reduzido de 1185 para 1176 ([QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)) | todas |
 
-Nas 45 linhas da variante 8 o `N` já estava no `P1 30.23`: essas ficam idênticas.
-Fora isto, os 5720 caracteres de dados são iguais byte a byte ao ficheiro de
-22/09.
+Mais nada: com o `N` recuado, o ficheiro é o de 22/09 mais os `;`. Fora os campos
+da V45 e o filler, os 5720 caracteres de dados do P1 são iguais byte a byte.
 
 ## Os outros seis pavés (25/09)
 
@@ -614,8 +639,11 @@ P1: 122225 linhas, sem par 0, chave ambigua 0
   IDENTICO           45
 ```
 
-**Nenhuma linha de dados fica sem par, nos seis pavés.** O P1 dá o
-`(3982, 3983)` esperado em 122 180 linhas e a variante 8 idêntica em 45.
+**Nenhuma linha de dados fica sem par, nos seis pavés.** No P1, os dois octetos
+`(3982, 3983)` em 122 180 linhas são o `N` do netting, que esta corrida ainda
+levava mudado de sítio — **recuado em 27/09** (ver *E fica como está*). Com o `N`
+no lugar de sempre, a próxima corrida deve dar `IDENTICO` nas 122 225 linhas do P1
+e o ficheiro passa a ser, byte a byte, o de 22/09 mais os `;`.
 
 Do cabeçalho e do rodapé: o rodapé é byte a byte igual; o cabeçalho difere em 9
 octetos, a data de geração (24, 26-31) e o número de envio, `00016` -> `00023`

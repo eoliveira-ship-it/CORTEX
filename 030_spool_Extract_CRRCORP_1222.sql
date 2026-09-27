@@ -20,12 +20,12 @@
 -- Os outros seis paves (P2, M1, C1, F1, F2, P9) levam o ";" pelo
 -- gen_spool_paves.py, que corre depois deste sobre o mesmo ficheiro.
 --
--- VERSAO 2026-09-25c : os SETE paves com ";" entre todos os campos. O P1
---                      com o netting no P1 30.23 nas 6 variantes; os outros
---                      seis com cada campo a sair na largura da Notice
---                      (RPAD) e os campos criados na V45 em branco.
---                      Confirmar no servidor com:
---                          grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql
+-- VERSAO 2026-09-27 : os SETE paves com ";" entre todos os campos, e SO
+--                     isso: nenhum campo muda de valor nem de posicao. Os
+--                     seis paves com cada campo a sair na largura da
+--                     Notice (RPAD) e os campos criados na V45 em branco.
+--                     Confirmar no servidor com:
+--                         grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql
 --
 -- GERADO por gen_spool_1222.py e gen_spool_paves.py -- nao editar a mao.
 -- =====================================================================
@@ -989,8 +989,8 @@ select
        RPAD(' ', 1)||';'||   -- P1 30.19     BRANCO
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
-       RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 24)||'N'||';'||   -- P1 30.22     REGRA
+       ' '||';'||   -- P1 30.23     REGRA
        RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
@@ -2456,8 +2456,8 @@ select
        RPAD(' ', 1)||';'||   -- P1 30.19     BRANCO
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
-       RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 24)||'N'||';'||   -- P1 30.22     REGRA
+       ' '||';'||   -- P1 30.23     REGRA
        RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
@@ -3133,8 +3133,8 @@ select
        RPAD(' ', 1)||';'||   -- P1 30.19     BRANCO
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
-       RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 24)||'N'||';'||   -- P1 30.22     REGRA
+       ' '||';'||   -- P1 30.23     REGRA
        RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
@@ -3810,8 +3810,8 @@ select
        RPAD(' ', 1)||';'||   -- P1 30.19     BRANCO
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
-       RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 24)||'N'||';'||   -- P1 30.22     REGRA
+       ' '||';'||   -- P1 30.23     REGRA
        RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
@@ -4487,8 +4487,8 @@ select
        RPAD(' ', 1)||';'||   -- P1 30.19     BRANCO
        RPAD(' ', 10)||';'||   -- P1 30.20     BRANCO
        RPAD(' ', 7)||';'||   -- P1 30.21     BRANCO
-       RPAD(' ', 25)||';'||   -- P1 30.22     REGRA
-       'N'||';'||   -- P1 30.23     REGRA
+       RPAD(' ', 24)||'N'||';'||   -- P1 30.22     REGRA
+       ' '||';'||   -- P1 30.23     REGRA
        RPAD(' ', 25)||';'||   -- P1 30.24     REGRA
        'N'||';'||   -- P1 30.25     EXATO
        RPAD(' ', 25)||';'||   -- P1 30.26     BRANCO
