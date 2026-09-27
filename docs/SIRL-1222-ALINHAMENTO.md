@@ -1170,6 +1170,91 @@ Correr no DEV2. Não há corrida do Adapté com `;` ainda, e é o que fecha o
 
 ---
 
+## As corridas do Adapté de 27/09 — o shell entrou, o spool não
+
+Três corridas, 22:30, 23:24 e 00:15. Todas com o mesmo resultado:
+
+| linha | escrita por | `;` nas três corridas | régua quer |
+|---|---|---|---|
+| cabeçalho `00;` | shell | 14 | 14 ✔ |
+| **detalhe `A1`** | **o spool** | **0** | **90** ✗ |
+| `Z9` | shell | **8** | 8 ✔ |
+| rodapé `99;` | shell | 2 | 2 ✔ |
+
+O `Z9` saiu exactamente como gerado — 9 campos, 8 `;`, 2000 octetos:
+
+```
+20250531;00370;C_BTR       ;M;202609272230;Z9;          ;000000001774;...
+```
+
+Logo o **shell novo correu**. Mas as 1774 linhas `A1` saíram posicionais, e
+comparadas com as de 22/09 com o `MASYSDATE` mascarado são **idênticas, zero
+diferenças**. Quem as gerou foi o spool antigo.
+
+### A causa: o shell chama o spool pelo nome fixo
+
+```ksh
+spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
+...
+@$spool_sql $SORTIE $V30ENVOICRRFIC;
+```
+
+O `_1222` do nome é só para o repositório. No servidor, o ficheiro gerado tem de
+**ser** o `030_spool_Extract_CRRADAP.sql`. Deixado ao lado com o nome `_1222`,
+nunca é lido — e o `@` do SQL*Plus não se queixa, porque o ficheiro que ele pediu
+existe. Sai um `CRRADAP.dat` perfeitamente válido, no formato antigo, sem uma
+única mensagem de erro. É a pior maneira de falhar.
+
+### O rasto que passa a existir
+
+Não havia como saber, de dentro do ficheiro produzido, qual spool tinha sido
+lido. Passa a haver: o shell gerado escreve no log de cada corrida o caminho e a
+linha `VERSAO` do spool que vai ler, antes de o correr.
+
+```ksh
+trace_spool()
+{
+  if [ -f "$spool_sql" ]; then
+    trace_log "INFO" 0 "Spool lido : $spool_sql"
+    versao_spool=`grep -m1 "VERSAO" "$spool_sql"`
+    if [ -n "$versao_spool" ]; then
+      trace_log "INFO" 0 "  $versao_spool"
+    else
+      trace_log "WARN" 100 "  sem linha VERSAO: e o spool anterior ao SIRL-1222"
+    fi
+  else
+    trace_log "ERROR" 5000 "Spool nao encontrado : $spool_sql" $nom_shell
+  fi
+}
+```
+
+Chamado logo a seguir ao `recup_numenvoi`: é o último ponto do fluxo principal
+antes de o script se dividir nos dois ramos, já depois de o `trace_log` estar
+definido, e **antes** da extracção — se o spool rebentar, o `extract_entite` faz
+`exit 1`, e é justamente aí que o rasto faz falta.
+
+### Duas marcas, não uma
+
+Houve confusão com o `grep VERSAO`, que devolveu `27b`. São dois ficheiros:
+
+| marca | gerado | substitui |
+|---|---|---|
+| `2026-09-27b` — *os SETE paves* | `030_spool_Extract_CRRCORP_1222.sql` | `${SQL}/030_spool_Extract_CRRCORP_vPACT.sql` |
+| `2026-09-27a` — *o Adapte* | `030_spool_Extract_CRRADAP_1222.sql` | `${SQL}/030_spool_Extract_CRRADAP.sql` |
+
+O `27b` é o Corporate. O do Adapté é o `27a`.
+
+### O gerador do shell
+
+As alterações ao shell passaram a sair de um gerador, o `gen_shell_adap.py`, e
+não de uma edição à mão: quatro trocas, cada uma verificada por aparecer
+exactamente uma vez no original. O ficheiro fica em cp1252 e CRLF, com os mesmos
+24 octetos acentuados nos comentários — no `.sql` o gerador dobra tudo para ASCII
+porque reescreve o ficheiro por inteiro; aqui não há razão para mexer no que não
+se pediu.
+
+---
+
 ## A SFG V0.4 (27/09) — o que confirma
 
 O `SFG CORTEX PACT 4.5-SFG V0.4.docx` entrou no repo no mesmo commit. É o dossier

@@ -46,6 +46,23 @@ V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql.log
 # requete pour les fichiers spool 
 
 spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
+# SIRL-1222: deixa no log qual spool foi lido, e que versao tem. O
+# @$spool_sql chama este nome fixo: um spool gerado deixado ao lado com
+# outro nome nunca e lido, e a corrida sai no formato antigo sem erro.
+trace_spool()
+{
+  if [ -f "$spool_sql" ]; then
+    trace_log "INFO" 0 "Spool lido : $spool_sql"
+    versao_spool=`grep -m1 "VERSAO" "$spool_sql"`
+    if [ -n "$versao_spool" ]; then
+      trace_log "INFO" 0 "  $versao_spool"
+    else
+      trace_log "WARN" 100 "  sem linha VERSAO: e o spool anterior ao SIRL-1222"
+    fi
+  else
+    trace_log "ERROR" 5000 "Spool nao encontrado : $spool_sql" $nom_shell
+  fi
+}
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"
@@ -451,6 +468,9 @@ recup_arrete
 # recuperation et maj du numenvoi
 # --------------------
 recup_numenvoi
+
+# SIRL-1222: qual spool vai ser lido nesta corrida
+trace_spool
 
 # --------------------
 # Si pas de parametres : extraction complete
