@@ -37,6 +37,9 @@ seguintes.
 linha, antes do filler, por isso nada se desloca. Sem o `;` nem sequer mudam um
 byte do ficheiro; só existem de facto quando o separador entrar.
 
+**Confirmado no ticket** (Yacine AIT MADI, 21/07): *"oui pour les filler situés
+à l'intérieur des lignes, il faudrait ajouter un séparateur."*
+
 **Decidido também: o `;` vale para o ficheiro todo** — cabeçalho, fillers do
 meio da linha e filler final. O filler final é o último campo, precedido de `;`
 e sem `;` depois dele, como já se faz hoje no ficheiro do P3 (C3RD).
@@ -61,25 +64,66 @@ perdem um campo cada; se ficam em branco, o tamanho não muda.
 
 </details>
 
-### 3. ~~O filler do P1 não fecha em 8000~~ — RESPONDIDA (27/09)
+### 3. O `P1 621` entra no ficheiro? — REFORMULADA (27/09)
 
-**1176: a linha mantém os 8000.** Ver `respostas.txt`: *"les longueurs de lignes de
-nouveaux fichiers avec points virgules doivent conserver la même longueur
-aujourd'hui (Par Exemple 8000 dans PACT CORPORATE)? Réponse : OUI."*
-Não é preciso enviar a [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md).
+Era *"o filler do P1 não fecha em 8000"*. O PDF do ticket mudou-lhe a natureza: há
+**duas leituras coerentes**, e ele aponta para a que eu não escolhi.
 
-<details><summary>a pergunta como estava</summary>
+A tabela do ticket dá o número de `;` por registo. Bate em tudo menos no P1:
 
+| | ticket | o que geramos | |
+|---|---|---|---|
+| cabeçalho | 14 | 14 | ✓ |
+| rodapé | 2 | 2 | ✓ |
+| P2 | 397 | 397 | ✓ |
+| M1 | 157 | 157 | ✓ |
+| F1 | 72 | 72 | ✓ |
+| F2 | 45 | 45 | ✓ |
+| P9 | 38 | 38 | ✓ |
+| **P1** | **661** | **662** | **✗** |
 
-Pergunta redigida em pt-BR e em francês, pronta a enviar:
-**[QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)**.
+A diferença é um campo: o **`P1 621` — *Intention de gestion de l'opération***
+(ALPHA/8), criado na versão 45.01.
 
-Resumo: os tamanhos de filler da V45.02 já contam os separadores e dão 8000
-exatos em todos os registos, menos no P1, que dá 8009. A diferença é o
-`P1 621` (8 caracteres + 1 separador), criado na 45.01. O filler do P1 deve
-passar de 1185 para 1176 — a confirmar.
+```
+com ele : 663 campos + 662 ';' + filler 1185 = 8009
+sem ele : 662 campos + 661 ';' + filler 1185 = 8000   <- fecha exacto
+```
 
-</details>
+| | campos | `;` | filler | total |
+|---|---|---|---|---|
+| **A** — o que está implementado | 663 | 662 | **1176** | 8000 |
+| **B** — o que o ticket descreve | 662 | **661** | **1185** | 8000 |
+
+O ticket aponta para **B** em três sítios independentes: a tabela diz 661; o texto
+diz *"le filler doit impérativement avoir la longueur définie dans la notice"*
+(1185, não 1176); e *"la longueur totale d'une ligne d'en-tête, d'enregistrement
+de détail et d'en-queue doit être la même"* (8000).
+
+Mas a Notice V45.02 **define** o `P1 621`, e é a Notice que o ticket anexa. Uma
+das duas coisas está desactualizada, e não se adivinha qual.
+
+**Pergunta:** o `P1 621` entra no `CRRCORP.dat`?
+
+- **Se não entra** (B): o P1 passa a 662 campos e 661 `;`, o filler fica nos 1185
+  da Notice, e tudo o que vem depois do `P1 621` recua 9 octetos. Mexe nos
+  122 225 registos P1.
+- **Se entra** (A): fica como está, e é a tabela do ticket que precisa de ser
+  corrigida para 661 -> 662.
+
+Está implementado **A**, e não se muda sem resposta.
+
+### 3b. O C1 não tem linha na tabela do ticket
+
+A tabela lista P1, P2, F1, F2, M1 e P9. **O C1 não aparece**, e são 40 856 linhas
+do ficheiro. Geramos 97 `;` (98 campos). Confirmar o número, e que a ausência é
+esquecimento e não outra coisa.
+
+### 3c. Pedido: a Notice filtrada que o ticket anexa
+
+O ticket refere `Notice PACTV4.5_Grande Clientele_Corporate_V45.02_SIRL_1222.xlsx`
+-- a Notice filtrada para este chamado, com os exemplos dos fillers. Não a temos.
+É capaz de responder sozinha à 3 e à 3b.
 
 ### 4. Cabeçalho (`00;`) e rodapé (`99;`)
 
@@ -139,6 +183,22 @@ Sem ela não dá para separar por campo:
 
 **Pedido:** a notice do Adapté, na versão que o ficheiro deve passar a seguir. Se
 não existir V45, dizer qual usar.
+
+**O que o PDF do ticket já deu (27/09):**
+
+| PACT Adapté | tamanho | `;` |
+|---|---|---|
+| cabeçalho | 2000 | 14 |
+| **detalhe** | **2000** | **90** |
+| rodapé | 2000 | 2 |
+
+São **91 campos** numa linha de 2000, e bate com o spool: os três blocos fecham em
+835 octetos de dados mais `LPAD(' ', 1164)`, e havia 1 token por bloco sem largura
+medida -- o octeto que falta para os 2000.
+
+Isto não resolve o problema (continuam a faltar as fronteiras: ~70 tokens para 91
+campos, ou seja uns 20 campos escondidos nos fillers brancos) mas dá-lhe um alvo:
+qualquer reconstrução passa a ser verificável contra o 90.
 
 ---
 

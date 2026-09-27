@@ -838,3 +838,53 @@ a corrida `00024` validou — 5474 linhas, zero diferentes. Ou seja: a defesa
 entrou e mais nada mexeu.
 
 Versão `2026-09-27b`.
+
+## O PDF do ticket (27/09) — confirmações, e uma divergência no P1
+
+Chegou o `[SIRL-1222] … Séparateurs et Fillers - Suivi du projet.pdf`, exportação
+do ticket no Jira. Confirma três coisas e abre uma.
+
+### Confirmado
+
+- **Os fillers do meio da linha levam `;`** — Yacine AIT MADI, 21/07: *«oui pour
+  les filler situés à l'intérieur des lignes, il faudrait ajouter un
+  séparateur.»* É o que está feito.
+- **O filler final** leva `;` antes e não depois, escrito com brancos, e todas as
+  linhas — cabeçalho, detalhe, rodapé — com o mesmo tamanho. Também é o que está.
+- **O `;` nos dados** já estava no ticket como ponto de atenção: *«vérifier s'il y
+  a des adresses, raisons sociales et des données contenant du point virgules.»*
+
+### A tabela do número de `;`
+
+O ticket traz o número de separadores por registo. Bate em tudo menos no P1:
+
+| | ticket | geramos | |
+|---|---|---|---|
+| cabeçalho | 14 | 14 | ✓ |
+| rodapé | 2 | 2 | ✓ |
+| P2 | 397 | 397 | ✓ |
+| M1 | 157 | 157 | ✓ |
+| F1 | 72 | 72 | ✓ |
+| F2 | 45 | 45 | ✓ |
+| P9 | 38 | 38 | ✓ |
+| **P1** | **661** | **662** | **✗** |
+| **C1** | **sem linha na tabela** | 97 | — |
+
+A diferença do P1 é um campo, e é o mesmo que fazia a conta dar 8009: o
+`P1 621`, criado na 45.01. Ver [PERGUNTAS-DSID.md](PERGUNTAS-DSID.md), ponto 3,
+onde a pergunta foi reformulada — deixou de ser *"o filler está mal calculado"* e
+passou a ser *"o `P1 621` entra no ficheiro?"*, que é a pergunta honesta: há duas
+leituras que fecham em 8000, e o ticket aponta para a que não escolhi.
+
+### O Adapté
+
+| PACT Adapté | tamanho | `;` |
+|---|---|---|
+| cabeçalho | 2000 | 14 |
+| **detalhe** | **2000** | **90** |
+| rodapé | 2000 | 2 |
+
+91 campos numa linha de 2000, e bate com a medição do spool (835 octetos de dados
++ `LPAD(' ', 1164)`, com 1 token por bloco sem largura medida). Continua a faltar
+a régua — ~70 tokens para 91 campos, uns 20 escondidos nos fillers — mas agora há
+um alvo contra o qual verificar.
