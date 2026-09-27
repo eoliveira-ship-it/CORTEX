@@ -1061,6 +1061,115 @@ sempre o sinal de que a régua estava a ser lida certa.
 
 ---
 
+## O Adapté gerado (27/09) — o spool e o Z9 do shell
+
+Gerados dois ficheiros novos. **Nenhum dos dois originais foi alterado** — como no
+Corporate, o gerado é que substitui no servidor.
+
+| gerado | substitui no servidor |
+|---|---|
+| `030_spool_Extract_CRRADAP_1222.sql` | `${SQL}/030_spool_Extract_CRRADAP.sql` |
+| `030_CREATION_SPOOL_CRRADAP_1222.sh` | o shell que escreve o cabeçalho, o `Z9` e o rodapé |
+
+Conferir no servidor com `grep VERSAO 030_spool_Extract_CRRADAP.sql` —
+`2026-09-27a`.
+
+### O spool: `python gen_spool_adap.py`
+
+```
+A1_CRRV4_DEGRADE     dados 981 + separadores 90 + filler 929 = 2000
+   BRANCO 3  EXATO 70  NOVO 17  SEM-PV 40
+A1_DEGRADE_AUTO      dados 981 + separadores 90 + filler 929 = 2000
+   BRANCO 5  EXATO 66  NOVO 17  REGRA 2  SEM-PV 41
+A1_DEGRADE_GMBH      dados 981 + separadores 90 + filler 929 = 2000
+   BRANCO 7  EXATO 66  NOVO 17  SEM-PV 34
+ASCII puro: 9 linhas reparadas de UTF-8, 9 dobradas
+escreveu 030_spool_Extract_CRRADAP_1222.sql (403 linhas)
+```
+
+- **`SEM-PV`** são os `TRANSLATE(x, ';', '.')` nos campos de texto, a mesma defesa
+  do Corporate. No Adapté não há nomes nem moradas — os campos de texto são
+  códigos — mas a DSID pediu «faire une analyse du stock à chaque fois» e a SFG
+  põe o mesmo como ponto de atenção, por isso a defesa fica no spool;
+- **`REGRA 2`** são as duas anomalias do `CD_MOTEUR`, só no bloco `AUTO`;
+- **`NOVO 17`** são os campos da V45 que o spool V44 não escreve: saem em branco
+  na largura da notice;
+- o filler final passa de `LPAD(' ', 1164)` a `RPAD(' ', 929)` e **não leva `;` a
+  seguir**.
+
+Nenhum campo precisou de `RPAD` forçado — ao contrário do Corporate, onde 37
+expressões escreviam largura variável. O spool do Adapté já era todo `RPAD` de
+largura fixa.
+
+### Os comentários estavam codificados duas vezes
+
+O ficheiro de origem é cp1252, mas 20 linhas de comentário francês foram gravadas
+em UTF-8 — e nove delas **duas vezes**: o `§` do `-- §01` está lá como `C3 82 C2
+A7`, que é o UTF-8 de `C2 A7`, que é o UTF-8 de `§`. Dobrar isso para ASCII
+directamente dava `-- AA01` e `CrAation`. O `repara_mojibake` decodifica até
+parar de mudar, e só depois é que se tiram os acentos: fica `-- 01` e `Creation`.
+
+### O `Z9`, que o spool não escreve
+
+Medido nos dados reais, linha a linha, contra a régua:
+
+| linha | escrita por | `;` hoje | régua quer |
+|---|---|---|---|
+| cabeçalho `00;` | `ecris_entete`, no shell | 14 | 14 ✔ |
+| detalhe `A1` | o spool | 0 | **90** |
+| **`Z9`** | **`ecris_Z9`, no shell** | **0** | **8** |
+| rodapé `99;` | o shell | 2 | 2 ✔ |
+
+O cabeçalho e o rodapé já estavam certos, e os fillers deles batem ao octeto com
+a notice (1886 e 1986). O **`Z9` não**: o shell escreve-o posicionalmente, com os
+três campos do meio colados numa variável (`Champs2a4="00370C_BTR       M"` —
+entidade 5, aplicação 12, frequência 1).
+
+No `030_CREATION_SPOOL_CRRADAP_1222.sh`:
+
+- `Champs2a4` passa a três variáveis (`entiteZ9`, `appliZ9`, `freqZ9`);
+- o filler `Z9 99.99` passa de **1938** a **1930** — exactamente os 8 separadores,
+  e 1930 é o que a notice lhe dá;
+- o `echo` fica `"$dtarrete;$entiteZ9;$appliZ9;$freqZ9;$masysdate;$TypeLigne;$NatureFlux;$ftotligne;$finlignez9"`.
+
+Corrido num shell, com os mesmos valores do ficheiro de hoje:
+
+```
+octetos : 2000
+';'     : 8
+inicio  : |20250531;00370;C_BTR       ;M;202609221751;Z9;          ;000000001774;    ...
+```
+
+As três linhas antigas ficam comentadas ao lado das novas, como o resto do
+ficheiro já faz.
+
+O shell fica em cp1252 e CRLF, como estava, e **com os mesmos 24 octetos acentuados** que já tinha nos comentários. No `.sql` o gerador dobra tudo para ASCII porque reescreve o ficheiro por inteiro — um encode errado podia tocar num literal, que é código. No shell a alteração é cirúrgica: três sítios, e nenhum outro octeto muda.
+
+### O que verifica: `python valida_adap_1222.py`
+
+```
+A1_CRRV4_DEGRADE     campos  91  separadores  90  total 2000   BRANCO 3  EXATO 70  FILLER 1  NOVO 17
+A1_DEGRADE_AUTO      campos  91  separadores  90  total 2000   BRANCO 5  EXATO 66  FILLER 1  NOVO 17  REGRA 2
+A1_DEGRADE_GMBH      campos  91  separadores  90  total 2000   BRANCO 7  EXATO 66  FILLER 1  NOVO 17
+
+erros: 0
+```
+
+Além das larguras e da soma, verifica duas coisas que já morderam no Corporate:
+
+1. **o `TRANSLATE` não muda a largura** — descasca-se e mede-se outra vez. Foi
+   assim que se apanhou, no P1, um `TRANSLATE` posto por fora do `RPAD`, que
+   fechava a linha 64 octetos curta;
+2. **não-regressão**: cada expressão marcada `EXATO` tem de existir, letra por
+   letra, no spool de origem. Se alguma mudou, não foi só o `;` que entrou.
+
+### O que falta
+
+Correr no DEV2. Não há corrida do Adapté com `;` ainda, e é o que fecha o
+`CRRADAPT` como a `00025` fechou o `CRRCORP`.
+
+---
+
 ## A SFG V0.4 (27/09) — o que confirma
 
 O `SFG CORTEX PACT 4.5-SFG V0.4.docx` entrou no repo no mesmo commit. É o dossier
