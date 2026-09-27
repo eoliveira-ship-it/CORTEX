@@ -15,14 +15,18 @@ O que faz:
          byte, e a prova e a igualdade dos MD5 como multiconjunto (a ordem das
          linhas muda de corrida para corrida);
        - no P1 emparelha-se pelos primeiros 3900 bytes e imprime-se em que BYTES
-         difere cada registo, porque ha uma diferenca esperada.
+         difere cada registo.
 
 O resultado esperado, que e o que se entrega no chamado:
 
-    P1  (3982, 3983)   122180 linhas   o N do indicador de netting, que passa do
-                                       ultimo byte do P1 30.22 para o P1 30.23
-        IDENTICO           45 linhas   a variante 8, que ja o escrevia no sitio
+    P1  IDENTICO   122225 linhas
     os outros seis paves: nenhuma linha so num dos lados
+
+Foi o que deram as corridas 00024 e 00025 no DEV2. Aqui esteve escrito que o P1
+divergia nos bytes 3982-3983 em 122 180 linhas -- o N do indicador de netting,
+que eu tinha mudado do ultimo byte do P1 30.22 para o P1 30.23. Essa mudanca nao
+fazia parte do pedido e foi revertida: o N fica onde o spool o punha (ver a
+pergunta 5 em docs/PERGUNTAS-DSID.md). Nenhuma linha difere.
 
 A MASYSDATE (bytes 27-38) e mascarada: muda de corrida para corrida. A linha do
 cabecalho tambem difere sempre, na data de geracao.
