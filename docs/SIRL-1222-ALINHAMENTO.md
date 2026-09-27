@@ -750,7 +750,21 @@ acentuadas que o francês pede. Não é preciso `UNISTR`.
 
 ### O que falta no SIRL-1222
 
-Só o **Adapté**: o `CRRADAPT.dat` espera a Notice
-`CRRAV4.4_Adapté_Adapted_V44.02.xlsx`, que não temos. E as respostas da DSID em
-[PERGUNTAS-DSID.md](PERGUNTAS-DSID.md), duas das quais mudam o ficheiro: o filler
-do P1 (1176 vs 8009) e os campos obsoletos.
+Só o **Adapté**. O chamado inclui o `CRRADAPT.dat` ([SIRL-1224.md](SIRL-1224.md),
+"separador `;` entre todas as colunas de `CRRCORP.dat` e `CRRADAPT.dat`"), e para
+o fazer é precisa uma régua de campos que **não temos e que ninguém prometeu**:
+
+- o `030_spool_Extract_CRRADAP.sql` declara no cabeçalho a Notice
+  `CRRAV4.4_Adapté_Adapted_V44.02.xlsx` — mas o ficheiro não está no repo;
+- os dois Excel que temos (`V45.02` e `v1.0`) têm só a aba `PACT Corp`; nenhum
+  traz o Adapté;
+- o próprio spool não serve de régua: as referências de campo (`A1 4.6`,
+  `A1 7.3`) aparecem em meia dúzia de linhas, e os fillers — `RPAD(' ', 130)` — 
+  podem tapar um campo ou quarenta. Sem saber quantos, não se sabe quantos `;`
+  vão lá dentro.
+
+Está pedida à DSID ([PERGUNTAS-DSID.md](PERGUNTAS-DSID.md), ponto 6). **Pedida,
+não a caminho** — nada indica que exista uma versão V45 dela.
+
+E as respostas às outras perguntas, duas das quais mudam o ficheiro do Corporate:
+o filler do P1 (1176 vs 8009) e os campos obsoletos.

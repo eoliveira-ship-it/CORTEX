@@ -107,9 +107,19 @@ contratos de netting a declarar, a informação não está a chegar.
 
 ### 6. Notice do Adapté — **o que bloqueia o resto do chamado**
 
-O `030_spool_Extract_CRRADAP.sql` implementa a notice
-`CRRAV4.4_Adapté_Adapted_V44.02.xlsx`, que **não temos**. Sem ela não dá para
-separar por campo o `CRRADAPT.dat`. Pedir o ficheiro.
+O chamado inclui o `CRRADAPT.dat`, e o `030_spool_Extract_CRRADAP.sql` declara no
+cabeçalho a notice `CRRAV4.4_Adapté_Adapted_V44.02.xlsx`. **Não a temos**, e não
+há nenhuma indicação de que esteja a caminho nem de que exista uma versão V45.
+
+Sem ela não dá para separar por campo:
+
+- os dois Excel que temos têm só a aba `PACT Corp`;
+- o spool não serve de régua — traz referências de campo em meia dúzia de linhas
+  (`A1 4.6`, `A1 7.3`) e fillers como `RPAD(' ', 130)`, que tanto podem tapar um
+  campo como quarenta. Sem saber quantos, não se sabe quantos `;` lá vão dentro.
+
+**Pedido:** a notice do Adapté, na versão que o ficheiro deve passar a seguir. Se
+não existir V45, dizer qual usar.
 
 ---
 
