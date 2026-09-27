@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 ~$*.xlsx
+
+# Dumps de corridas do DEV2 (.7z, .dat): guarda-se a ULTIMA de cada fluxo e
+# apaga-se o resto. A limpeza de 28/09 tirou 109 MB de corridas velhas.
+# Nao ha regra automatica de propositos: um glob esconderia tambem a corrida
+# boa, e estes ficheiros entram pelo carregamento da web do GitHub, que nao
+# olha para o .gitignore. Fica a politica, e o criterio e de quem carrega.
+# Para trazer uma de volta:  git show <commit>:<ficheiro> > <ficheiro>

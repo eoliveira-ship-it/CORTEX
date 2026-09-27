@@ -30,7 +30,28 @@ def linhas(caminho):
             yield ln.rstrip(b'\r\n')
 
 
+def sem_separador(caminho):
+    """Recusa-se a ler um CRRADAP que ja tem ';' entre os campos (SIRL-1222).
+
+    Este script conta com as posicoes do formato antigo -- o codigo do registo
+    nos octetos 39-40, cada campo colado no seguinte. Num ficheiro com ';' o
+    l[38:40] nao e o registo, o filtro nao apanha nada e a queixa que saia era
+    'nenhuma linha de detalhe A1' num ficheiro com 1774. Para o formato novo
+    use o comparar_adap.py, que desfaz os separadores antes de comparar.
+    """
+    with open(caminho, 'rb') as f:
+        f.readline()                       # o cabecalho tem ';' nos dois formatos
+        ln = f.readline()
+    if ln[8:9] == b';':
+        raise SystemExit(
+            '%s esta no formato do SIRL-1222, com ";" entre os campos.\n'
+            'Este script le a regua por posicao, do formato antigo. Para o\n'
+            'novo use:  python comparar_adap.py <novo> <a referencia sem ";">'
+            % caminho)
+
+
 def main(caminho):
+    sem_separador(caminho)
     d = notice_adap.carrega()
     lin = list(linhas(caminho))
     print('%s: %d linhas de %d octetos' % (caminho, len(lin), len(lin[0])))

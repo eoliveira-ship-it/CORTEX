@@ -25,7 +25,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 O T4 compara, campo a campo, a expressão original do spool com a expressão que
 o **spool vPACT** emite. Todas iguais: o ficheiro sai igual.
 
-O T3 lê agora os 8 `WHERE` do próprio `030_spool_Extract_CRRCORP-antigo.sql`. O total ficou nos mesmos
+O T3 lê agora os 8 `WHERE` do próprio `030_spool_Extract_CRRCORP.sql`. O total ficou nos mesmos
 122138 depois de acrescentar ao INSERT #1 a condição `NOT LIKE 'TRE2%'` que lhe
 faltava — nesta fotografia não há registos TRE2% em NAT02, por isso o defeito
 era latente. Continua a ser um defeito: noutro arrêté a procedure carregaria
@@ -44,7 +44,7 @@ Mapeamento posicional: [docs/REGUA-V44.md](docs/REGUA-V44.md)
 
 ## ⚠️ Achado importante — ecart de versão
 
-O `030_spool_Extract_CRRCORP-antigo.sql` implementa a notice **V44.02**; a notice deste repo é **V45.00**.
+O `030_spool_Extract_CRRCORP.sql` implementa a notice **V44.02**; a notice deste repo é **V45.00**.
 Diferença medida: **519 bytes**. Isto invalida o mapeamento automático por posição
 e condiciona o SIRL-1224. Ver [docs/ECART-VERSAO.md](docs/ECART-VERSAO.md).
 
@@ -55,14 +55,14 @@ usado sempre inteiro: cada shell só chama o seu spool e escreve o seu `.dat`.
 
 | | Shell | Spool | Lê de | Ficheiro |
 |---|---|---|---|---|
-| **antigo** | `030_CREATION_SPOOL_CRRCORP-antigo.sh` | `030_spool_Extract_CRRCORP-antigo.sql` | `ENG_CORP_P1` (8 SELECT) | `CRRCORP-antigo.dat` |
-| **novo** | `030_CREATION_SPOOL_CRRCORP-novo.sh` | `030_spool_Extract_CRRCORP-novo.sql` | `ENG_CORP_P1_BIS` (2 SELECT) | `CRRCORP-novo.dat` |
+| **antigo** | `030_CREATION_SPOOL_CRRCORP.sh` | `030_spool_Extract_CRRCORP.sql` | `ENG_CORP_P1` (8 SELECT) | `CRRCORP-antigo.dat` |
+| **novo** | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | `030_spool_Extract_CRRCORP_vPACT.sql` | `ENG_CORP_P1_BIS` (2 SELECT) | `CRRCORP-novo.dat` |
 
 Para saber qual é qual sem abrir o ficheiro:
 
 ```
-grep -c ENG_CORP_P1_BIS 030_spool_Extract_CRRCORP-novo.sql     # 4
-grep -c ENG_CORP_P1_BIS 030_spool_Extract_CRRCORP-antigo.sql   # 0
+grep -c ENG_CORP_P1_BIS 030_spool_Extract_CRRCORP_vPACT.sql     # 4
+grep -c ENG_CORP_P1_BIS 030_spool_Extract_CRRCORP.sql   # 0
 ```
 
 > **Corrigido no shell antigo**: tinha uma segunda atribuição de `spool_sql`,
@@ -105,12 +105,9 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `ENG_CORP_P1_BIS.sql` | DDL da tabela: 662 colunas P1 + 4 técnicas |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` da tabela + 8 `INSERT`, numa chamada só |
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
-| `erro` | Log de compilação/execução Oracle — erros já corrigidos |
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
-| `tipos` | Tipos reais das colunas de `ENG_CORP_P1`, lidos do dicionario |
-| `excel` | Fórmulas Excel: gera o DDL, e marca a origem V44/V45 de cada campo |
 | `explicacao.md` | Como a tabela sai da Notice, e a fórmula de Excel explicada passo a passo |
-| `030_spool_Extract_CRRCORP-novo.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
+| `030_spool_Extract_CRRCORP_vPACT.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas. **Deteta o formato** (com ou sem `;`) e recusa-se a comparar um de cada |
 | `gen_spool_1222.py` | SIRL-1222: gera o pave P1 com `;` entre todos os campos, a partir da Notice |
@@ -130,24 +127,32 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
 | `CONSULTAS_CLIENTE.sql` | Consultas para levar ao cliente: TRE502 sem devise e tipos de risco sem dados |
 | `TESTES.sql` | Ficheiro unico de testes: estrutura, package, volumetria, round-trip |
-| `testes` | Resultado da 1a execucao dos testes |
 | `gen_mapa.py` | Gera o mapeamento posicao -> coluna validado contra o ficheiro real |
 | `align_v44.py` | Reconstroi a regua V44 e mede o alinhamento posicional |
 | `gen_procedure.py` / `conv_spool.py` | Geradores: regeneram a procedure a partir do spool |
 | `gen_testes.py` | Gera o `TESTES.sql` a partir do spool, do DDL e da procedure |
+| `gen_comentarios.py` | Gera os comentarios das colunas de `ENG_CORP_P1_BIS` a partir da Notice |
+| `valida_posicoes.py` | Confere o mapa posicao -> coluna contra o ficheiro real |
+| `notice_adap.py` | SIRL-1222: le a regua do Adapte (91 campos / 90 `;`), separada nos quatro registos |
+| `valida_adap.py` | Confere a regua do Adapte contra um `CRRADAP.dat`, campo a campo |
+| `casa_adap.py` | SIRL-1222: alinha os tres blocos do spool do Adapte com a regua |
+| `gen_spool_adap.py` | SIRL-1222: gera o `030_spool_Extract_CRRADAP_1222.sql` |
+| `gen_shell_adap.py` | SIRL-1222: gera o `030_CREATION_SPOOL_CRRADAP_1222.sh` (os `;` do `Z9` e o rasto do spool lido) |
+| `valida_adap_1222.py` | Confere o spool do Adapte gerado: larguras, `;`, total 2000 e nao-regressao contra a origem |
+| `comparar_adap.py` | Nao-regressao do Adapte: reconstroi as linhas sem `;` e compara com a referencia |
 
 ### Fonte (entrada)
 
 | Ficheiro | Conteúdo |
 |---|---|
-| `030_spool_Extract_CRRCORP-antigo.sql` | Cópia do `030_spool_Extract_CRRCORP.sql` (5.662 linhas, notice V44.02) |
+| `030_spool_Extract_CRRCORP.sql` | O spool V44 de origem, 5.662 linhas — a base de que os geradores partem |
 | `Notice PACTV4.5_v1.0.xlsx` | Notice PACT V4.5 Corporate — aba `PACT Corp` é a fonte da estrutura |
 | `ticket 1224`, `plan 1224`, `1222`, `1223`, `plano` | Tickets e SFG técnicas |
 | `1224.png` | Diagrama do fluxo SIRL-1224 |
 
 ## Regenerar a procedure
 
-Depois de qualquer alteração ao `030_spool_Extract_CRRCORP-antigo.sql`:
+Depois de qualquer alteração ao `030_spool_Extract_CRRCORP.sql`:
 
 ```bash
 python gen_procedure.py

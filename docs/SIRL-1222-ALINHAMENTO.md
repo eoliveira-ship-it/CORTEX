@@ -1350,7 +1350,8 @@ E03 do projecto — mas fica registado.
 *Esta secção é anterior à leitura da notice do Adapté, acima. Fica como
 registo do que se conseguiu medir sem ela, e de quanto faltava.*
 
-Os dados reais do Adapté estavam no repo (`CRRADAP.7z`): **1777 linhas de 2000
+Os dados reais do Adapté estavam no repo (`CRRADAP.7z`, tirado na limpeza de
+28/09 — a corrida que ficou é o `CRRADAP.dat`): **1777 linhas de 2000
 octetos**, 1774 do tipo `A1`, mais um registo `Z9` e o rodapé `99;`.
 
 Com o número de separadores que o ticket dá (90, logo 91 campos), a conta fecha
