@@ -76,6 +76,17 @@ def carrega(ficheiro=V4502, aba='PACT Corp'):
     return out
 
 
+def alpha(ficheiro=V4502, aba='PACT Corp'):
+    """{ref} dos campos de texto (FORMAT ALPHA), por pave.
+
+    Sao os unicos onde um ';' pode aparecer nos dados: um montante ou uma data
+    saem de um formato, um codigo de texto sai da coluna. A DSID pediu para
+    trocar o ';' por '.' nesses campos (ver respostas.txt).
+    """
+    return {p: {c['ref'] for c in cs if c['fmt'].upper().startswith('ALPHA')}
+            for p, cs in carrega(ficheiro, aba).items()}
+
+
 if __name__ == '__main__':
     d = carrega()
     print('%-10s %6s %6s %8s %8s %6s %6s' %

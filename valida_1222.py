@@ -112,6 +112,13 @@ def largura(expr):
     expr = expr.strip()
     if expr == ':MASYSDATE':
         return 12
+    # O TRANSLATE(x, ';', '.') do sem_pv troca um caractere por outro: escreve
+    # exatamente o mesmo numero de octetos que o x. Descasca-se para o resto
+    # desta funcao poder reconhecer o que esta por baixo -- uma coluna nua,
+    # sobretudo, cujo tamanho vem do DDL e nao da expressao.
+    nu = G.nu_pv(expr).strip()
+    if nu != expr:
+        return largura(nu)
     if re.match(r'^P1_[A-Z0-9_]+$', expr):
         return TAMANHO_COLUNA.get(expr)          # a coluna ja tem o tamanho certo
     # Um CASE ... END nao se parte pelos '||': o 'x'||y de dentro de um ramo

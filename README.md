@@ -9,7 +9,7 @@ de dentro do spool** e passá-las para uma tabela alimentada por uma procedure.
 | Ticket | Assunto | Estado |
 |---|---|---|
 | **SIRL-1224** | Tabela `ENG_CORP_P1_BIS` + procedure + spool vPACT | 🟢 conteúdo idêntico provado (0 diferenças); faltam aceites da DSID e ajustes de entrega — ver **[resumo para a equipe](docs/SIRL-1224-resumo.md)** |
-| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟢 **`CRRCORP` fechado** (corrida `00024`, 27/09): **nenhuma linha de dados difere** da referência de 22/09 nos sete pavés — P1 `IDENTICO 122225`. O ficheiro é o de 22/09 mais os `;`, e só isso. Encode confirmado (`WE8MSWIN1252`). O **Adapté** não pode começar: falta-lhe a notice, que não temos e não está prometida — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
+| **SIRL-1222** | Separador `;` em `CRRCORP.dat` / `CRRADAPT.dat` | 🟢 **`CRRCORP` fechado** (corrida `00024`, 27/09): nenhuma linha de dados difere da referência de 22/09 nos sete pavés — P1 `IDENTICO 122225`. Respostas da DSID em `respostas.txt`: filler do P1 a 1176 confirmado, larguras estritas confirmadas, e `TRANSLATE(x,';','.')` nos 1054 campos de texto para um `;` nos dados não partir o ficheiro (zero ocorrências em 20250531). O **Adapté** não pode começar: falta-lhe a notice — ver [docs/SIRL-1222-ALINHAMENTO.md](docs/SIRL-1222-ALINHAMENTO.md) |
 | **SIRL-1223** | Tamanhos: `P1 21.65` 5→50, `P3C 21.65`, filler BALE4 1132→1087 | 🟢 P1 e P3 provados (só a mudança pedida) — ver [docs/SIRL-1223.md](docs/SIRL-1223.md) |
 | — | SFD/STD único do projeto | ⬜ não iniciado |
 

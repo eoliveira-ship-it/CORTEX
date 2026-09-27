@@ -183,6 +183,61 @@ def achata(e):
                    for i, x in enumerate(re.split(r"('[^']*')", e)))
 
 
+COLUNA = re.compile(r'\b(C_ENR\.\w+|P1_\d+_\w+)\b', re.I)
+
+
+def sem_pv(e):
+    """Troca o ';' por '.' no valor, para nao partir o ficheiro separado.
+
+    Um ';' dentro de um campo de texto faz o leitor contar um separador a mais e
+    ler tudo o que vem depois no campo errado. A DSID respondeu que a solucao
+    e trocar o ';' por '.' (respostas.txt, 27/09).
+
+    So se aplica a expressoes que LEEM uma coluna: um literal e um filler branco
+    nao podem trazer surpresas.
+
+    O TRANSLATE entra por DENTRO do RPAD/LPAD que fecha a largura, e nao por
+    fora, por duas razoes: o width() nao sabe medir um TRANSLATE -- e e ele que
+    prova que cada campo tem a largura da notice -- e o RPAD tem de continuar a
+    ser a ultima coisa que se faz ao valor. Como o TRANSLATE devolve NULL se o
+    que esta dentro for NULL, fica sempre depois do NVL.
+    """
+    if not COLUNA.search(e):
+        return e, False
+    # Enfia-se o TRANSLATE a volta do PRIMEIRO argumento, por corte de cadeia e
+    # nao por reconstrucao: assim tudo o resto -- espacos, o 3o argumento do
+    # LPAD -- fica exatamente como estava, e o unico que muda no ficheiro
+    # entregue e o embrulho.
+    m = re.match(r'^(\s*[RL]PAD\s*\()', e, re.I)
+    if m:
+        i = j = m.end()
+        d = 0
+        while j < len(e):
+            c = e[j]
+            if c == "'":
+                j = e.index("'", j + 1)
+            elif c == '(':
+                d += 1
+            elif c == ')' and d:
+                d -= 1
+            elif d == 0 and c in ',)':
+                break
+            j += 1
+        if j < len(e) and e[j] == ',':
+            return e[:i] + "TRANSLATE(%s, ';', '.')" % e[i:j] + e[j:], True
+    return "TRANSLATE(%s, ';', '.')" % e, True
+
+
+def nu_pv(e):
+    """Tira os embrulhos do sem_pv, para comparar o que esta por baixo deles."""
+    antes = None
+    while antes != e:
+        antes = e
+        e = re.sub(r"TRANSLATE\s*\((.*),\s*';'\s*,\s*'\.'\s*\)",
+                   lambda m: m.group(1), e, flags=re.I | re.S)
+    return e
+
+
 def width(e):
     t = achata(e).strip().rstrip('|').strip()
     if not t:
@@ -222,6 +277,15 @@ def width(e):
             if w:
                 ws_.append(w)
         return max(ws_) if ws_ else None
+    # TRANSLATE(expr, de, para) com 'de' e 'para' do mesmo tamanho nao muda a
+    # largura -- troca caracteres um a um. E o embrulho do sem_pv, que poe '.'
+    # onde os dados tragam ';'. Sem isto o campo ficava sem largura medida e a
+    # linha do P1 fechava 64 octetos curta.
+    m = re.match(r'^TRANSLATE\s*\((.*)\)$', t, re.I | re.S)
+    if m:
+        args = split_args(m.group(1))
+        if len(args) == 3 and len(args[1].strip()) == len(args[2].strip()):
+            return width(args[0])
     # SUBSTR(expr, inicio, n) -> n  (tem de vir ANTES das funcoes de formato:
     # o SUBSTR corta o resultado de F_FORMAT_* e e ele que manda na largura)
     m = re.match(r'^SUBSTR\s*\((.*)\)$', t, re.I)

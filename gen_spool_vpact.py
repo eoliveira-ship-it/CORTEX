@@ -51,6 +51,7 @@ sys.stdout = buf
 exec(src, ns)
 sys.stdout = _o
 tokenize, width, v44 = ns['tokenize'], ns['width'], ns['v44']
+nu_pv, sem_pv = ns['nu_pv'], ns['sem_pv']
 
 DDL = open('ENG_CORP_P1_BIS.sql', encoding='cp1252').read()
 COLS = set(re.findall(r'^\s+(P1_[A-Z0-9_]+)\s', DDL, re.M))

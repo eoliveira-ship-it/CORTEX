@@ -69,7 +69,15 @@ buf, _o = io.StringIO(), sys.stdout
 sys.stdout = buf
 import gen_spool_vpact as G          # noqa: E402  (expressoes vPACT e TOKENS)
 import mapa_1222 as M                # noqa: E402  (regua de hoje e ordem)
+import align_v44 as A                # noqa: E402  (sem_pv: o ';' dos dados)
 sys.stdout = _o
+
+# Os campos de texto do P1, onde um ';' nos dados partiria o ficheiro separado.
+# A DSID respondeu que se troca por '.' (respostas.txt, 27/09). No arrete
+# 20250531 nao ha nenhum -- medido nas 554 045 linhas do ficheiro de 22/09, que
+# e anterior ao separador e onde por isso qualquer ';' seria dado -- mas a
+# resposta diz "faire une analyse du stock a chaque fois".
+ALPHA = notice.alpha()['P1']
 
 NL = chr(10)
 Q = chr(39)
@@ -266,6 +274,10 @@ def bloco(var, filtro, comentario):
             e, regra = expressao(c, var)
             if e is None:
                 raise SystemExit('campo sem regra: %s (variante %d)' % (c['ref'], var))
+            if c['ref'] in ALPHA:
+                e, trocado = A.sem_pv(e)
+                if trocado:
+                    n_regra['SEM-PV'] += 1
             n_regra[regra] += 1
             corpo.append(linha(e, c['ref'], regra, sep=i != len(REGUA) - 1))
         if col == 0:
@@ -312,12 +324,14 @@ CAB = [
     '-- Os outros seis paves (P2, M1, C1, F1, F2, P9) levam o ";" pelo',
     '-- gen_spool_paves.py, que corre depois deste sobre o mesmo ficheiro.',
     '--',
-    '-- VERSAO 2026-09-27 : os SETE paves com ";" entre todos os campos, e SO',
-    '--                     isso: nenhum campo muda de valor nem de posicao. Os',
-    '--                     seis paves com cada campo a sair na largura da',
-    '--                     Notice (RPAD) e os campos criados na V45 em branco.',
-    '--                     Confirmar no servidor com:',
-    '--                         grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql',
+    '-- VERSAO 2026-09-27b : os SETE paves com ";" entre todos os campos.',
+    '--                      Nenhum campo muda de valor nem de posicao. Cada',
+    '--                      campo sai na largura da Notice (RPAD) e os campos',
+    '--                      criados na V45 vao em branco. Nos campos de texto,',
+    '--                      TRANSLATE(x, ";", ".") para um ";" nos dados nao',
+    '--                      partir o ficheiro (resposta da DSID de 27/09).',
+    '--                      Confirmar no servidor com:',
+    '--                          grep VERSAO 030_spool_Extract_CRRCORP_vPACT.sql',
     '--',
     '-- GERADO por gen_spool_1222.py e gen_spool_paves.py -- nao editar a mao.',
     '-- =====================================================================',

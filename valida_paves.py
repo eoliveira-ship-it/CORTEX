@@ -71,7 +71,11 @@ def valores(linhas, a, b):
             # gerado, para nenhum encode lhe poder tocar. Aplica-se a mesma troca
             # ao lado do spool: se as duas nao derem a mesma coisa, e porque a
             # conversao nao foi fiel, e isso tem de acusar.
-            out.append(re.sub(r'\s+', '', GP.ascii_seguro(x)))
+            # O TRANSLATE(..., ';', '.') e o embrulho do sem_pv, posto de
+            # proposito: descasca-se antes de comparar, senao o validador dava
+            # por perdida toda a expressao que o levou. O que tem de ficar
+            # provado e que nada se perdeu POR BAIXO dele.
+            out.append(re.sub(r'\s+', '', GP.ascii_seguro(MP.A.nu_pv(x))))
     return sorted(out)
 
 

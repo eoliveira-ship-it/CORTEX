@@ -63,6 +63,14 @@ SAIDA = '030_spool_Extract_CRRCORP_1222.sql'   # o mesmo ficheiro do P1
 # primeiro os que nao levam REGRA nenhuma.
 PAVES = ('F2', 'F1', 'P9', 'P2', 'M1', 'C1')
 
+# Os campos de texto, onde um ';' nos dados pode aparecer e partir o ficheiro.
+# A DSID respondeu que se troca por '.' (respostas.txt, 27/09). No arrete
+# 20250531 nao ha nenhum -- medido nas 554 045 linhas do ficheiro de 22/09, que
+# e anterior ao separador e onde por isso qualquer ';' seria dado -- mas a
+# resposta diz "faire une analyse du stock a chaque fois", ou seja: e risco de
+# todas as corridas, e a defesa fica no spool.
+ALPHA = notice.alpha()
+
 # Campos cuja largura foi forcada com RPAD, por pave: e a lista para a DSID.
 RELATORIO = {}
 
@@ -171,7 +179,10 @@ def forca_largura(e, ln):
     """
     if largura_garantida(e) == ln:
         return e, False
-    if re.match(r'^NVL\s*\(', e, re.I):          # ja tem NVL, nao leva outro
+    # Le-se por baixo do TRANSLATE do sem_pv: o que interessa e se o VALOR ja
+    # esta protegido de NULL. Um TRANSLATE de NULL e NULL, por isso um que
+    # embrulhe algo sem NVL continua a precisar de um.
+    if re.match(r'^NVL\s*\(', MP.A.nu_pv(e).strip(), re.I):
         return 'RPAD(%s, %d)' % (e, ln), True
     return "RPAD(NVL(%s, ' '), %d)" % (e, ln), True
 
@@ -227,6 +238,10 @@ def bloco(linhas, pave, a, b):
         if any(ord(c) > 127 for c in e):
             e = ascii_seguro(e)
             censo['ASCII'] += 1
+        if l['ref'] in ALPHA[pave]:
+            e, trocado = MP.A.sem_pv(e)
+            if trocado:
+                censo['SEM-PV'] += 1
         e, forcado = forca_largura(e, l['len'])
         if forcado:
             censo['RPAD'] += 1

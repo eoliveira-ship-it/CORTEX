@@ -768,3 +768,73 @@ não a caminho** — nada indica que exista uma versão V45 dela.
 
 E as respostas às outras perguntas, duas das quais mudam o ficheiro do Corporate:
 o filler do P1 (1176 vs 8009) e os campos obsoletos.
+
+## O `;` dentro dos dados (27/09) — resposta da DSID
+
+O [respostas.txt](../respostas.txt) trouxe três respostas. Duas fecham perguntas
+minhas; a terceira abre um problema que eu não tinha visto.
+
+### Fechada: a linha continua com 8000 → o filler do P1 é 1176
+
+> *«les longueurs de lignes de nouveaux fichiers avec points virgules doivent
+> conserver la même longueur aujourd'hui (Par Exemple 8000 dans PACT
+> CORPORATE)?»* — **Réponse: OUI.**
+
+O P1 não pode ser 8009. O filler vai de 1185 para 1176, que é o que está
+implementado. A [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md) deixa de ser precisa.
+
+### Fechada: larguras estritas da Notice, campo a campo
+
+> *«on doit respecter strictement les longueurs indiquées dans la notice, pour
+> chaque champ + nombre de «;» et la somme doit correspondre à la taille maximale
+> indiquée.»*
+
+É exactamente o que os `RPAD(NVL(expr, n))` garantem. E as duas respostas só
+fecham juntas: 663 campos + 662 `;` + 1185 dá 8009 ≠ 8000, logo o filler cede.
+
+### Nova: um `;` nos dados parte o ficheiro
+
+> *«Pour le cas où on trouve des points virgules dans les données…»* —
+> **Réponse: Faire une analyse du stock à chaque fois.** Solution la plus simple
+> de remplacer les `;` avec un `.`
+
+Um `;` num campo de texto faz o leitor contar um separador a mais e ler tudo o
+que vem depois no campo errado. É uma falha que a **nossa própria mudança** criou.
+
+**No arrêté 20250531 não há nenhum.** Medido no ficheiro de 22/09, que é anterior
+ao separador e onde por isso qualquer `;` seria dado:
+
+```
+linhas de dados com ; : 0        (em 554 045)
+```
+
+Mas a resposta diz *«à chaque fois»*: é risco de todas as corridas. E a exposição
+é grande — **1054 dos 1468 campos são ALPHA** (P1 457, P2 269, M1 126, C1 80,
+F1 53, F2 36, P9 33).
+
+### A defesa
+
+Cada campo de texto passa a sair por um `TRANSLATE(x, ';', '.')`. São **1024**
+no ficheiro: 976 por dentro do `RPAD`/`LPAD` que fecha a largura, 48 sem
+`RPAD` à volta (campos do P1 cuja largura vem do tipo da coluna, pelo `CAST`).
+
+Três cuidados, e cada um custou um erro apanhado pelos validadores:
+
+- **Por dentro do `RPAD`, nunca por fora.** O `width()` é quem prova que cada
+  campo tem a largura da Notice, e não sabia medir um `TRANSLATE` — a linha do P1
+  fechava 64 octetos curta. Passou a saber: um `TRANSLATE` com `de` e `para` do
+  mesmo tamanho não muda a largura.
+- **Por dentro do `NVL`.** `TRANSLATE(NULL, …)` é `NULL`, e um `NULL` numa
+  concatenação escreve zero octetos. O `forca_largura` passa a ler por baixo do
+  embrulho para decidir se o valor já está protegido — sem isso punha um `NVL` a
+  mais, e sem ler nada punha-o a menos, que era pior.
+- **Por corte de cadeia, não por reconstrução.** Refazer o `RPAD(a, b)` a partir
+  dos argumentos reespaçava 976 linhas sem necessidade.
+
+### A prova
+
+Tirando os `TRANSLATE` do ficheiro gerado, ele fica **byte a byte** igual ao que
+a corrida `00024` validou — 5474 linhas, zero diferentes. Ou seja: a defesa
+entrou e mais nada mexeu.
+
+Versão `2026-09-27b`.

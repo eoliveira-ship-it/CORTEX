@@ -10,7 +10,14 @@ Atualizado em 2026-09-27.
 
 ## SIRL-1222 — separador `;`
 
-### 1. A lista de campos é a da Notice ou a de hoje?
+### 1. ~~A lista de campos é a da Notice ou a de hoje?~~ — RESPONDIDA (27/09)
+
+**A da Notice, com as larguras estritas de cada campo.** Ver `respostas.txt`:
+*"respecter strictement les longueurs indiquées dans la notice, pour chaque champ
++ nombre de «;» et la somme doit correspondre à la taille maximale indiquée."*
+
+<details><summary>a pergunta como estava</summary>
+
 
 Hoje o `CRRCORP.dat` segue a régua da notice **V44.02**. A notice atual é a
 **V45.02**, e há **51 campos que o ficheiro não escreve**: os 50 criados na V45
@@ -52,7 +59,17 @@ perdem um campo cada; se ficam em branco, o tamanho não muda.
 | Sair do ficheiro | menos um campo em cada linha P1 e P2; desloca os seguintes |
 | Ficar em branco | a linha não muda de tamanho |
 
-### 3. O filler do P1 não fecha em 8000
+</details>
+
+### 3. ~~O filler do P1 não fecha em 8000~~ — RESPONDIDA (27/09)
+
+**1176: a linha mantém os 8000.** Ver `respostas.txt`: *"les longueurs de lignes de
+nouveaux fichiers avec points virgules doivent conserver la même longueur
+aujourd'hui (Par Exemple 8000 dans PACT CORPORATE)? Réponse : OUI."*
+Não é preciso enviar a [QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md).
+
+<details><summary>a pergunta como estava</summary>
+
 
 Pergunta redigida em pt-BR e em francês, pronta a enviar:
 **[QUESTAO-FILLER-P1.md](QUESTAO-FILLER-P1.md)**.
@@ -61,6 +78,8 @@ Resumo: os tamanhos de filler da V45.02 já contam os separadores e dão 8000
 exatos em todos os registos, menos no P1, que dá 8009. A diferença é o
 `P1 621` (8 caracteres + 1 separador), criado na 45.01. O filler do P1 deve
 passar de 1185 para 1176 — a confirmar.
+
+</details>
 
 ### 4. Cabeçalho (`00;`) e rodapé (`99;`)
 
