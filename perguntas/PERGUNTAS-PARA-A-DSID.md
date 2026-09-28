@@ -115,6 +115,48 @@ spool do Adapté e uma corrida.
 
 ---
 
+## Pergunta 5 — O P3 passou a gerar 6 ficheiros em vez de 5
+
+**Perguntar assim:**
+
+> A corrida do P3 no DEV2 passou a escrever **seis** ficheiros `UC2_P3`, e antes
+> escrevia cinco. O que apareceu é o da entidade **00372**, e vem **vazio** —
+> só cabeçalho e rodapé, com `99;0000000002`. A entidade não tem uma linha na
+> `CREDIT_P3`. O package `PACK_UTL_FILE_ENVOI_C3RD2` que está no nosso
+> repositório tem a lista das seis entidades escrita no código
+> (`'00399','00936','00357','00472','00370','00372'`) e gera ficheiro para todas,
+> mesmo sem dados. A versão que estava compilada no DEV2 não gerava o da 00372.
+> Confirmam que o CASA aceita o ficheiro vazio da 00372, ou a 00372 não deve ser
+> enviada?
+
+**Por que isto apareceu agora.** Não é o SIRL-1223. O chamado mexeu em **duas
+linhas** do package (o `21.65` de 5 para 50 e o filler BALE4 de 1132 para 1087)
+— está no commit, e a lista de entidades é byte a byte a mesma. O que mudou foi
+que a recompilação do ficheiro do repositório substituiu no DEV2 uma versão mais
+antiga, que escolhia as entidades **pelos dados** e não pela lista:
+
+```sql
+-- PACK_UTL_FILE_ENVOI_C3RD2.sql, linhas 794-796, comentadas no nosso ficheiro:
+--CURSOR C_CONSO
+--is select distinct cd_conso_cpt from credit_p3;
+```
+
+Com esse cursor, uma entidade sem linhas nunca aparecia — e portanto não saía
+ficheiro. Com a lista no código, aparece e sai um ficheiro de 2 linhas. É a
+regra que o próprio package escreve na linha 68: *«ENVOYER SOCIETE MEME SI ELLE
+EST ABSENTE … ALORS GENERER FICHIER VIDE»*.
+
+**A corrida não falhou.** Verificado: a entidade `00370`, a que vem antes da
+00372 na lista, tem nos dois lados o mesmo rodapé `99;0000170421` e o mesmo
+tamanho ao octeto. Nenhuma corrida abortou a meio, nenhum ficheiro ficou
+truncado, e os cinco pares antes/depois dão `IDENTICOS`.
+
+**O que muda com a resposta:** se a 00372 não deve ir, é tirar `'00372'` da
+lista do package. Se deve, não se toca em nada — mas convém dizê-lo ao CASA,
+porque é um ficheiro que eles nunca receberam.
+
+---
+
 ## Anexo — o que já foi respondido, e não precisa de voltar à mesa
 
 Registado aqui para não se perguntar duas vezes.

@@ -44,6 +44,16 @@ cheia.
 
 ### 1 — Base de dados
 
+> **O nome do package.** Aqui o package chama-se `pack_alim_tab_envoi_crrv4` —
+> o nome de produção, o que ele substitui. No repositório, na raiz, leva o
+> sufixo `_new`: é a versão de teste, que no DEV2 compila **ao lado** do de
+> produção em vez de o substituir. Quem faz a troca é o
+> [`montar_entrega.py`](../../montar_entrega.py), ao montar esta pasta, e nos
+> quatro ficheiros ao mesmo tempo — o package, o `run_procedure.sql`, o
+> `TESTES.sql` e o `030_CREATION_SPOOL_CRRCORP_vPACT.sh`, que também o chama.
+> Não edite o nome à mão num só: instala-se com um nome e chama-se com outro,
+> e dá `PLS-00201`.
+
 No SQL Developer, **F5 (Run Script)**, não F9:
 
 ```
@@ -57,7 +67,7 @@ Confirmar que os dois packages ficaram válidos:
 ```sql
 SELECT object_name, status, TO_CHAR(last_ddl_time,'DD/MM/YYYY HH24:MI') AS compilado
   FROM user_objects
- WHERE object_name IN ('PACK_ALIM_TAB_ENVOI_CRRV4_NEW', 'PACK_UTL_FILE_ENVOI_C3RD2')
+ WHERE object_name IN ('PACK_ALIM_TAB_ENVOI_CRRV4', 'PACK_UTL_FILE_ENVOI_C3RD2')
  ORDER BY 1;
 ```
 
@@ -66,7 +76,7 @@ SELECT object_name, status, TO_CHAR(last_ddl_time,'DD/MM/YYYY HH24:MI') AS compi
 ```sql
 SELECT line, position, text
   FROM user_errors
- WHERE name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW'
+ WHERE name = 'PACK_ALIM_TAB_ENVOI_CRRV4'
  ORDER BY sequence;
 ```
 
@@ -75,7 +85,7 @@ SELECT line, position, text
 ```sql
 SET SERVEROUTPUT ON
 BEGIN
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS;
+    pack_alim_tab_envoi_crrv4.P_ALIM_ENG_CORP_P1_BIS;
 END;
 /
 

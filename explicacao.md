@@ -1,7 +1,9 @@
 # Como a tabela `ENG_CORP_P1_BIS` sai da Notice
 
 Explicação do zero: o que é a especificação, que regras se aplicam a cada
-campo, e como a fórmula de Excel que está em [`excel`](excel) as executa.
+campo, e como a fórmula de Excel a executa. As fórmulas estão citadas aqui
+mesmo, nos blocos ```excel``` de cada secção; a pasta `excel/` onde viviam foi
+tirada na limpeza de 28/09 (está no histórico do git, no commit `80f7c2d`).
 
 ---
 

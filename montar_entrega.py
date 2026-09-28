@@ -25,7 +25,6 @@ Um ficheiro pode aparecer em mais do que um chamado quando os dois lhe mexeram:
 o 030_spool_Extract_CRRCORP_vPACT.sql nasce no 1224 e leva o alargamento do
 1223. Em final/ vai sempre a versao com tudo empilhado.
 """
-import filecmp
 import io
 import os
 import shutil
@@ -72,6 +71,22 @@ PLANO = {
     ],
 }
 
+# {pasta: [(de, para)]} -- trocas de texto feitas na COPIA, em octetos.
+#
+# O package chama-se pack_alim_tab_envoi_crrv4 em producao. Na raiz leva o
+# sufixo _new de proposito: e a versao de teste, e no DEV2 compila-se ao lado do
+# de producao em vez de o substituir. Em final/ vai o nome verdadeiro -- e tem de
+# ir tambem no run_procedure.sql, no TESTES.sql e no INSTALACAO.md, senao a
+# procedure instala-se com um nome e chama-se com outro (PLS-00201).
+#
+# A troca e feita aqui e nao a mao nos ficheiros de final/ porque final/ e
+# reconstruido por este script: uma correcao a mao era apagada na corrida
+# seguinte. Em octetos para nao mexer no cp1252 nem nos CRLF.
+TROCAS = {
+    'final': [(b'pack_alim_tab_envoi_crrv4_new', b'pack_alim_tab_envoi_crrv4'),
+              (b'PACK_ALIM_TAB_ENVOI_CRRV4_NEW', b'PACK_ALIM_TAB_ENVOI_CRRV4')],
+}
+
 
 def pares():
     for pasta, fs in PLANO.items():
@@ -80,18 +95,30 @@ def pares():
                    os.path.join(ENTREGA, pasta, destino or origem))
 
 
+def conteudo(pasta, origem):
+    """Os octetos que vao para a copia, com as trocas da pasta aplicadas."""
+    with open(origem, 'rb') as f:
+        b = f.read()
+    for de, para in TROCAS.get(pasta, ()):
+        b = b.replace(de, para)
+    return b
+
+
 def main(conferir=False):
     faltam, diferentes, copiados = [], [], 0
     for pasta, o, d in pares():
         if not os.path.exists(o):
             faltam.append(o)
             continue
+        b = conteudo(pasta, o)
         if conferir:
-            if not os.path.exists(d) or not filecmp.cmp(o, d, shallow=False):
+            if not os.path.exists(d) or open(d, 'rb').read() != b:
                 diferentes.append(os.path.relpath(d, RAIZ))
             continue
         os.makedirs(os.path.dirname(d), exist_ok=True)
-        shutil.copy2(o, d)
+        with open(d, 'wb') as f:
+            f.write(b)
+        shutil.copystat(o, d)
         copiados += 1
     if faltam:
         for f in faltam:

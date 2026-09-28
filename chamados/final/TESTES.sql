@@ -82,12 +82,12 @@ COLUMN argument_name FORMAT A14
 -- T2.1  estado e data de compilacao (STATUS tem de ser VALID)
 SELECT object_name, object_type, status,
        TO_CHAR(last_ddl_time,'YYYY-MM-DD HH24:MI') AS compilado_em
-  FROM ALL_OBJECTS WHERE object_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW' ORDER BY object_type;
+  FROM ALL_OBJECTS WHERE object_name = 'PACK_ALIM_TAB_ENVOI_CRRV4' ORDER BY object_type;
 
 -- T2.2  assinatura : a procedure atual nao tem parametros (resultado vazio)
 SELECT position, argument_name, data_type
   FROM ALL_ARGUMENTS
- WHERE object_name = 'P_ALIM_ENG_CORP_P1_BIS' AND package_name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW'
+ WHERE object_name = 'P_ALIM_ENG_CORP_P1_BIS' AND package_name = 'PACK_ALIM_TAB_ENVOI_CRRV4'
  ORDER BY position;
 
 -- T2.3  se T2.1 devolveu INVALID, a razao esta aqui. Resultado vazio = sem
@@ -95,7 +95,7 @@ SELECT position, argument_name, data_type
 --       proxima chamada recompila sozinha.
 COLUMN texto FORMAT A96
 SELECT type, line, position, TRIM(text) AS texto
-  FROM ALL_ERRORS WHERE name = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW' ORDER BY sequence;
+  FROM ALL_ERRORS WHERE name = 'PACK_ALIM_TAB_ENVOI_CRRV4' ORDER BY sequence;
 
 -- ---------------------------------------------------------------------
 -- T3  VOLUMETRIA : esperado (fonte) vs inserido (tabela)
@@ -105,7 +105,7 @@ SELECT type, line, position, TRIM(text) AS texto
 DECLARE
     v_t0        TIMESTAMP    := SYSTIMESTAMP;
 BEGIN
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS;
+    pack_alim_tab_envoi_crrv4.P_ALIM_ENG_CORP_P1_BIS;
     DBMS_OUTPUT.PUT_LINE('procedure OK - duracao : '||TO_CHAR(SYSTIMESTAMP - v_t0));
 END;
 /

@@ -24,6 +24,62 @@ python -c "import py7zr; py7zr.SevenZipFile('junto.7z').extractall('.')"
 
 ---
 
+## A corrida de 28/09 12:11 — `Ficheiros.7z.001` … `.006`
+
+Um arquivo partido em seis, com **três pares OLD/NEW** — o antes e o depois de
+cada fluxo, na mesma corrida. Para juntar e extrair:
+
+```bash
+cat Ficheiros.7z.00[1-6] > junto.7z
+python -c "import py7zr; py7zr.SevenZipFile('junto.7z').extractall('.')"
+```
+
+Descompactado dá ~11 GB. O `py7zr` extrai só o que se pedir:
+
+```bash
+python -c "import py7zr; py7zr.SevenZipFile('junto.7z').extract(path='x', targets=['UC2_P3/NEW/UC2_P3_APRES00357'])"
+```
+
+### O que cada par prova, e o que deu
+
+| par | o que se corre | resultado |
+|---|---|---|
+| `CRRCORP/OLD/CRRCORP.dat` → `NEW/CRRCORP_vPACT.dat` | `python comparar_1223.py crrcorp <OLD> <NEW>` | **IDENTICOS**, 554 044 linhas |
+| `CRRADAP/OLD/CRRADAP.dat` → `NEW/CRRADAP_vPACT.dat` | `python comparar_adap.py <NEW> <OLD>` | detalhe **IDENTICAS**; o `Z9` ficou no formato antigo |
+| `UC2_P3/OLD/UC2_P3_AVANT*` → `NEW/UC2_P3_APRES*` | `python comparar_1223.py p3 <AVANT> <APRES>` | **IDENTICOS** nos cinco, 171 930 linhas |
+
+### O par do Corporate é a prova do SIRL-1224
+
+O `CRRCORP_vPACT.dat` sai do spool que lê da **`ENG_CORP_P1_BIS`**. Dar
+`IDENTICOS` contra o ficheiro do spool antigo quer dizer que a tabela e a
+procedure reproduzem o ficheiro **ao octeto** — é mais forte do que o
+round-trip do `TESTES.sql`, que compara valor a valor mas não o ficheiro. E leva
+o SIRL-1223 ao mesmo tempo: o único campo que muda é o `P1 21.65`.
+
+Este par **não** tem os `;` do SIRL-1222 — nenhum dos dois lados. A prova do
+1222 no Corporate é a outra, a corrida `00025`, no `CRRCORP_vPACT.7z.00*`.
+
+### ⚠ O `Z9` do Adapté ficou no formato antigo
+
+O `CRRADAP_vPACT.dat` desta corrida tem o detalhe `A1` certo — 90 `;`, e as
+1774 linhas idênticas à referência — mas a linha `Z9` sai **sem um único `;`**:
+
+```
+2025053100370C_BTR       M202609281211Z9          000000001774 ...
+```
+
+Essa linha não vem do spool, vem do **shell**. Quer dizer que o
+`030_CREATION_SPOOL_CRRADAP.sh` no servidor ainda é o antigo: instalou-se o
+`.sql` e não o `.sh`. Faltam os 8 `;` do `Z9` e o filler de 1930.
+
+Os `.bat` que vêm no arquivo (`CRRCORP_Split*.bat`) partem o ficheiro por pavé
+com `findstr "\<M............C1\>"` — o padrão conta **12** caracteres entre o
+`M` e o pavé, que é a posição do formato **sem** `;`. Num ficheiro com
+separadores passam a ser 14 (`M;202609281211;C1`) e o `findstr` não acha nada:
+saem sete ficheiros vazios, sem erro.
+
+---
+
 ## Como usar
 
 ### O Corporate
