@@ -18,22 +18,52 @@ com o nome que têm no repositório.
 | `PACK_UTL_FILE_ENVOI_C3RD2.sql` | base de dados | 1223 |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | `${SQL}/` | 1224 + 1223 + **1222** |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | o diretório dos shells | 1224 |
-| `030_spool_Extract_CRRADAP.sql` | `${SQL}/` | **1222** |
-| `030_CREATION_SPOOL_CRRADAP.sh` | o diretório dos shells | **1222** |
+| `030_CREATION_SPOOL_CRRCORP.sh` | o diretório dos shells | 1224 — **é quem chama o de cima** |
+| `030_spool_Extract_CRRADAP_vPACT.sql` | `${SQL}/` | **1222** |
+| `030_CREATION_SPOOL_CRRADAP_vPACT.sh` | o diretório dos shells | **1222** |
+| `030_CREATION_SPOOL_CRRADAP.sh` | o diretório dos shells | **1222** — **é quem chama o de cima** |
 | `TESTES.sql` | correr no SQL Developer | 1224 |
 
-### ⚠ Os nomes já estão certos — não lhes acrescente sufixos
+### Os fluxos novos correm ao lado dos antigos, não em vez deles
 
-No repositório estes dois chamam-se `..._1222.sql` e `..._1222.sh`. **Aqui não.**
-O shell chama o spool pelo nome fixo:
+Nenhum destes ficheiros substitui um spool antigo. Em cada um dos dois fluxos, o
+shell de sempre continua a escrever o ficheiro oficial e, **no fim, chama o
+`_vPACT`**, que escreve o seu a partir do seu próprio spool:
+
+```
+030_CREATION_SPOOL_CRRCORP.sh   ->  CRRCORP.dat         (030_spool_Extract_CRRCORP.sql)
+   e no fim chama
+030_CREATION_SPOOL_CRRCORP_vPACT.sh  ->  CRRCORP_vPACT.dat  (030_spool_Extract_CRRCORP_vPACT.sql)
+
+030_CREATION_SPOOL_CRRADAP.sh   ->  CRRADAP.dat         (030_spool_Extract_CRRADAP.sql)
+   e no fim chama
+030_CREATION_SPOOL_CRRADAP_vPACT.sh  ->  CRRADAP_vPACT.dat  (030_spool_Extract_CRRADAP_vPACT.sql)
+```
+
+Duas razões, e as duas contam:
+
+1. **os dois ficheiros saem da mesma corrida** — mesmos dados, mesmo instante.
+   A comparação antes/depois deixa de depender de duas corridas separadas;
+2. **se o novo rebentar, o oficial já está escrito.**
+
+Por isso vão os **dois** shells de cada fluxo: o antigo é que leva a chamada, e
+sem ele o novo nunca corre. Os dois spools antigos
+(`030_spool_Extract_CRRCORP.sql` e `030_spool_Extract_CRRADAP.sql`) **não se
+tocam** e não estão nesta pasta.
+
+### ⚠ O nome do spool do Corporate
+
+Um só ficheiro muda de nome do repositório para cá: no repositório chama-se
+`030_spool_Extract_CRRCORP_1222.sql`, e aqui já está com o nome que o shell
+chama. Não lhe acrescente o sufixo outra vez:
 
 ```ksh
-spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
+spool_sql="${SQL}/030_spool_Extract_CRRCORP_vPACT.sql"
 @$spool_sql $SORTIE $V30ENVOICRRFIC;
 ```
 
-Se o ficheiro ficar ao lado com outro nome, **nunca é lido** e não há erro
-nenhum: sai um ficheiro válido, no formato antigo. Aconteceu três vezes.
+Deixado ao lado com outro nome, **nunca é lido** e não há erro nenhum: sai um
+ficheiro válido, no formato antigo. Aconteceu três vezes, no Adapté.
 
 ---
 
@@ -112,17 +142,26 @@ por acaso.
 ### 4 — Os ficheiros do servidor
 
 ```
-4.1  030_spool_Extract_CRRCORP_vPACT.sql   ->  ${SQL}/
-4.2  030_CREATION_SPOOL_CRRCORP_vPACT.sh   ->  o diretorio dos shells
-4.3  030_spool_Extract_CRRADAP.sql         ->  ${SQL}/
-4.4  030_CREATION_SPOOL_CRRADAP.sh         ->  o diretorio dos shells
+4.1  030_spool_Extract_CRRCORP_vPACT.sql     ->  ${SQL}/
+4.2  030_CREATION_SPOOL_CRRCORP_vPACT.sh     ->  o diretorio dos shells
+4.3  030_CREATION_SPOOL_CRRCORP.sh           ->  o diretorio dos shells
+4.4  030_spool_Extract_CRRADAP_vPACT.sql     ->  ${SQL}/
+4.5  030_CREATION_SPOOL_CRRADAP_vPACT.sh     ->  o diretorio dos shells
+4.6  030_CREATION_SPOOL_CRRADAP.sh           ->  o diretorio dos shells
 ```
 
-**Confirmar sempre depois de copiar:**
+Os `4.3` e `4.6` são os shells antigos, com uma só alteração: a chamada ao
+`_vPACT` no fim. **Sem eles o novo não corre.** Confirmar que a chamada está lá:
+
+```bash
+grep -n "_vPACT.sh" $SHL/030_CREATION_SPOOL_CRRCORP.sh $SHL/030_CREATION_SPOOL_CRRADAP.sh
+```
+
+**E a versão dos dois spools novos:**
 
 ```bash
 grep VERSAO $SQL/030_spool_Extract_CRRCORP_vPACT.sql
-grep VERSAO $SQL/030_spool_Extract_CRRADAP.sql
+grep VERSAO $SQL/030_spool_Extract_CRRADAP_vPACT.sql
 ```
 
 Tem de sair:
@@ -139,7 +178,7 @@ Se não devolver nada, o ficheiro não foi substituído.
 O shell do Adapté também o escreve no log de cada corrida:
 
 ```
-INFO  Spool lido : /caminho/030_spool_Extract_CRRADAP.sql
+INFO  Spool lido : /caminho/030_spool_Extract_CRRADAP_vPACT.sql
 INFO    -- VERSAO 2026-09-27a : o Adapte com ";" entre todos os campos.
 ```
 
@@ -147,25 +186,30 @@ Se aparecer `WARN sem linha VERSAO`, está lá o spool antigo.
 
 ### 5 — Correr e comparar
 
+Corre-se **só o shell antigo** de cada fluxo. Ele chama o novo:
+
 ```bash
-./030_CREATION_SPOOL_CRRCORP_vPACT.sh
+./030_CREATION_SPOOL_CRRCORP.sh
 ./030_CREATION_SPOOL_CRRADAP.sh
 ```
 
-E comparar com a referência:
+Saem dois ficheiros de cada fluxo, da mesma corrida — e é esse par que se
+compara:
 
 ```bash
-python comparar_1222.py <CRRCORP novo> <referencia de 22/09>
-python comparar_adap.py  <CRRADAP novo> <referencia sem ';'>
+python comparar_1222.py CRRCORP_vPACT.dat CRRCORP.dat
+python comparar_adap.py  CRRADAP_vPACT.dat CRRADAP.dat
 ```
 
 Esperado: `IDENTICOS` / `erros: 0`.
 
 ---
 
-## O que se espera ver no ficheiro
+## O que se espera ver nos ficheiros NOVOS
 
-### `CRRCORP.dat`
+Os antigos (`CRRCORP.dat` e `CRRADAP.dat`) não mudam — saem como sempre.
+
+### `CRRCORP_vPACT.dat`
 
 | | |
 |---|---|
@@ -174,7 +218,7 @@ Esperado: `IDENTICOS` / `erros: 0`.
 | P2 / M1 / C1 / F1 / F2 / P9 | 397 / 157 / 97 / 72 / 45 / 38 |
 | cabeçalho / rodapé | 14 / 2 |
 
-### `CRRADAP.dat`
+### `CRRADAP_vPACT.dat`
 
 | | |
 |---|---|
@@ -188,20 +232,22 @@ Verificação rápida, no servidor:
 
 ```bash
 # o detalhe do Adapte tem de dar 90 em todas as linhas
-awk -F';' '!/^00;/ && !/^99;/ {print NF-1}' CRRADAP.dat | sort -u
+awk -F';' '!/^00;/ && !/^99;/ {print NF-1}' CRRADAP_vPACT.dat | sort -u
+
+# e o Z9, a unica linha que vem do shell: 8
+grep -c ";" CRRADAP_vPACT.dat
 ```
 
 ---
 
 ## Se precisar de voltar atrás
 
-Os originais não foram apagados. Estão no repositório, na raiz:
+Não há nada para desfazer nos fluxos: os spools e os ficheiros antigos continuam
+a ser escritos como sempre. Para desligar o novo, basta tirar a chamada do fim do
+shell antigo — o bloco `Lancement du script ..._vPACT.sh`. O ficheiro oficial não
+muda.
 
-| voltar para | ficheiro |
-|---|---|
-| antes do 1222 (Corporate) | `030_spool_Extract_CRRCORP_vPACT.sql` da pasta `SIRL-1224/` |
-| antes do 1222 (Adapté) | `030_spool_Extract_CRRADAP.sql` e `030_CREATION_SPOOL_CRRADAP.sh` da raiz |
-| antes de tudo | `030_spool_Extract_CRRCORP.sql` e `030_CREATION_SPOOL_CRRCORP.sh` da raiz |
+Na base de dados, os originais estão no repositório, na raiz.
 
 ---
 

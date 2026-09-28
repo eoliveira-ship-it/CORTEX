@@ -3,7 +3,7 @@
 
     python valida_adap_1222.py
 
-Le o 030_spool_Extract_CRRADAP_1222.sql e, em cada um dos tres blocos:
+Le o 030_spool_Extract_CRRADAP_vPACT.sql e, em cada um dos tres blocos:
 
   1. mede a largura de cada expressao e compara com o que a notice V45.00 do
      Adapte da ao campo;

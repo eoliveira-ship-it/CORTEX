@@ -1068,8 +1068,8 @@ Corporate, o gerado é que substitui no servidor.
 
 | gerado | substitui no servidor |
 |---|---|
-| `030_spool_Extract_CRRADAP_1222.sql` | `${SQL}/030_spool_Extract_CRRADAP.sql` |
-| `030_CREATION_SPOOL_CRRADAP_1222.sh` | o shell que escreve o cabeçalho, o `Z9` e o rodapé |
+| `030_spool_Extract_CRRADAP_vPACT.sql` | `${SQL}/030_spool_Extract_CRRADAP.sql` |
+| `030_CREATION_SPOOL_CRRADAP_vPACT.sh` | o shell que escreve o cabeçalho, o `Z9` e o rodapé |
 
 Conferir no servidor com `grep VERSAO 030_spool_Extract_CRRADAP.sql` —
 `2026-09-27a`.
@@ -1084,7 +1084,7 @@ A1_DEGRADE_AUTO      dados 981 + separadores 90 + filler 929 = 2000
 A1_DEGRADE_GMBH      dados 981 + separadores 90 + filler 929 = 2000
    BRANCO 7  EXATO 66  NOVO 17  SEM-PV 34
 ASCII puro: 9 linhas reparadas de UTF-8, 9 dobradas
-escreveu 030_spool_Extract_CRRADAP_1222.sql (403 linhas)
+escreveu 030_spool_Extract_CRRADAP_vPACT.sql (403 linhas)
 ```
 
 - **`SEM-PV`** são os `TRANSLATE(x, ';', '.')` nos campos de texto, a mesma defesa
@@ -1125,7 +1125,7 @@ a notice (1886 e 1986). O **`Z9` não**: o shell escreve-o posicionalmente, com 
 três campos do meio colados numa variável (`Champs2a4="00370C_BTR       M"` —
 entidade 5, aplicação 12, frequência 1).
 
-No `030_CREATION_SPOOL_CRRADAP_1222.sh`:
+No `030_CREATION_SPOOL_CRRADAP_vPACT.sh`:
 
 - `Champs2a4` passa a três variáveis (`entiteZ9`, `appliZ9`, `freqZ9`);
 - o filler `Z9 99.99` passa de **1938** a **1930** — exactamente os 8 separadores,
@@ -1292,7 +1292,7 @@ Houve confusão com o `grep VERSAO`, que devolveu `27b`. São dois ficheiros:
 | marca | gerado | substitui |
 |---|---|---|
 | `2026-09-27b` — *os SETE paves* | `030_spool_Extract_CRRCORP_1222.sql` | `${SQL}/030_spool_Extract_CRRCORP_vPACT.sql` |
-| `2026-09-27a` — *o Adapte* | `030_spool_Extract_CRRADAP_1222.sql` | `${SQL}/030_spool_Extract_CRRADAP.sql` |
+| `2026-09-27a` — *o Adapte* | `030_spool_Extract_CRRADAP_vPACT.sql` | `${SQL}/030_spool_Extract_CRRADAP.sql` |
 
 O `27b` é o Corporate. O do Adapté é o `27a`.
 

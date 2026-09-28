@@ -2,7 +2,7 @@
 -- CAL-Version : 1.9                                                          --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Script        : 030_spool_Extract_CRRADAP.sql                              --
+-- Script        : 030_spool_Extract_CRRADAP_vPACT.sql                        --
 -- Objet         : spool fichier Export_CRRADAP                               --
 --                                                                            --
 -- Type          : Script SQL et PL/SQL                                       --
@@ -14,7 +14,8 @@
 -- VERSAO 2026-09-27a : o Adapte com ";" entre todos os campos.
 --   Gerado por gen_spool_adap.py a partir de 030_spool_Extract_CRRADAP.sql.
 --   Regua: Notice PACTV4.5_Adapte_Adapted_V45.00, aba A1.
---   Conferir no servidor com: grep VERSAO 030_spool_Extract_CRRADAP.sql
+--   Corre pelo 030_CREATION_SPOOL_CRRADAP_vPACT.sh, que o chama por
+--   este nome. Conferir no servidor com:  grep VERSAO 030_spool_Extract_CRRADAP_vPACT.sql
 --------------------------------------------------------------------------------
 -- Creation      : le 18/05/2021 par DUGUET MARC                              --
 --                                                                            --

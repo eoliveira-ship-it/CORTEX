@@ -24,7 +24,7 @@ from conv_spool import convert
 NL = chr(10)
 Q = chr(39)
 N_LINHAS = 200
-PKG = 'PACK_ALIM_TAB_ENVOI_CRRV4_NEW'
+PKG = 'PACK_ALIM_TAB_ENVOI_CRRV4'
 
 # ---------------------------------------------------------------- regua V44
 src = open('align_v44.py', encoding='utf-8').read()

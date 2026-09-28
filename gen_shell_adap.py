@@ -3,8 +3,27 @@
 
     python gen_shell_adap.py
 
-Le o 030_CREATION_SPOOL_CRRADAP.sh (que NAO se altera) e escreve o
-030_CREATION_SPOOL_CRRADAP_1222.sh. No servidor, o gerado substitui o original.
+Le o 030_CREATION_SPOOL_CRRADAP.sh e escreve o
+030_CREATION_SPOOL_CRRADAP_vPACT.sh.
+
+CORRE EM PARALELO, NAO SUBSTITUI
+--------------------------------
+O shell antigo continua a correr e a escrever o CRRADAP.dat como sempre; no fim,
+chama este. E o mesmo desenho do Corporate (030_CREATION_SPOOL_CRRCORP.sh chama o
+_vPACT no fim) e tem duas vantagens sobre substituir o original: as duas versoes
+saem da MESMA corrida, com os mesmos dados e o mesmo instante, e a comparacao
+antes/depois deixa de depender de duas corridas; e se o novo rebentar, o ficheiro
+oficial ja esta escrito.
+
+Por isso o gerado nao escreve nos nomes do original -- tem os seus:
+
+    nom_shell   030_CREATION_SPOOL_CRRADAP_vPACT.sh
+    ficheiro    CRRADAP_vPACT.dat
+    logs        030_CREATION_SPOOL_CRRADAP_vPACT.log / ..._sql_vPACT.log
+    spool       ${SQL}/030_spool_Extract_CRRADAP_vPACT.sql
+
+E o fim do original -- o bloco que chama este script -- nao vem para ca, senao o
+shell chamava-se a si mesmo.
 
 PORQUE E QUE O SHELL TEM DE MUDAR
 ---------------------------------
@@ -45,16 +64,57 @@ import io
 import sys
 
 FONTE = '030_CREATION_SPOOL_CRRADAP.sh'
-SAIDA = '030_CREATION_SPOOL_CRRADAP_1222.sh'
+SAIDA = '030_CREATION_SPOOL_CRRADAP_vPACT.sh'
 NL = '\r\n'
+
+# Primeiro os nomes: o gerado corre ao lado do original e nao lhe toca em nada.
+RENOMES = [
+    (
+        '## Script        : 030_CREATION_SPOOL_CRRADAP.sh                              ##',
+        '## Script        : 030_CREATION_SPOOL_CRRADAP_vPACT.sh                        ##',
+    ),
+    (
+        '## Creation      : le 18/05/2021 par DUGUET MARC                              ##',
+        '## Creation      : le 28/09/2026 par OLIVEIRA ELDERSON                        ##' + NL +
+        '##                 a partir do 030_CREATION_SPOOL_CRRADAP.sh                  ##',
+    ),
+    ('nom_shell=030_CREATION_SPOOL_CRRADAP.sh',
+     'nom_shell=030_CREATION_SPOOL_CRRADAP_vPACT.sh'),
+    ('V30ENVOICRRFIC="CRRADAP.dat"',
+     'V30ENVOICRRFIC="CRRADAP_vPACT.dat"'),
+    ('V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP.log',
+     'V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP_vPACT.log'),
+    ('V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql.log',
+     'V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql_vPACT.log'),
+    ('spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"',
+     'spool_sql="${SQL}/030_spool_Extract_CRRADAP_vPACT.sql"'),
+]
+
+# O fim do original chama este script. Nao vem para ca, senao o shell chamava-se
+# a si mesmo -- e nao se apaga do original, que e onde tem de estar. Corta-se
+# pelas duas pontas em vez de por um literal: a linha do ERR tem um acento, e um
+# acento num literal deste ficheiro (UTF-8) nao casa com o do shell (cp1252).
+CHAMADA_A_SI = ('trace_log "INF" "Lancement du script %s"' % SAIDA,
+                'trace_log "INF" "Fin du script %s"' % SAIDA)
+
+
+def tira_a_chamada(t):
+    a = t.find(CHAMADA_A_SI[0])
+    b = t.find(CHAMADA_A_SI[1])
+    if a < 0 or b < a:
+        raise SystemExit('nao achei o bloco que chama o %s no fim do %s'
+                         % (SAIDA, FONTE))
+    # o corte deixaria as linhas em branco dos dois lados do bloco: fica so o
+    # par de linhas em branco que o original tem antes do DATE_TRT
+    return t[:a].rstrip(NL) + NL * 3 + t[b + len(CHAMADA_A_SI[1]):].lstrip(NL)
 
 TROCAS = [
     # (o que esta la, o que passa a estar)
     (
-        '## 10/01/2024 GOMESHU : BALE4 - entete 43 => 44                               ##',
-        '## 27/09/2026 SIRL-1222 : ";" entre os campos do Z9 (o cabecalho e o        ##' + NL +
-        '##            rodape ja os tinham; o detalhe vem do spool)                  ##' + NL +
-        '## 10/01/2024 GOMESHU : BALE4 - entete 43 => 44                               ##',
+        '## 16/01/2026 MESQUIPE: SIRL-712 - MERCA                                      ##',
+        '## 28/09/2026 SIRL-1222 : ";" entre os campos do Z9 (o cabecalho e o          ##' + NL +
+        '##            rodape ja os tinham; o detalhe vem do spool)                    ##' + NL +
+        '## 16/01/2026 MESQUIPE: SIRL-712 - MERCA                                      ##',
     ),
     (
         '  finlignez9=`printf "%1938s" " " ` ##BALE4',
@@ -79,8 +139,8 @@ TROCAS = [
         '$NatureFlux;$ftotligne;$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC',
     ),
     (
-        'spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"',
-        'spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"' + NL +
+        'spool_sql="${SQL}/030_spool_Extract_CRRADAP_vPACT.sql"',
+        'spool_sql="${SQL}/030_spool_Extract_CRRADAP_vPACT.sql"' + NL +
         '# SIRL-1222: deixa no log qual spool foi lido, e que versao tem. O' + NL +
         '# @$spool_sql chama este nome fixo: um spool gerado deixado ao lado com' + NL +
         '# outro nome nunca e lido, e a corrida sai no formato antigo sem erro.' + NL +
@@ -121,8 +181,8 @@ TROCAS = [
 
 
 def main():
-    t = io.open(FONTE, encoding='cp1252', newline='').read()
-    for velho, novo in TROCAS:
+    t = tira_a_chamada(io.open(FONTE, encoding='cp1252', newline='').read())
+    for velho, novo in RENOMES + TROCAS:
         if t.count(velho) != 1:
             raise SystemExit('nao achei exactamente uma vez em %s:\n  %s'
                              % (FONTE, velho.split(NL)[0][:70]))

@@ -45,7 +45,7 @@ A procedure roda **numa chamada só**, dentro do shell do spool: esvazia a
 tabela e carrega o NAT02 e o Fora do NAT02 juntos (os 8 INSERTs).
 
 ```sql
-PACK_ALIM_TAB_ENVOI_CRRV4_NEW.P_ALIM_ENG_CORP_P1_BIS;
+PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_ENG_CORP_P1_BIS;
 ```
 
 > **Decisão de 2026-09-17.** O ticket falava em duas cargas (NAT02 na M2 BTR,
@@ -269,7 +269,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 | 1 | ~~Aceite de que "arquivos idênticos" = **mesmo conteúdo**~~ ✅ **Resolvida em 2026-09-17:** arquivos idênticos = mesmo conteúdo, independente da ordem das linhas (o `MASYSDATE` também é ignorado) | — | — |
 | 2 | Aceite do desvio do plano: **6 SELECTs** em vez de 1 | DSID | Mostrar o item 3 |
 | 3 | ~~**Carga em duas fases.**~~ ✅ **Resolvida em 2026-09-17:** uma chamada só, sem parâmetros (`p_perimetre`, `p_entite` e `p_masysdate` retirados). **Recompilar o package e rodar o `TESTES.sql` de novo** | — | — |
-| 4 | ~~**Nome do package.**~~ ✅ **Resolvida em 2026-09-15:** mantém-se `PACK_ALIM_TAB_ENVOI_CRRV4_NEW`, como o shell já chama | — | — |
+| 4 | ~~**Nome do package.**~~ ✅ **Resolvida em 2026-09-15:** mantém-se `PACK_ALIM_TAB_ENVOI_CRRV4`, como o shell já chama | — | — |
 | 5 | ~~**`TABLESPACE`.**~~ ✅ **Resolvida em 2026-09-15:** `DDR_DATA` é o tablespace correto, confirmado com a equipe. O DDL não muda | — | — |
 | 6 | ~~**`comparar_ficheiros.sh` não ordena**~~ ✅ **Resolvida em 2026-09-15:** o script ordena as linhas (`LC_ALL=C sort`) antes do `diff` | — | — |
 | 7 | **`P1 3.41` / `P1 3.43`.** O antigo faz `RPAD(C_ENR.CD_DEV_VTR,3)` sem `NVL`: um TRE502 sem devise **encurta a linha em 3 bytes** e desalinha o resto. O novo escreve 3 brancos | DSID | Rodar a consulta 8.7-b. Hoje dá 0 casos (se não, os arquivos teriam diferido). Confirmar que o comportamento novo é o desejado |

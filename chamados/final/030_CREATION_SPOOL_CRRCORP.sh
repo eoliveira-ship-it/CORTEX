@@ -1,9 +1,9 @@
 ################################################################################
-## CAL-Version : 1.7                                                          ##
+## CAL-Version : 1.41                                                         ##
 ################################################################################
 ################################################################################
-## Script        : 030_CREATION_SPOOL_CRRADAP.sh                              ##
-## Objet         : Creation fichier spool CRRADAP                             ##
+## Script        : 030_CREATION_SPOOL_CRRCORP.sh                              ##
+## Objet         : Creation fichier spool CRRCORP                             ##
 ##                                                                            ##
 ## Type          : Traitement Shell                                           ##
 ################################################################################
@@ -14,76 +14,67 @@
 ##                                                                            ##
 ## Modifications                                                              ##
 ## -------------                                                              ##
-## 16/01/2026 MESQUIPE: SIRL-712 - MERCA                                      ##
 ## 10/01/2024 GOMESHU : BALE4 - entete 43 => 44                               ##
 ################################################################################
+## 29/05/2025 MESQUIPE: RSE_LOT3: SIRL-153                                    ## 
 ## 04/02/2022 CUNHAVI : Mantis 11841 - Correction Taille Ligne                ##
-## 13/07/2021 MIPAMES : Correction US 216 CRRv4.3                             ##
-## 13/07/2021 MIPAMES : US 216 CRRv4.3                                        ##
+## 13/07/2021 MIPAMES : US 194 CRRv4.3                                        ##
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
 # -- Nom de ce shell
-nom_shell=030_CREATION_SPOOL_CRRADAP.sh
+nom_shell=030_CREATION_SPOOL_CRRCORP.sh
 
 
 # -- Nom du fichier d'envoi
 # /!\ sans extension spool creera un .lst  
-V30ENVOICRRFIC="CRRADAP.dat"
+V30ENVOICRRFIC="CRRCORP.dat"
 #export V30ENVOICRRV4FIC
 
+
 # -- Nom du fichier log
-V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP.log
+V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRCORP.log
 #export V30ENVOICRRV4LOG
-file_log="${LOG}/${V30ENVOICRRV4LOG}"
+file_log="${V30RACINE}/log/${V30ENVOICRRV4LOG}"
 
 # -- Nom du fichier log sql
-V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql.log
+V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRCORP_sql.log
 #export V30ENVOICRRV4ERR
 
 # requete pour les fichiers spool 
 
-spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
+spool_sql="${SQL}/030_spool_Extract_CRRCORP.sql"
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"
 c=1
 
 # requete pour recuperer une entite (cd_conso_cpt) a partir de la liste des entites qui ecriront les fichiers
-# SQL2 a 4 : requete pour avoir la liste des entites  qui ecriront les fichiers
-# generee a partir de la  
-# requete dans P_UTLF_DEGRADE_A1   (SQL2)
-# requete dans P_UTLF_AUTO_A1      (SQL4)
-SQL1=" SELECT cd_conso_cpt FROM ("
-SQL2="SELECT DISTINCT cd_conso_cpt FROM A1_CRRV4_DEGRADE WHERE CD_STATUT_LIGNE = 'V' AND DT_ARRETE = (select max(dt_arrete) from eng_corp_p1)" 
+SQL0=" SELECT cd_conso_cpt FROM ("
+# SQL1 a n : requete pour avoir la liste des entites  qui ecriront les fichiers
+# requete dans P_UTLF_TIERS_C5                (SQL1)
+# requete dans P_UTLF_ENG_CORP_P1             (SQL2)
+# requete dans P_UTLF_ENG_CORP_P2             (SQL3)
+# requete dans P_UTLF_SURETE_M1               (SQL4)
+# requetes dans autres : pas necessaire : les 4 premiers devraient etre suffisantes 
+SQL1="SELECT DISTINCT cd_conso_cpt FROM TIE_TIERS_C1_C5 WHERE A_EXTRAIRE ='O' AND CD_TYPE_SEGMENT = 'CORP'" 
+SQL2="SELECT DISTINCT cd_conso_cpt FROM ENG_CORP_P1 WHERE A_EXTRAIRE ='O'" 
+SQL3="SELECT DISTINCT cd_conso_cpt FROM ENG_CORP_P2 WHERE A_EXTRAIRE ='O'" 
+SQL4="SELECT DISTINCT cd_conso_cpt FROM SURETE_M1 WHERE A_EXTRAIRE ='O'" 
+
 SQLU=" UNION "
-SQL4="SELECT DISTINCT cd_conso_cpt FROM A1_DEGRADE_AUTO  WHERE CD_STATUT_LIGNE = 'V' AND DT_ARRETE = (select max(dt_arrete) from eng_corp_p1)"
-#SIRL-712
-#SQL5="SELECT '00357' AS cd_conso_cpt FROM A1_DEGRADE_GMBH" ## KLx CRRv4.3 - Leasing Germany - US 279 
-SQL5="SELECT '00416' AS cd_conso_cpt FROM A1_DEGRADE_GMBH" ## KLx CRRv4.3 - Leasing Germany - US 279 
 # pour recuperer une entite parametree (et verifier si c'est bien une entite) 
 SQLX=") WHERE cd_conso_cpt = '${param}';"
 
-SQL_entite=${SQL1}${SQL2}${SQLU}${SQL4}${SQLU}${SQL5}${SQLX} ## Fin KLx CRRv4.3 - Leasing Germany - US 279 
 
-# KLx CRRv4.3 - Leasing Germany - US 279 
-# Extraire A1_DEGRADE_GMBH uniquement s'il n'y a pas de rejet
-rejets=`sqlplus -s $V30LOGIN <<EOF
-SET heading off
-select TO_CHAR(count(*)) AS REJETS from REJET_DEGRADE_GMBH;
-EXIT;
-EOF
-`
-
-rejets=`echo "${rejets}" | tr -d '\r\n'`
-
+SQL_entite=${SQL0}${SQL1}${SQLU}${SQL2}${SQLU}${SQL3}${SQLU}${SQL4}${SQLX}
 # ------------------------------------------
 # Fonction de trace pour les erreurs gerees
 # ------------------------------------------
 trace_log()
 {
   echo "$1-$2 : $3 - $4"
-  echo "$1-$2 : $3 - $4" >> "${LOG}/$V30ENVOICRRV4LOG"
+  echo "$1-$2 : $3 - $4" >> "$V30RACINE/log/$V30ENVOICRRV4LOG"
 }
 
 # ---------------------------------------------------
@@ -125,6 +116,7 @@ entite=`echo "${execution_requete}" | tr -d '\r\n'`
 recup_arrete()
 {
 SQL_arrete="select to_char(nvl((SELECT max(dt_arrete) FROM TIE_TIERS),(SELECT max(dt_arrete) FROM ENG_CORP_P1)),'YYYYMMDD') from dual;"
+
 
 # lance la requete pour recuperer la date d'arrete
 execution_requete=`sqlplus -s $V30LOGIN << EOF
@@ -198,30 +190,26 @@ numenvoi=`echo "${execution_requete}" | tr -d '\r\n'`
 
 }
 # ---------------------------------------------------
-# Fonction Extraction d'une entite : ecriture du fichier
-# CRRADAP pour la partie CRR adapte : tous les A1 qu'ils soient automatiques ou saisis.
+# Fonction Extraction d'une entite : ecriture du fichier CCRCORP
+# 
 # ---------------------------------------------------
 
 extract_entite()
 {
 
 trace_log "INFO" 0 "Extraction de l entite : ${entite}"
-trace_log "INFO" 0 "Nombre de rejets" "${rejets}"
 
-# KLx CRRv4.3 - Leasing Germany - US 279 - Passage du nombre de rejet au SQL
+
 # ecriture su spool : mis des variable et des parametres 
-execution_requete=`sqlplus -s $V30LOGIN << EOF >>${LOG}/$V30ENVOICRRV4ERR 2>>${file_log}
+execution_requete=`sqlplus -s $V30LOGIN << EOF >>$V30RACINE/log/$V30ENVOICRRV4ERR 2>>${file_log}
 whenever sqlerror exit 1
 whenever oserror exit 2
 set serveroutput on size 1000000
-var ENTITE varchar2(5);
-exec :ENTITE := '${entite}';
-var REJETNUMBER number ;
-exec :REJETNUMBER:= TO_NUMBER( replace('${rejets}','	','') ) ;
+var ENTITE varchar2(5)
+exec :ENTITE := '${entite}'
 var MASYSDATE varchar2(12)
 exec :MASYSDATE := '${masysdate}'
-
-@$spool_sql $SORTIE $V30ENVOICRRFIC;
+@$spool_sql $SORTIE $V30ENVOICRRFIC ;
 exit;
 EOF
 `
@@ -238,17 +226,17 @@ if [[ $EXECUTION_REQUETE_ERROR -ne 0 ]] || [[ $execution_requete == *"ORA-"* ]] 
 
         if [[ -f $SORTIE/$V30ENVOICRRFIC ]]; then
     	   if grep -q "^ORA-[0-9]" "$SORTIE/$V30ENVOICRRFIC"; then 
-             trace_log "ERROR" 4000 "Erreur dans l'ecriture du fichier " $nom_shell
-             # copie 50 lignes de fin du fichier sortie ds log
-             tail -50 "$SORTIE/$V30ENVOICRRFIC" >> ${file_log}
-    		 echo "" >> ${file_log}
-    		 echo "*****************************************************************************************************" >> ${file_log}
-    		 echo "" >> ${file_log}
- 	         #echo "Supprime le fichier sortie car copie ds log"
-   		     #rm -f $SORTIE/$V30ENVOICRRFIC    
-             # pour test : droit 
-             #chmod 777 $LOG/030_CREATION_SPOOL_CRRADAP*
-             #chmod 777 $SORTIE/CRRADAP*
+           trace_log "ERROR" 4000 "Erreur dans l'ecriture du fichier " $nom_shell
+              # copie 50 lignes de fin du fichier sortie ds log
+              tail -50 "$SORTIE/$V30ENVOICRRFIC" >> ${file_log}
+    		  echo "" >> ${file_log}
+    		  echo "*****************************************************************************************************" >> ${file_log}
+    		  echo "" >> ${file_log}
+ 	          #echo "Supprime le fichier sortie car copie ds log"
+   		      #rm -f $SORTIE/$V30ENVOICRRFIC    
+              # pour test : droit 
+              #chmod 777 $LOG/030_CREATION_SPOOL_CRRCORP*
+              #chmod 777 $SORTIE/CRRCORP*
        	   fi
        fi 
 	  exit 1
@@ -257,17 +245,17 @@ fi
 if [[ -f $SORTIE/$V30ENVOICRRFIC ]]; then
    if grep -q "^SP2-[0-9]" "$SORTIE/$V30ENVOICRRFIC"; then 
     trace_log "ERROR" 3000 "Erreur SP2 dans l'ecriture du fichier " $nom_shell
-     # copie 50 lignes de fin du fichier sortie ds log
-     tail -50 "$SORTIE/$V30ENVOICRRFIC" >> ${file_log}
-	 echo "" >> ${file_log}
-	 echo "*****************************************************************************************************" >> ${file_log}
-	 echo "" >> ${file_log}
-     #echo "Supprime le fichier sortie car copie ds log"
-     #rm -f $SORTIE/$V30ENVOICRRFIC    
-     # pour test : droit 
-     #chmod 777 $LOG/030_CREATION_SPOOL_CRRRETA*
-     #chmod 777 $SORTIE/CRRRETA*
-     exit 1
+      # copie 50 lignes de fin du fichier sortie ds log
+      tail -50 "$SORTIE/$V30ENVOICRRFIC" >> ${file_log}
+	  echo "" >> ${file_log}
+	  echo "*****************************************************************************************************" >> ${file_log}
+	  echo "" >> ${file_log}
+      #echo "Supprime le fichier sortie car copie ds log"
+      #rm -f $SORTIE/$V30ENVOICRRFIC    
+      # pour test : droit 
+      #chmod 777 $LOG/030_CREATION_SPOOL_CRRCORP*
+      #chmod 777 $SORTIE/CRRCORP*
+      exit 1
    fi
    # requete SQL ok mais il a ecris erreur dans fichier
    if grep -q "^ORA-[0-9]" "$SORTIE/$V30ENVOICRRFIC"; then 
@@ -295,10 +283,9 @@ ecris_entete()
   appemettrice=`printf "%32s" " " `
   appemettricefin=`printf "%5s" " " `
   #finlignehead=`printf "%4985s" " " `
-  finlignehead=`printf "%1886s" " " ` ##BALE4
-
-  #echo "00;00000535;001;$masysdateZ;00370;00370;$appemettrice;CRRA;43;$xnumenvoi;M;$dtarrete;00001;$appemettricefin;$finlignehead"  >> $SORTIE/$V30ENVOICRRFIC ## BALE4
-  echo "00;00000535;001;$masysdateZ;00370;00370;$appemettrice;CRRA;44;$xnumenvoi;M;$dtarrete;00001;$appemettricefin;$finlignehead"  >> $SORTIE/$V30ENVOICRRFIC ## BALE4
+  finlignehead=`printf "%7886s" " " `
+  #echo "00;00000533;001;$masysdateZ;00370;00370;$appemettrice;CRRC;43;$xnumenvoi;M;$dtarrete;00001;$appemettricefin;$finlignehead"  >> $SORTIE/$V30ENVOICRRFIC ## BALE4 
+  echo "00;00000533;001;$masysdateZ;00370;00370;$appemettrice;CRRC;44;$xnumenvoi;M;$dtarrete;00001;$appemettricefin;$finlignehead"  >> $SORTIE/$V30ENVOICRRFIC ## BALE4
 
 #  Description dans l'excell : 
 #  '00'                                -- Type d'enregistrement
@@ -313,9 +300,9 @@ ecris_entete()
 #  ';'                                 -- separateur 5
 #  '00370'                             -- Entite declarante
 #  ';'                                 -- separateur 6
-#  '' -- 32 blancs	                   -- Application emettrice   
+#  '' -- Non alimente	               -- Application emettrice   
 #  ';'                                 -- separateur 7
-#  'CRRA'                              -- Code du flux : "CRRC" pour corporate "CRRR" pour retail "CRRA" pour adapte
+#  'CRRC'                              -- Code du flux : "CRRC" pour corporate "CRRR" pour retail "CRRA" pour adapte
 #  ';'                                 -- separateur 8
 #  '43'                                -- Version du flux
 #  ';'                                 -- separateur 9
@@ -327,65 +314,12 @@ ecris_entete()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application ï¿½mettrice Finance
-#  ';'                                 -- sï¿½parateur 14
-#  ' '									-- filler de fin
+#  '' -- Non alimente                  -- Application emettrice Finance
+#  ';'                                 -- separateur 14
+
 }
 
-# ---------------------------------------------------
-# Fonction Ecriture de la ligne Z9 du fichier
-# ---------------------------------------------------
-ecris_Z9()
-{
-  
-  # sysdate au format 'YYYYMMDDHH24MI'   et au format ISO 8601 
-  masysdate=`date '+%Y%m%d%H%M' `
-  NatureFlux=`printf "%10s" " " `
-  Champs2a4="00370C_BTR       M"
-  TypeLigne="Z9"
-  nbtotligne=`wc -l $SORTIE/$V30ENVOICRRFIC | cut -d' ' -f1`
-  # Z9 ne doit pas comtper le header 
-  nbtotligne=$(($nbtotligne - 1))
-  trace_log "INFO" 0  " Nbre d enregistrement : $nbtotligne"
-  # formate en 12 decimal avec des 0 a gauche
-  ftotligne=`printf "%012d" $nbtotligne `
-  #finlignez9=`printf "%5037s" " " `
-  finlignez9=`printf "%1938s" " " ` ##BALE4
 
-  echo "$dtarrete$Champs2a4$masysdate$TypeLigne$NatureFlux$ftotligne$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
-
-  
-#  Description dans l'excell : 
-#  '00'                                -- Type d'enregistrement
-#  ';'                                 -- separateur 1
-#  '00000533'                          -- Identifiant du fichier : "00000533" pour corporate  "00000534" pour retail "00000535" pour adapte
-#  ';'                                 -- separateur 2
-#  '001'                               -- Version technique du fichier
-#  ';'                                 -- separateur 3
-#   sysdate en 'YYYYMMddThhmmss'       -- Horodatage  Date et heure de production du fichier (norme ISO 8601 : separateur normalise a T a entre la date et l'heure)
-#  ';'                                 -- separateur 4
-#  '00370'                             -- Entite emettrice      LC.3 Liste des codes consolidation comptable : 00370
-#  ';'                                 -- separateur 5
-#  '00370'                             -- Entite declarante
-#  ';'                                 -- separateur 6
-#  '' -- 32 blancs	                   -- Application emettrice   
-#  ';'                                 -- separateur 7
-#  'CRRA'                              -- Code du flux : "CRRC" pour corporate "CRRR" pour retail "CRRA" pour adapte
-#  ';'                                 -- separateur 8
-#  '43'                                -- Version du flux
-#  ';'                                 -- separateur 9
-#  NUMENVOI en lg 5,  0 a gauche       -- Numero d'envoi du fichier Permet de gerer les reemissions A alimenter a "00001" et a incrementer de +1 a chaque reemission sequence par entite, par mois  a initier
-#  ';'                                 -- separateur 10
-#  'M'                                 -- Type d'arrete   'M'ensuel  'H'ebdo 'Q'uainzaine
-#  ';'                                 -- separateur 11
-#  dtarrete en 'YYYYMMDD'              -- Date d'arrete (YYYYMMDD)
-#  ';'                                 -- separateur 12
-#  '00001'	                           -- Numero de sequence du fichier
-#  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application ï¿½mettrice Finance
-#  ';'                                 -- sï¿½parateur 14
-#  ' '									-- filler de fin
-}
 # -------------------------------------------------------------------------------------------------
 # T R A I T E M E N T   P R I N C I P A L
 # -------------------------------------------------------------------------------------------------
@@ -394,19 +328,19 @@ ecris_Z9()
 # ---------------------------
 # suppression du fichier log
 # ---------------------------
-if [ -f ${LOG}/$V30ENVOICRRV4LOG ]
+if [ -f $V30RACINE/log/$V30ENVOICRRV4LOG ]
  then
-  echo "Suppression de l'ancien fichier: ${LOG}/$V30ENVOICRRV4LOG"
-   rm -f ${LOG}/$V30ENVOICRRV4LOG
-   trace_log "INF" 0 " - Suppression de l'ancien fichier: ${LOG}/$V30ENVOICRRV4LOG" $nom_shell
+  echo "Suppression de l'ancien fichier: $V30RACINE/log/$V30ENVOICRRV4LOG"
+   rm -f $V30RACINE/log/$V30ENVOICRRV4LOG
+   trace_log "INF" 0 " - Suppression de l'ancien fichier: $V30RACINE/log/$V30ENVOICRRV4LOG" $nom_shell
 fi
 
 
-if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
+if [ -f $V30RACINE/log/$V30ENVOICRRV4ERR ]
  then
-  echo "Suppression de l'ancien fichier: ${LOG}/$V30ENVOICRRV4ERR"
-   trace_log "INF" 0 " - Suppression de l'ancien fichier: ${LOG}/$V30ENVOICRRV4ERR" $nom_shell
-   rm -f ${LOG}/$V30ENVOICRRV4ERR
+  echo "Suppression de l'ancien fichier: $V30RACINE/log/$V30ENVOICRRV4ERR"
+   trace_log "INF" 0 " - Suppression de l'ancien fichier: $V30RACINE/log/$V30ENVOICRRV4ERR" $nom_shell
+   rm -f $V30RACINE/log/$V30ENVOICRRV4ERR
 fi
 
 # --------------------
@@ -482,7 +416,7 @@ do
 
 # verifie le parametre en entree est une entite
 SQLX=") WHERE cd_conso_cpt = '${param}';"
-SQL_entite=${SQL1}${SQL2}${SQLU}${SQL4}${SQLU}${SQL5}${SQLX} ## KLx CRRv4.3 - Leasing Germany - US 279 
+SQL_entite=${SQL0}${SQL1}${SQLU}${SQL2}${SQLU}${SQL3}${SQLU}${SQL4}${SQLX}
 
 verif_entite
 
@@ -512,10 +446,8 @@ fi
 done
 # fin boucle parametre
 
-fi # fin 1 ou n parametres 
 
-# Ecriture du Z9 a la fin de l'extraction du A1
-ecris_Z9
+fi # fin 1 ou n parametres 
 
 # -------------------------------
 #   Ecriture de l'enqueue
@@ -528,22 +460,19 @@ if [[ -f $SORTIE/$V30ENVOICRRFIC ]]; then
    nbtotligne=$(($nbtotligne + 1))
 
    trace_log "INFO" 0  " Nbre de lignes : $nbtotligne"
-   # formate en 12 decimal avec des 0 a gauche
+   # formate en 10 decimal avec des 0 a gauche
    xtotligne=`printf "%010d" $nbtotligne `
-   # ecris un 1 en fin de ligne 
+   # ecris des blancs en fin de ligne 
    #finligne=`printf "%884s" 1 `
-   # ecris 5085 blancs en fin de ligne  
-  # finligne=`printf "%5085s" " " `
-   finligne=`printf "%1986s" " " `
-	#echo"....;$finligne" >>
-   
+   #finligne=`printf "%5085s" " " `
+   finligne=`printf "%7986s" " " `
    # ecris ds fichier 
    echo "99;$xtotligne;$finligne"  >> $SORTIE/$V30ENVOICRRFIC
    #echo "99;$xtotligne;"  >> $SORTIE/$V30ENVOICRRFIC
 
    if [ "$nbtotligne" -le 2 ]; then 
-       trace_log "WARN" 100 "Supprime le fichier sortie car Aucune lignes retournees" $nom_shell  
-       rm -f $SORTIE/$V30ENVOICRRFIC    
+      trace_log "WARN" 100 "Supprime le fichier sortie car Aucune lignes retournees" $nom_shell  
+      rm -f $SORTIE/$V30ENVOICRRFIC    
    # else 
    #    # En test : compresse car ENORME 
    #    gzip -f9 $SORTIE/$V30ENVOICRRFIC
@@ -558,7 +487,7 @@ trace_log "INFO" 0 "Fin de l'extraction"
 # -------------------------------
 #   Analyse erreur
 # -------------------------------
-if [ -f ${LOG}/$V30ENVOICRRV4LOG ]
+if [ -f $V30RACINE/log/$V30ENVOICRRV4LOG ]
  then
   V99015FICLOG=$V99015LOG/$V30ENVOICRRV4LOG
   export V99015FICLOG
@@ -571,9 +500,9 @@ if [ -f ${LOG}/$V30ENVOICRRV4LOG ]
   fi
 fi 
 
-if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
+if [ -f $V30RACINE/log/$V30ENVOICRRV4ERR ]
  then
-  V99015FICLOG=${LOG}/$V30ENVOICRRV4ERR
+  V99015FICLOG=$V30RACINE/log/$V30ENVOICRRV4ERR
   export V99015FICLOG
   $EXECRP
   CRP=$?
@@ -584,18 +513,51 @@ if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
   fi
 fi
 
-trace_log "INF" "Lancement du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
 
-sh $SHL/030_CREATION_SPOOL_CRRADAP_vPACT.sh
+## RSE_LOT3: SIRL-153 - 29/05/2025 - Remplissage de la table PERIM_ENVOI_CRR_P1
+sqlplus $V30LOGIN <<EOF  >>$V30RACINE/log/$V30ENVOICRRV4ERR
+set serveroutput on size 1000000;
+whenever oserror exit 9;
+whenever sqlerror exit sql.sqlcode;
+
+execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_PERIM_ENVOI_CRR_P1;
+
+spool off;
+
+EXIT;
+EOF
+
+
+# -------------------------------
+#   Analyse erreur
+# -------------------------------
+if [ -f $V30RACINE/log/$V30ENVOICRRV4ERR ]
+then
+  V99015FICLOG=$V30RACINE/log//$V30ENVOICRRV4ERR
+  export V99015FICLOG
+  $EXECRP
+  CRP=$?
+  if [ $CRP != 0 ]
+  then
+    echo "Erreur dans 030_CREATION_SPOOL_CRRCORP durant P_ALIM_PERIM_ENVOI_CRR_P1"
+    exit 1
+  fi
+fi
+
+
+
+trace_log "INF" "Lancement du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
+
+sh $SHL/030_CREATION_SPOOL_CRRCORP_vPACT.sh
 RC=$?
 
 if [ $RC -ne 0 ]
 then
-    ERR $RC "Erreur lors de l'exécution du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
+    ERR $RC "Erreur lors de l'exécution du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
     exit $RC
 fi
 
-trace_log "INF" "Fin du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
+trace_log "INF" "Fin du script 030_CREATION_SPOOL_CRRCORP_vPACT.sh"
 
 
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
@@ -606,6 +568,7 @@ trace_log "INF" 0 "-----------------------------------------------------------"
 # -------------------------------
 #  Droits pour tests
 # -------------------------------
-# chmod 777 $LOG/030_CREATION*CRRADAP*
-# chmod 777 $SORTIE/CRRADAP*
+# chmod 777 $LOG/030_CREATION*CRRCORP*
+# chmod 777 $SORTIE/CRRCORP*
+
 

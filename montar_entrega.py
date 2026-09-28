@@ -25,7 +25,7 @@ Um ficheiro pode aparecer em mais do que um chamado quando os dois lhe mexeram:
 o 030_spool_Extract_CRRCORP_vPACT.sql nasce no 1224 e leva o alargamento do
 1223. Em final/ vai sempre a versao com tudo empilhado.
 """
-import io
+import filecmp
 import os
 import shutil
 import sys
@@ -41,6 +41,7 @@ PLANO = {
         ('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', None),
         ('030_spool_Extract_CRRCORP_vPACT.sql', None),
         ('030_CREATION_SPOOL_CRRCORP_vPACT.sh', None),
+        ('030_CREATION_SPOOL_CRRCORP.sh', None),
         ('run_procedure.sql', None),
         ('TESTES.sql', None),
     ],
@@ -51,40 +52,38 @@ PLANO = {
     ],
     'SIRL-1222': [
         ('030_spool_Extract_CRRCORP_1222.sql', None),
-        ('030_spool_Extract_CRRADAP_1222.sql', None),
-        ('030_CREATION_SPOOL_CRRADAP_1222.sh', None),
+        ('030_spool_Extract_CRRADAP_vPACT.sql', None),
+        ('030_CREATION_SPOOL_CRRADAP_vPACT.sh', None),
+        ('030_CREATION_SPOOL_CRRADAP.sh', None),
         ('comparar_ficheiros.sh', None),
     ],
     # A versao final: o nome de destino e o nome COM QUE O FICHEIRO FICA NO
-    # SERVIDOR. E por isso que o _1222 desaparece aqui -- o shell chama o spool
-    # pelo nome fixo, e um ficheiro deixado ao lado com outro nome nunca e lido.
+    # SERVIDOR.
+    #
+    # OS DOIS FLUXOS NOVOS CORREM AO LADO DOS ANTIGOS
+    # Nem o CRRCORP nem o CRRADAP substituem o spool antigo. O shell antigo
+    # continua a escrever o ficheiro oficial e, no fim, chama o _vPACT, que
+    # escreve o seu (CRRCORP_vPACT.dat / CRRADAP_vPACT.dat) a partir do seu
+    # proprio spool. Por isso vao os DOIS shells de cada fluxo: o antigo leva a
+    # chamada, e sem ele o novo nunca corre.
+    #
+    # O unico nome que muda e o do spool do Corporate: o _1222 e nome de
+    # repositorio, e o que o 030_CREATION_SPOOL_CRRCORP_vPACT.sh chama e o
+    # 030_spool_Extract_CRRCORP_vPACT.sql. Um ficheiro deixado ao lado com outro
+    # nome nunca e lido -- e nao da erro.
     'final': [
         ('ENG_CORP_P1_BIS.sql', None),
         ('pack_alim_tab_envoi_crrv4.sql', None),
         ('030_spool_Extract_CRRCORP_1222.sql', '030_spool_Extract_CRRCORP_vPACT.sql'),
         ('030_CREATION_SPOOL_CRRCORP_vPACT.sh', None),
-        ('030_spool_Extract_CRRADAP_1222.sql', '030_spool_Extract_CRRADAP.sql'),
-        ('030_CREATION_SPOOL_CRRADAP_1222.sh', '030_CREATION_SPOOL_CRRADAP.sh'),
+        ('030_CREATION_SPOOL_CRRCORP.sh', None),
+        ('030_spool_Extract_CRRADAP_vPACT.sql', None),
+        ('030_CREATION_SPOOL_CRRADAP_vPACT.sh', None),
+        ('030_CREATION_SPOOL_CRRADAP.sh', None),
         ('PACK_UTL_FILE_ENVOI_C3RD2.sql', None),
         ('run_procedure.sql', None),
         ('TESTES.sql', None),
     ],
-}
-
-# {pasta: [(de, para)]} -- trocas de texto feitas na COPIA, em octetos.
-#
-# O package chama-se pack_alim_tab_envoi_crrv4 em producao. Na raiz leva o
-# sufixo _new de proposito: e a versao de teste, e no DEV2 compila-se ao lado do
-# de producao em vez de o substituir. Em final/ vai o nome verdadeiro -- e tem de
-# ir tambem no run_procedure.sql, no TESTES.sql e no INSTALACAO.md, senao a
-# procedure instala-se com um nome e chama-se com outro (PLS-00201).
-#
-# A troca e feita aqui e nao a mao nos ficheiros de final/ porque final/ e
-# reconstruido por este script: uma correcao a mao era apagada na corrida
-# seguinte. Em octetos para nao mexer no cp1252 nem nos CRLF.
-TROCAS = {
-    'final': [(b'pack_alim_tab_envoi_crrv4_new', b'pack_alim_tab_envoi_crrv4'),
-              (b'PACK_ALIM_TAB_ENVOI_CRRV4_NEW', b'PACK_ALIM_TAB_ENVOI_CRRV4')],
 }
 
 
@@ -95,13 +94,26 @@ def pares():
                    os.path.join(ENTREGA, pasta, destino or origem))
 
 
-def conteudo(pasta, origem):
-    """Os octetos que vao para a copia, com as trocas da pasta aplicadas."""
-    with open(origem, 'rb') as f:
-        b = f.read()
-    for de, para in TROCAS.get(pasta, ()):
-        b = b.replace(de, para)
-    return b
+def orfaos():
+    """Ficheiros nas pastas de entrega que o PLANO ja nao preve.
+
+    Um ficheiro entregue com o nome antigo nao da erro nenhum: fica ao lado do
+    certo, e quem instalar copia os dois. Foi o que aconteceu ao spool do
+    Adapte, que passou a correr em paralelo e deixou la o nome com que
+    substituia o original.
+    """
+    previsto = {}
+    for pasta, _, d in pares():
+        previsto.setdefault(pasta, set()).add(os.path.basename(d))
+    fora = []
+    for pasta, nomes in previsto.items():
+        dir_ = os.path.join(ENTREGA, pasta)
+        if not os.path.isdir(dir_):
+            continue
+        for f in sorted(os.listdir(dir_)):
+            if f not in nomes and not f.endswith('.md'):
+                fora.append(os.path.relpath(os.path.join(dir_, f), RAIZ))
+    return fora
 
 
 def main(conferir=False):
@@ -110,20 +122,24 @@ def main(conferir=False):
         if not os.path.exists(o):
             faltam.append(o)
             continue
-        b = conteudo(pasta, o)
         if conferir:
-            if not os.path.exists(d) or open(d, 'rb').read() != b:
+            if not os.path.exists(d) or not filecmp.cmp(o, d, shallow=False):
                 diferentes.append(os.path.relpath(d, RAIZ))
             continue
         os.makedirs(os.path.dirname(d), exist_ok=True)
-        with open(d, 'wb') as f:
-            f.write(b)
-        shutil.copystat(o, d)
+        shutil.copy2(o, d)
         copiados += 1
     if faltam:
         for f in faltam:
             print('  FALTA na raiz: %s' % os.path.relpath(f, RAIZ))
         return 2
+    fora = orfaos()
+    if fora:
+        print('a mais nas pastas de entrega (%d): o PLANO ja nao os preve' % len(fora))
+        for f in fora:
+            print('    git rm %s' % f)
+        if conferir:
+            return 1
     if conferir:
         if diferentes:
             print('desactualizados (%d):' % len(diferentes))

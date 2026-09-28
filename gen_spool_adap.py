@@ -4,7 +4,7 @@
     python gen_spool_adap.py
 
 Le o 030_spool_Extract_CRRADAP.sql (que NAO se altera) e escreve o
-030_spool_Extract_CRRADAP_1222.sql. No servidor, o ficheiro gerado substitui o
+030_spool_Extract_CRRADAP_vPACT.sql. No servidor e um ficheiro NOVO, ao lado do
 ${SQL}/030_spool_Extract_CRRADAP.sql.
 
 COMO SE RESOLVE CADA CAMPO DA REGUA
@@ -50,7 +50,7 @@ import gen_spool_paves as GP          # noqa: E402  (ascii_seguro, so_ascii, RPA
 sys.stdout = _o
 
 FONTE = CA.FONTE
-SAIDA = '030_spool_Extract_CRRADAP_1222.sql'
+SAIDA = '030_spool_Extract_CRRADAP_vPACT.sql'
 LINHA = 2000
 VERSAO = '-- VERSAO 2026-09-27a : o Adapte com ";" entre todos os campos.'
 
@@ -210,13 +210,24 @@ def escreve():
     for a, b, novo in sorted(trocas, reverse=True):
         saida[a - 1:b] = novo
 
+    # o nome no cabecalho e o do ficheiro gerado, nao o da fonte: o shell
+    # _vPACT chama este e nao o original, e um cabecalho com o nome errado ja
+    # custou tres corridas a sair no formato antigo sem uma linha de erro
+    i = next(i for i, l in enumerate(saida) if l.startswith('-- Script'))
+    novo_nome = saida[i].replace(FONTE, SAIDA, 1)
+    assert SAIDA in novo_nome, 'nao achei o nome da fonte na linha -- Script'
+    # a linha do cabecalho tem 80 colunas e acaba em '--'
+    saida[i] = novo_nome[:-2].rstrip().ljust(78) + '--'
+    assert len(saida[i]) == 80, len(saida[i])
+
     # a marca da versao, logo depois da linha da Notice do cabecalho
     i = next(i for i, l in enumerate(saida) if l.startswith('-- Notice'))
     saida[i + 1:i + 1] = [
         VERSAO,
         '--   Gerado por gen_spool_adap.py a partir de ' + FONTE + '.',
         '--   Regua: Notice PACTV4.5_Adapte_Adapted_V45.00, aba A1.',
-        '--   Conferir no servidor com: grep VERSAO 030_spool_Extract_CRRADAP.sql',
+        '--   Corre pelo 030_CREATION_SPOOL_CRRADAP_vPACT.sh, que o chama por',
+        '--   este nome. Conferir no servidor com:  grep VERSAO ' + SAIDA,
     ]
     saida, reparadas = repara_mojibake(saida)
     saida, dobradas = GP.so_ascii(saida)

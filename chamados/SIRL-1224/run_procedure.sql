@@ -16,7 +16,7 @@ DECLARE
 BEGIN
     -- Uma chamada so, sem parametros: esvazia a tabela e corre os 8 INSERT
     -- (todas as entidades, NAT02 e Hors NAT02 juntos).
-    pack_alim_tab_envoi_crrv4_new.P_ALIM_ENG_CORP_P1_BIS;
+    pack_alim_tab_envoi_crrv4.P_ALIM_ENG_CORP_P1_BIS;
 
     DBMS_OUTPUT.PUT_LINE('OK - duracao : '||TO_CHAR(SYSTIMESTAMP - v_t0));
 END;

@@ -59,18 +59,24 @@ o SIRL-1223 ao mesmo tempo: o único campo que muda é o `P1 21.65`.
 Este par **não** tem os `;` do SIRL-1222 — nenhum dos dois lados. A prova do
 1222 no Corporate é a outra, a corrida `00025`, no `CRRCORP_vPACT.7z.00*`.
 
-### ⚠ O `Z9` do Adapté ficou no formato antigo
+### O `Z9` do Adapté ficou no formato antigo — e porquê
 
 O `CRRADAP_vPACT.dat` desta corrida tem o detalhe `A1` certo — 90 `;`, e as
-1774 linhas idênticas à referência — mas a linha `Z9` sai **sem um único `;`**:
+1774 linhas idênticas à referência — mas a linha `Z9` saiu **sem um único `;`**:
 
 ```
 2025053100370C_BTR       M202609281211Z9          000000001774 ...
 ```
 
-Essa linha não vem do spool, vem do **shell**. Quer dizer que o
-`030_CREATION_SPOOL_CRRADAP.sh` no servidor ainda é o antigo: instalou-se o
-`.sql` e não o `.sh`. Faltam os 8 `;` do `Z9` e o filler de 1930.
+Essa linha não vem do spool, vem do **shell**. E a razão apareceu quando o
+`030_CREATION_SPOOL_CRRADAP_vPACT.sh` entrou no repositório: era o shell antigo
+com os nomes trocados (`CRRADAP_vPACT.dat`, o seu spool, os seus logs) e **sem as
+três alterações do SIRL-1222** — o `Z9` com 8 `;`, o filler de 1930 e o rasto do
+spool lido.
+
+Está corrigido: o `030_CREATION_SPOOL_CRRADAP_vPACT.sh` passou a sair do
+[`gen_shell_adap.py`](../gen_shell_adap.py), que aplica as duas coisas — os nomes
+e o 1222 — a partir do shell antigo. Numa corrida nova o `Z9` tem de dar 8.
 
 Os `.bat` que vêm no arquivo (`CRRCORP_Split*.bat`) partem o ficheiro por pavé
 com `findstr "\<M............C1\>"` — o padrão conta **12** caracteres entre o

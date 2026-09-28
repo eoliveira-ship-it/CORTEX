@@ -158,8 +158,8 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `notice_adap.py` | SIRL-1222: le a regua do Adapte (91 campos / 90 `;`), separada nos quatro registos |
 | `valida_adap.py` | Confere a regua do Adapte contra um `CRRADAP.dat`, campo a campo |
 | `casa_adap.py` | SIRL-1222: alinha os tres blocos do spool do Adapte com a regua |
-| `gen_spool_adap.py` | SIRL-1222: gera o `030_spool_Extract_CRRADAP_1222.sql` |
-| `gen_shell_adap.py` | SIRL-1222: gera o `030_CREATION_SPOOL_CRRADAP_1222.sh` (os `;` do `Z9` e o rasto do spool lido) |
+| `gen_spool_adap.py` | SIRL-1222: gera o `030_spool_Extract_CRRADAP_vPACT.sql` |
+| `gen_shell_adap.py` | SIRL-1222: gera o `030_CREATION_SPOOL_CRRADAP_vPACT.sh` (os `;` do `Z9`, os nomes proprios e o rasto do spool lido) |
 | `valida_adap_1222.py` | Confere o spool do Adapte gerado: larguras, `;`, total 2000 e nao-regressao contra a origem |
 | `comparar_adap.py` | Nao-regressao do Adapte: reconstroi as linhas sem `;` e compara com a referencia |
 

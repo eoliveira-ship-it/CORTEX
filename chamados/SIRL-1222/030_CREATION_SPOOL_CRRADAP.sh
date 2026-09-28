@@ -15,8 +15,6 @@
 ## Modifications                                                              ##
 ## -------------                                                              ##
 ## 16/01/2026 MESQUIPE: SIRL-712 - MERCA                                      ##
-## 27/09/2026 SIRL-1222 : ";" entre os campos do Z9 (o cabecalho e o        ##
-##            rodape ja os tinham; o detalhe vem do spool)                  ##
 ## 10/01/2024 GOMESHU : BALE4 - entete 43 => 44                               ##
 ################################################################################
 ## 04/02/2022 CUNHAVI : Mantis 11841 - Correction Taille Ligne                ##
@@ -46,23 +44,6 @@ V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql.log
 # requete pour les fichiers spool 
 
 spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
-# SIRL-1222: deixa no log qual spool foi lido, e que versao tem. O
-# @$spool_sql chama este nome fixo: um spool gerado deixado ao lado com
-# outro nome nunca e lido, e a corrida sai no formato antigo sem erro.
-trace_spool()
-{
-  if [ -f "$spool_sql" ]; then
-    trace_log "INFO" 0 "Spool lido : $spool_sql"
-    versao_spool=`grep -m1 "VERSAO" "$spool_sql"`
-    if [ -n "$versao_spool" ]; then
-      trace_log "INFO" 0 "  $versao_spool"
-    else
-      trace_log "WARN" 100 "  sem linha VERSAO: e o spool anterior ao SIRL-1222"
-    fi
-  else
-    trace_log "ERROR" 5000 "Spool nao encontrado : $spool_sql" $nom_shell
-  fi
-}
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"
@@ -346,8 +327,8 @@ ecris_entete()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application ï¿½mettrice Finance
-#  ';'                                 -- sï¿½parateur 14
+#  '     ' -- 5 lancs             	-- Application �mettrice Finance
+#  ';'                                 -- s�parateur 14
 #  ' '									-- filler de fin
 }
 
@@ -369,20 +350,9 @@ ecris_Z9()
   # formate en 12 decimal avec des 0 a gauche
   ftotligne=`printf "%012d" $nbtotligne `
   #finlignez9=`printf "%5037s" " " `
-  #finlignez9=`printf "%1938s" " " ` ##BALE4
-  # SIRL-1222: o filler do Z9 encolhe os 8 octetos dos separadores.
-  # A notice do Adapte da 1930 ao Z9 99.99; 1992 + 8 ";" = 2000.
-  finlignez9=`printf "%1930s" " " `
+  finlignez9=`printf "%1938s" " " ` ##BALE4
 
-  # SIRL-1222: os 9 campos do Z9 com ";" entre todos (8 separadores). O
-  # Champs2a4 tinha os tres campos colados -- entite 5, application 12,
-  # frequence 1 -- e passa a tres variaveis. O filler final nao leva ";"
-  # a seguir, que e a regra da SFG para os fluxos de formato fixo.
-  entiteZ9="00370"
-  appliZ9=`printf "%-12s" "C_BTR" `
-  freqZ9="M"
-  #echo "$dtarrete$Champs2a4$masysdate$TypeLigne$NatureFlux$ftotligne$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
-  echo "$dtarrete;$entiteZ9;$appliZ9;$freqZ9;$masysdate;$TypeLigne;$NatureFlux;$ftotligne;$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
+  echo "$dtarrete$Champs2a4$masysdate$TypeLigne$NatureFlux$ftotligne$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
 
   
 #  Description dans l'excell : 
@@ -412,8 +382,8 @@ ecris_Z9()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application ï¿½mettrice Finance
-#  ';'                                 -- sï¿½parateur 14
+#  '     ' -- 5 lancs             	-- Application �mettrice Finance
+#  ';'                                 -- s�parateur 14
 #  ' '									-- filler de fin
 }
 # -------------------------------------------------------------------------------------------------
@@ -468,9 +438,6 @@ recup_arrete
 # recuperation et maj du numenvoi
 # --------------------
 recup_numenvoi
-
-# SIRL-1222: qual spool vai ser lido nesta corrida
-trace_spool
 
 # --------------------
 # Si pas de parametres : extraction complete
@@ -616,6 +583,21 @@ if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
     exit $CRP
   fi
 fi
+
+trace_log "INF" "Lancement du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
+
+sh $SHL/030_CREATION_SPOOL_CRRADAP_vPACT.sh
+RC=$?
+
+if [ $RC -ne 0 ]
+then
+    ERR $RC "Erreur lors de l'ex�cution du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
+    exit $RC
+fi
+
+trace_log "INF" "Fin du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
+
+
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"
 trace_log "INF" 0 "$DATE_TRT - FIN CREATION FICHIER ENVOI POUR CASA" $nom_shell

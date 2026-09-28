@@ -2,7 +2,7 @@
 ## CAL-Version : 1.7                                                          ##
 ################################################################################
 ################################################################################
-## Script        : 030_CREATION_SPOOL_CRRADAP.sh                              ##
+## Script        : 030_CREATION_SPOOL_CRRADAP_vPACT.sh                        ##
 ## Objet         : Creation fichier spool CRRADAP                             ##
 ##                                                                            ##
 ## Type          : Traitement Shell                                           ##
@@ -10,10 +10,13 @@
 ## Domaine       : RINT                                                       ##
 ## Application   : 030  - Declarations Des Risques                            ##
 ################################################################################
-## Creation      : le 18/05/2021 par DUGUET MARC                              ##
+## Creation      : le 28/09/2026 par OLIVEIRA ELDERSON                        ##
+##                 a partir do 030_CREATION_SPOOL_CRRADAP.sh                  ##
 ##                                                                            ##
 ## Modifications                                                              ##
 ## -------------                                                              ##
+## 28/09/2026 SIRL-1222 : ";" entre os campos do Z9 (o cabecalho e o          ##
+##            rodape ja os tinham; o detalhe vem do spool)                    ##
 ## 16/01/2026 MESQUIPE: SIRL-712 - MERCA                                      ##
 ## 10/01/2024 GOMESHU : BALE4 - entete 43 => 44                               ##
 ################################################################################
@@ -24,26 +27,43 @@
 ##                                                                            ##
 ################################################################################
 # -- Nom de ce shell
-nom_shell=030_CREATION_SPOOL_CRRADAP.sh
+nom_shell=030_CREATION_SPOOL_CRRADAP_vPACT.sh
 
 
 # -- Nom du fichier d'envoi
 # /!\ sans extension spool creera un .lst  
-V30ENVOICRRFIC="CRRADAP.dat"
+V30ENVOICRRFIC="CRRADAP_vPACT.dat"
 #export V30ENVOICRRV4FIC
 
 # -- Nom du fichier log
-V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP.log
+V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP_vPACT.log
 #export V30ENVOICRRV4LOG
 file_log="${LOG}/${V30ENVOICRRV4LOG}"
 
 # -- Nom du fichier log sql
-V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql.log
+V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql_vPACT.log
 #export V30ENVOICRRV4ERR
 
 # requete pour les fichiers spool 
 
-spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
+spool_sql="${SQL}/030_spool_Extract_CRRADAP_vPACT.sql"
+# SIRL-1222: deixa no log qual spool foi lido, e que versao tem. O
+# @$spool_sql chama este nome fixo: um spool gerado deixado ao lado com
+# outro nome nunca e lido, e a corrida sai no formato antigo sem erro.
+trace_spool()
+{
+  if [ -f "$spool_sql" ]; then
+    trace_log "INFO" 0 "Spool lido : $spool_sql"
+    versao_spool=`grep -m1 "VERSAO" "$spool_sql"`
+    if [ -n "$versao_spool" ]; then
+      trace_log "INFO" 0 "  $versao_spool"
+    else
+      trace_log "WARN" 100 "  sem linha VERSAO: e o spool anterior ao SIRL-1222"
+    fi
+  else
+    trace_log "ERROR" 5000 "Spool nao encontrado : $spool_sql" $nom_shell
+  fi
+}
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"
@@ -350,9 +370,20 @@ ecris_Z9()
   # formate en 12 decimal avec des 0 a gauche
   ftotligne=`printf "%012d" $nbtotligne `
   #finlignez9=`printf "%5037s" " " `
-  finlignez9=`printf "%1938s" " " ` ##BALE4
+  #finlignez9=`printf "%1938s" " " ` ##BALE4
+  # SIRL-1222: o filler do Z9 encolhe os 8 octetos dos separadores.
+  # A notice do Adapte da 1930 ao Z9 99.99; 1992 + 8 ";" = 2000.
+  finlignez9=`printf "%1930s" " " `
 
-  echo "$dtarrete$Champs2a4$masysdate$TypeLigne$NatureFlux$ftotligne$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
+  # SIRL-1222: os 9 campos do Z9 com ";" entre todos (8 separadores). O
+  # Champs2a4 tinha os tres campos colados -- entite 5, application 12,
+  # frequence 1 -- e passa a tres variaveis. O filler final nao leva ";"
+  # a seguir, que e a regra da SFG para os fluxos de formato fixo.
+  entiteZ9="00370"
+  appliZ9=`printf "%-12s" "C_BTR" `
+  freqZ9="M"
+  #echo "$dtarrete$Champs2a4$masysdate$TypeLigne$NatureFlux$ftotligne$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
+  echo "$dtarrete;$entiteZ9;$appliZ9;$freqZ9;$masysdate;$TypeLigne;$NatureFlux;$ftotligne;$finlignez9" >>  $SORTIE/$V30ENVOICRRFIC
 
   
 #  Description dans l'excell : 
@@ -438,6 +469,9 @@ recup_arrete
 # recuperation et maj du numenvoi
 # --------------------
 recup_numenvoi
+
+# SIRL-1222: qual spool vai ser lido nesta corrida
+trace_spool
 
 # --------------------
 # Si pas de parametres : extraction complete
@@ -583,19 +617,6 @@ if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
     exit $CRP
   fi
 fi
-
-trace_log "INF" "Lancement du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
-
-sh $SHL/030_CREATION_SPOOL_CRRADAP_vPACT.sh
-RC=$?
-
-if [ $RC -ne 0 ]
-then
-    ERR $RC "Erreur lors de l'exécution du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
-    exit $RC
-fi
-
-trace_log "INF" "Fin du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
 
 
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
