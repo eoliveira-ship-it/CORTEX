@@ -126,7 +126,8 @@ No SQL Developer usar **F5** (Run Script), não F9.
 |---|---|
 | `ENG_CORP_P1_BIS.sql` | DDL da tabela: 662 colunas P1 + 4 técnicas |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Procedure isolada: `DELETE` da tabela + 8 `INSERT`, numa chamada só |
-| `pack_alim_tab_envoi_crrv4.sql` | Package completo (spec + body) com a procedure integrada |
+| `pack_alim_tab_envoi_crrv4.sql` | O package **de produção**, como veio. A base, não se altera |
+| `pack_alim_tab_envoi_crrv4_1224.sql` | Gerado: o de produção **+** a procedure. É este que se instala |
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
 | `explicacao.md` | Como a tabela sai da Notice, e a fórmula de Excel explicada passo a passo |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
@@ -146,6 +147,10 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
 | `gen_p3_1223.py` | SIRL-1223: as duas linhas do P3 **sobre a versão de produção** do package |
+| `gen_pack_1224.py` | SIRL-1224: mete a procedure no package **de produção** (duas inserções, nada mais) |
+| `gen_chamada_vpact.py` | Põe nos dois shells de produção a chamada ao shell `_vPACT` |
+| `enc.py` | Lê um ficheiro do DDR sem adivinhar a codificação: UTF-8 primeiro, cp1252 depois |
+| `para_cp1252.py` | Põe os `.sql` e os `.sh` em cp1252, a regra do projeto. `--aplicar` converte |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
 | `CONSULTAS_CLIENTE.sql` | Consultas para levar ao cliente: TRE502 sem devise e tipos de risco sem dados |

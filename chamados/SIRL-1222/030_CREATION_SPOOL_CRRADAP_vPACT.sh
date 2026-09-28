@@ -347,8 +347,8 @@ ecris_entete()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application �mettrice Finance
-#  ';'                                 -- s�parateur 14
+#  '     ' -- 5 lancs             	-- Application ?mettrice Finance
+#  ';'                                 -- s?parateur 14
 #  ' '									-- filler de fin
 }
 
@@ -413,8 +413,8 @@ ecris_Z9()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application �mettrice Finance
-#  ';'                                 -- s�parateur 14
+#  '     ' -- 5 lancs             	-- Application ?mettrice Finance
+#  ';'                                 -- s?parateur 14
 #  ' '									-- filler de fin
 }
 # -------------------------------------------------------------------------------------------------
@@ -617,8 +617,6 @@ if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
     exit $CRP
   fi
 fi
-
-
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"
 trace_log "INF" 0 "$DATE_TRT - FIN CREATION FICHIER ENVOI POUR CASA" $nom_shell

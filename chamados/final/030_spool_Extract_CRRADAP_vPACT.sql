@@ -10,7 +10,7 @@
 -- Domaine       : RINT                                                       --
 -- Application   : 030  - Declarations Des Risques                            --
 --------------------------------------------------------------------------------
--- Notice        : Notice CRRAV4.4_Adapte_Adapted_V44.02.xlsx                 --
+-- Notice        : Notice CRRAV4.4_Adapt_Adapted_V44.02.xlsx                 --
 -- VERSAO 2026-09-27a : o Adapte com ";" entre todos os campos.
 --   Gerado por gen_spool_adap.py a partir de 030_spool_Extract_CRRADAP.sql.
 --   Regua: Notice PACTV4.5_Adapte_Adapted_V45.00, aba A1.
@@ -25,7 +25,7 @@
 -- 01/04/2025 GOMESHU : Mantis 73798                                          --
 -- 10/01/2024 GOMESHU : BALE4                                                 --
 --------------------------------------------------------------------------------
--- 18/05/2022 CUNHAVI : Mantis 62434 - Retour en arriere de l'US 302          --
+-- 18/05/2022 CUNHAVI : Mantis 62434 - Retour en arrire de l'US 302          --
 -- 24/03/2022 CUNHAVI : US 302 - Changement alimentation du champs 5.4        --
 -- 24/02/2022 GOMESHU : Mantis 11855 - structure fichiers CRR                 --
 -- 04/02/2022 CUNHAVI : Mantis 11841 - Taille Ligne                           --

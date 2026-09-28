@@ -25,6 +25,8 @@ Uso:  python align_v44.py
 import re
 import openpyxl
 
+import enc
+
 # ----------------------------------------------------------------- notice
 ws = openpyxl.load_workbook('Notice PACTV4.5_v1.0.xlsx', data_only=True)['PACT Corp']
 notice = []
@@ -56,7 +58,10 @@ print('notice V45 : %d campos, %d octetos' % (len(notice), sum(f['len'] for f in
 print('regua V44  : %d campos, %d octetos' % (len(v44), TOT_V44))
 
 # ----------------------------------------------------------------- spool
-lines = open('030_spool_Extract_CRRCORP.sql', encoding='cp1252').read().split('\n')
+# A codificacao vem do ficheiro, nao de um palpite: as copias do DDR eram
+# cp1252 e as de producao sao UTF-8. Ler UTF-8 como cp1252 nao rebenta -- da o
+# caracter errado e segue. Ver enc.py.
+lines, _cod, _nl = enc.linhas('030_spool_Extract_CRRCORP.sql')
 
 
 def strip_line(l, in_block):

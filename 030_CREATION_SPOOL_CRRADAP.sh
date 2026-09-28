@@ -327,8 +327,8 @@ ecris_entete()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application �mettrice Finance
-#  ';'                                 -- s�parateur 14
+#  '     ' -- 5 lancs             	-- Application ?mettrice Finance
+#  ';'                                 -- s?parateur 14
 #  ' '									-- filler de fin
 }
 
@@ -382,8 +382,8 @@ ecris_Z9()
 #  ';'                                 -- separateur 12
 #  '00001'	                           -- Numero de sequence du fichier
 #  ';'                                 -- separateur 13
-#  '     ' -- 5 lancs             	-- Application �mettrice Finance
-#  ';'                                 -- s�parateur 14
+#  '     ' -- 5 lancs             	-- Application ?mettrice Finance
+#  ';'                                 -- s?parateur 14
 #  ' '									-- filler de fin
 }
 # -------------------------------------------------------------------------------------------------

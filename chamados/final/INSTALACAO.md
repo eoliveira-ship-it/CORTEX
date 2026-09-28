@@ -14,7 +14,7 @@ com o nome que têm no repositório.
 | ficheiro desta pasta | destino | chamados que leva |
 |---|---|---|
 | `ENG_CORP_P1_BIS.sql` | base de dados | 1224 |
-| `pack_alim_tab_envoi_crrv4.sql` | base de dados | 1224 |
+| `pack_alim_tab_envoi_crrv4.sql` | base de dados | 1224 — é o de produção **+** a procedure |
 | `PACK_UTL_FILE_ENVOI_C3RD2.sql` | base de dados | 1223 |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | `${SQL}/` | 1224 + 1223 + **1222** |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | o diretório dos shells | 1224 |
@@ -23,6 +23,36 @@ com o nome que têm no repositório.
 | `030_CREATION_SPOOL_CRRADAP_vPACT.sh` | o diretório dos shells | **1222** |
 | `030_CREATION_SPOOL_CRRADAP.sh` | o diretório dos shells | **1222** — **é quem chama o de cima** |
 | `TESTES.sql` | correr no SQL Developer | 1224 |
+
+### Todos estes ficheiros saem da versão de PRODUÇÃO
+
+Nenhum foi editado à mão. Cada um sai de um gerador que parte do ficheiro de
+produção e lhe aplica só a alteração do chamado — e que **para** se a linha que
+procura não estiver exatamente uma vez:
+
+| o que se instala | sai de | a partir de |
+|---|---|---|
+| `pack_alim_tab_envoi_crrv4.sql` | `gen_pack_1224.py` | o package de produção + a procedure |
+| `PACK_UTL_FILE_ENVOI_C3RD2.sql` | `gen_p3_1223.py` | o package de produção + 2 linhas |
+| `030_CREATION_SPOOL_CRRCORP.sh` | `gen_chamada_vpact.py` | o shell de produção + a chamada |
+| `030_CREATION_SPOOL_CRRADAP.sh` | `gen_chamada_vpact.py` | idem |
+| `030_spool_Extract_CRRCORP_vPACT.sql` | `gen_spool_vpact.py` + `gen_spool_1222.py` | o spool de produção |
+| `030_spool_Extract_CRRADAP_vPACT.sql` | `gen_spool_adap.py` | o spool de produção |
+| `030_CREATION_SPOOL_CRRADAP_vPACT.sh` | `gen_shell_adap.py` | o shell de produção |
+
+**Porque isto importa para quem instala:** se a produção mudar entre hoje e a
+MEP, não se re-edita nada — troca-se o ficheiro de produção na raiz do
+repositório e corre-se o gerador. Já aconteceu uma vez: o SIRL-1223 esteve
+aplicado a uma cópia do package do P3 atrasada, e ia desfazer o SIRL-667 (a
+entidade `00372`) sem ninguém ver.
+
+Todos os ficheiros são **cp1252 + CRLF**, como no DDR:
+
+```bash
+python para_cp1252.py
+```
+
+---
 
 ### Os fluxos novos correm ao lado dos antigos, não em vez deles
 

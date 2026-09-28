@@ -34,14 +34,33 @@ RAIZ = os.path.dirname(os.path.abspath(__file__))
 ENTREGA = os.path.join(RAIZ, 'chamados')
 
 # {pasta: [(ficheiro na raiz, nome na pasta)]}
+#
+# O NOME DE DESTINO E O NOME NO SERVIDOR
+# Os sufixos _1222, _1223, _1224 sao nomes de repositorio: dizem de que chamado
+# vem a alteracao e distinguem o ficheiro gerado da base de PRODUCAO com que
+# convive na raiz. No servidor todos eles instalam-se com o nome de producao.
+#
+# TODO O FICHEIRO COM SUFIXO SAI DE UM GERADOR
+#   gen_pack_1224.py       pack_alim_tab_envoi_crrv4_1224.sql
+#   gen_chamada_vpact.py   os dois shells que passam a chamar o _vPACT
+#   gen_spool_vpact.py     030_spool_Extract_CRRCORP_vPACT.sql
+#   gen_spool_1222.py      030_spool_Extract_CRRCORP_1222.sql
+#   gen_spool_adap.py      030_spool_Extract_CRRADAP_vPACT.sql
+#   gen_shell_adap.py      030_CREATION_SPOOL_CRRADAP_vPACT.sh
+#   gen_p3_1223.py         PACK_UTL_FILE_ENVOI_C3RD2_1223.sql
+# Cada um parte de um ficheiro de producao e PARA se a ancora que procura nao
+# estiver exactamente uma vez. Nenhuma alteracao vive num ficheiro editado a
+# mao: e por nao ser assim que o SIRL-1223 esteve aplicado a uma copia do
+# package do P3 atrasada em relacao a producao, a desfazer o SIRL-667.
 PLANO = {
     'SIRL-1224': [
         ('ENG_CORP_P1_BIS.sql', None),
-        ('pack_alim_tab_envoi_crrv4.sql', None),
+        ('pack_alim_tab_envoi_crrv4_1224.sql', 'pack_alim_tab_envoi_crrv4.sql'),
+        ('pack_alim_tab_envoi_crrv4.sql', 'pack_alim_tab_envoi_crrv4_PROD.sql'),
         ('pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql', None),
         ('030_spool_Extract_CRRCORP_vPACT.sql', None),
         ('030_CREATION_SPOOL_CRRCORP_vPACT.sh', None),
-        ('030_CREATION_SPOOL_CRRCORP.sh', None),
+        ('030_CREATION_SPOOL_CRRCORP_1224.sh', '030_CREATION_SPOOL_CRRCORP.sh'),
         ('run_procedure.sql', None),
         ('TESTES.sql', None),
     ],
@@ -53,10 +72,10 @@ PLANO = {
         ('VALIDAR_1223_P3.sql', None),
     ],
     'SIRL-1222': [
-        ('030_spool_Extract_CRRCORP_1222.sql', None),
+        ('030_spool_Extract_CRRCORP_1222.sql', '030_spool_Extract_CRRCORP_vPACT.sql'),
         ('030_spool_Extract_CRRADAP_vPACT.sql', None),
         ('030_CREATION_SPOOL_CRRADAP_vPACT.sh', None),
-        ('030_CREATION_SPOOL_CRRADAP.sh', None),
+        ('030_CREATION_SPOOL_CRRADAP_1222.sh', '030_CREATION_SPOOL_CRRADAP.sh'),
         ('comparar_ficheiros.sh', None),
     ],
     # A versao final: o nome de destino e o nome COM QUE O FICHEIRO FICA NO
@@ -75,13 +94,13 @@ PLANO = {
     # nome nunca e lido -- e nao da erro.
     'final': [
         ('ENG_CORP_P1_BIS.sql', None),
-        ('pack_alim_tab_envoi_crrv4.sql', None),
+        ('pack_alim_tab_envoi_crrv4_1224.sql', 'pack_alim_tab_envoi_crrv4.sql'),
         ('030_spool_Extract_CRRCORP_1222.sql', '030_spool_Extract_CRRCORP_vPACT.sql'),
         ('030_CREATION_SPOOL_CRRCORP_vPACT.sh', None),
-        ('030_CREATION_SPOOL_CRRCORP.sh', None),
+        ('030_CREATION_SPOOL_CRRCORP_1224.sh', '030_CREATION_SPOOL_CRRCORP.sh'),
         ('030_spool_Extract_CRRADAP_vPACT.sql', None),
         ('030_CREATION_SPOOL_CRRADAP_vPACT.sh', None),
-        ('030_CREATION_SPOOL_CRRADAP.sh', None),
+        ('030_CREATION_SPOOL_CRRADAP_1222.sh', '030_CREATION_SPOOL_CRRADAP.sh'),
         ('PACK_UTL_FILE_ENVOI_C3RD2_1223.sql', 'PACK_UTL_FILE_ENVOI_C3RD2.sql'),
         ('run_procedure.sql', None),
         ('TESTES.sql', None),

@@ -102,8 +102,10 @@ def tira_a_chamada(t):
     a = t.find(CHAMADA_A_SI[0])
     b = t.find(CHAMADA_A_SI[1])
     if a < 0 or b < a:
-        raise SystemExit('nao achei o bloco que chama o %s no fim do %s'
-                         % (SAIDA, FONTE))
+        # o normal: a base e o shell de PRODUCAO, que ainda nao chama ninguem.
+        # Quem lhe poe a chamada e o gen_chamada_vpact.py, e escreve noutro
+        # ficheiro. So ha bloco a tirar se alguem lhe mexeu a mao.
+        return t
     # o corte deixaria as linhas em branco dos dois lados do bloco: fica so o
     # par de linhas em branco que o original tem antes do DATE_TRT
     return t[:a].rstrip(NL) + NL * 3 + t[b + len(CHAMADA_A_SI[1]):].lstrip(NL)

@@ -9,12 +9,12 @@
 -- Domaine       : RINT                                                       --
 -- Application   : 030  - Declarations Des Risques                            --
 --------------------------------------------------------------------------------
--- Notice        : CRRCV4.4_Grande Clientèle_Corporate_V44.02.xlsx            --
+-- Notice        : CRRCV4.4_Grande Client�le_Corporate_V44.02.xlsx            --
 --------------------------------------------------------------------------------
 -- Creation      : le 18/05/2021 par DUGUET MARC                              --
 -- Modifications :                                                            --
 --------------------------------------------------------------------------------
--- 18/03/2026 MESQUIPE: SIRL-500 - [QDD Bâle 4] Absence mnt acquisition dans  --
+-- 18/03/2026 MESQUIPE: SIRL-500 - [QDD B�le 4] Absence mnt acquisition dans  --
 --                                 extraction CRR                             --
 -- 22/01/2026 GOMESHU : Projet FED- CRR C3RD                                  --
 -- 19/01/2026 GOMESHU : SIRL-519                                              --
@@ -70,7 +70,7 @@ Formats  :  char 4201
   / ! \                     pas de point-virgule dans commentaires
   -----   
 
-select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limitï¿½ a 4000 car 
+select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limit� a 4000 car 
 Pour avoir les 4201 car : 
 select ( champ1 || champ2 ) as lignedetail1, champ3 as lignedetail2  from table  : 
 le spool va ecrire la ligne "lignedetail1 lignedetail2"  (avec 1 blanc entre les 2)
@@ -93,7 +93,7 @@ SET HEADING OFF
 SET FEED OFF
 set trimspool OFF
 --30/06/21 CDS ATOS (EMM) US 194 CRRv4.3
---SET linesize 4201   --4201  mais requete SQL limite ï¿½ 4000 !
+--SET linesize 4201   --4201  mais requete SQL limite � 4000 !
 -- Mantis 11841 - Modification linesize
 --SET linesize 5099   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
 --SET linesize 5699   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
@@ -109,11 +109,11 @@ spool &1/&2 append;
 ------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------------------
--- ï¿½01: a partir de P_UTLF_TIERS_C1 
+-- �01: a partir de P_UTLF_TIERS_C1 
 -- 2 select 
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
--- ï¿½01a: a partir de C_C1 
+-- �01a: a partir de C_C1 
 ------------------------------------------------------------------------------------------------------------------------
 select 
         to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -140,17 +140,17 @@ select
        RPAD(' ', 40)||
        RPAD(' ', 40)||
        RPAD(' ', 20)||
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 40)||
-       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 90)||
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '��������������', 'AACEEEEIIOOUUU'), ' '), 40)||
+       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), '��������������', 'AACEEEEIIOOUUU'), ' '), 90)||
        TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')|| -- a modifier
 -- 29/05/2018 CDS Atos (JMP) ANACREDIT  US346 
 -- Remplacement de la zone libre de 76 blancs par :
--- * 25 Blancs destinï¿½s ï¿½ C 14.30 ï¿½ C 14.34 dans les US a venir,
--- * Le nombre de salariï¿½s sur 6 chiffres,
+-- * 25 Blancs destin�s � C 14.30 � C 14.34 dans les US a venir,
+-- * Le nombre de salari�s sur 6 chiffres,
 -- * Puis 45 Blancs.
        --07/01/2019 CDS Atos (SQN) US 615
 --       RPAD(' ',76)||
---       RPAD(' ',25)|| On split le 25 en 10+1+5+1+8 pour C 14.30 ï¿½ C 14.34
+--       RPAD(' ',25)|| On split le 25 en 10+1+5+1+8 pour C 14.30 � C 14.34
        -- 13/05/2019 - CDS ATOS (LFD) - US 791
        --RPAD(' ',10)||--RPAD(NVL(C_ENR.ID_ENT_MERE_IMMEDIAT, ' '), 10)||
        --RPAD(' ',1)||--RPAD(NVL(C_ENR.IND_ENT_MERE_IMMEDIAT, ' '), 1)||
@@ -188,8 +188,8 @@ select
        RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 70)||
-       RPAD(NVL(translate(upper(C_ENR.VILLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 30)||
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '��������������', 'AACEEEEIIOOUUU'), ' '), 70)||
+       RPAD(NVL(translate(upper(C_ENR.VILLE), '��������������', 'AACEEEEIIOOUUU'), ' '), 30)||
        RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||
        --29/01/2019 CDS Atos (SQN) US 649
        --15/01/18 CDS ATOS (EMM) Sprint 3 US 2 Rework
@@ -217,9 +217,9 @@ select
        RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)|| -- C1 8.82 pos 695 - BALE4
        LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||
        RPAD(NVL(C_ENR.IND_WL, '9'), 1)|| --C1 4.18	Indicateur Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrée en Watch List
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entr�e en Watch List
        RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.24	Date de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrée en Watch List
+       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entr�e en Watch List
        RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||--C1 4.26	Motif de sortie en Watch List
        RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||
        '  '||
@@ -244,7 +244,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||    --- champ ref_ident_nat_2 de 2 caracteres dans la table -- 18/02/2019 - CDS ATOS (GBD) - US731  (C1 8.6)
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 114)||
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '��������������', 'AACEEEEIIOOUUU'), ' '), 114)||
        LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||
        '     '||
        RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||
@@ -264,7 +264,7 @@ select
     and (cd_conso_cpt = :ENTITE  or :ENTITE = 'TOTAL' );
 
 ------------------------------------------------------------------------------------------------------------------------
--- ï¿½01b: a partir de C_C2 
+-- �01b: a partir de C_C2 
 ------------------------------------------------------------------------------------------------------------------------
 select   
           to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -286,8 +286,8 @@ select
        RPAD(' ', 40)||
        RPAD(' ', 40)||
        RPAD(' ', 20)||
-       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 40)||
-       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 90)||
+       RPAD(NVL(translate(upper(C_ENR.NOM_TIERS), '��������������', 'AACEEEEIIOOUUU'), ' '), 40)||
+       --RPAD(NVL(translate(upper(C_ENR.RAISON_SOCLE), '��������������', 'AACEEEEIIOOUUU'), ' '), 90)||
        TO_CHAR(nvl(C_ENR.DT_REVISION_NOTE,sysdate),'YYYYMMDDHH24MISS')|| --a modifier
        --07/01/2019 CDS Atos (SQN) US 615
        --RPAD(' ',76)||
@@ -327,8 +327,8 @@ select
        RPAD(NVL(C_ENR.CD_PAYS_NATIONALITE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_RESIDENCE, ' '), 2)||
        RPAD(NVL(C_ENR.CD_PAYS_CONTROLE, ' '), 2)||
-       RPAD(NVL(translate(upper(C_ENR.ADRESSE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 70)||
-       RPAD(NVL(translate(upper(C_ENR.VILLE), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 30)||
+       RPAD(NVL(translate(upper(C_ENR.ADRESSE), '��������������', 'AACEEEEIIOOUUU'), ' '), 70)||
+       RPAD(NVL(translate(upper(C_ENR.VILLE), '��������������', 'AACEEEEIIOOUUU'), ' '), 30)||
        RPAD(NVL(C_ENR.CD_POSTAL, ' '), 15)||
        --29/01/2019 CDS Atos (SQN) US 649
        --15/01/18 CDS ATOS (EMM) Sprint 3 US 2 Rework
@@ -356,9 +356,9 @@ select
        RPAD(NVL(C_ENR.IND_RATIO_LEVIER, ' '), 1)|| -- C1 8.82 pos 695 - BALE4
        LPAD(NVL(to_char(C_ENR.CD_STATUT_FILIATION), ' '), 1)||
        RPAD(NVL(C_ENR.IND_WL, '9'), 1)|| --C1 4.18	Indicateur Watch List
-       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entrée en Watch List
+       RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTREE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.23	Date d'entr�e en Watch List
        RPAD(NVL(TO_CHAR(C_ENR.DATE_SORTIE_WL, 'YYYYMMDD'), ' '), 8)||--C1 4.24	Date de sortie en Watch List
-       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entrée en Watch List
+       RPAD(NVL(C_ENR.CD_TYPE_WL_CASA  , ' '), 2)||--C1 4.25	Motif d'entr�e en Watch List
        RPAD(NVL(C_ENR.CD_MOTIF_SORTIE_WL, ' '), 5)||--C1 4.26	Motif de sortie en Watch List
        RPAD(NVL(C_ENR.CD_TYPE_ACTEUR, ' '), 26)||
        '  '||
@@ -383,7 +383,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_STATUT_ACTIVITE_LOC, 'YYYYMMDD'), ' '),8)||
        RPAD(NVL(C_ENR.REF_IDENT_NAT_2, ' '),2)||    --- champ ref_ident_nat_2 de 2 caracteres dans la table -- 18/02/2019 - CDS ATOS (GBD) - US731  (C1 8.6)
        RPAD(NVL(C_ENR.IDENT_NATION_2, ' '), 20)||
-       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), 'ÀÂÇÉÈÊËÎÝÔÖÙÛÜ', 'AACEEEEIIOOUUU'), ' '), 114)||
+       RPAD(NVL(translate(upper(NVL(C_ENR.RAIS_SOCL_KBIS,C_ENR.RAISON_SOCLE)), '��������������', 'AACEEEEIIOOUUU'), ' '), 114)||
        LPAD(NVL(C_ENR.TOT_BILAN_RETRAITE, 0),15,0)||
        '     '||
        RPAD(NVL(C_ENR.CD_SECT_RISQ_SYST, ' '),6)||
@@ -407,7 +407,7 @@ select
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- ï¿½02: a partir de P_UTLF_AUTORISATION_F1     
+-- �02: a partir de P_UTLF_AUTORISATION_F1     
 ------------------------------------------------------------------------------------------------------------------------
 select
        to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -504,7 +504,7 @@ select
        RPAD(NVL(C_ENR.REF_SYNDICATION,' '), 40)||
        -- FIN LFD
 	   --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)|| --KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source'
+	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)|| --KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'Système de gestion source'
 	   RPAD(' ', 5)||
        lPAD(' ', 3169)		--4000 - 831
      as lignedetail1,  -- debut ligne (taille <= 4000)
@@ -519,7 +519,7 @@ select
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- ï¿½03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
+-- �03: a partir de P_UTLF_AUTORISATION_DETAIL_F2
 ------------------------------------------------------------------------------------------------------------------------
 select
          to_char(C_ENR.dt_arrete, 'YYYYMMDD')||
@@ -546,7 +546,7 @@ select
        RPAD(' ', 20)||
        RPAD(' ', 10)||
        RPAD(NVL(C_ENR.CD_METHODO_BALE2, ' '), 7)||
-       --28/11/2018 - CDS ATOS (SQN) - Mantis 45281 : Code moteur erronï¿½ pour P2 et F2
+       --28/11/2018 - CDS ATOS (SQN) - Mantis 45281 : Code moteur erron� pour P2 et F2
        RPAD(NVL(C_ENR.CD_MOTEUR, ' '), 2)||
        --Fin SQN
        --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
@@ -565,7 +565,7 @@ select
        -- FIN - CDS ATOS (PSR) - ANACREDIT US 348
 	   --01/07/21 CDS ATOS (EMM) US 194 CRRv4.3
        RPAD(' ', 5)||
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source'
+	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20)||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'Système de gestion source'
 	   RPAD(' ', 5)||
 	   RPAD(' ', 3456)  --4000 - 544
      as lignedetail1,  -- debut ligne (taille <= 4000)
@@ -618,7 +618,7 @@ select
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF_LOCAL)||
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_TRC)||
 --       
---       RPAD(' ', 10)||    --taux pondï¿½ration baloise
+--       RPAD(' ', 10)||    --taux pond�ration baloise
        pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_EAD_TOT),0) <0 THEN 0 ELSE nvl((C_ENR.MNT_EAD_TOT),0)END ) ||
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)||
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)||
@@ -696,7 +696,7 @@ select
      NVL(C_ENR.TOP_ENG,'B')|| -- P1 4.8
      RPAD (' ', 5)||
 		 RPAD(nvl(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-     RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+     RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
      RPAD (' ', 7)||
      RPAD(NVL(TO_CHAR(C_ENR.DT_DISPO_FONDS, 'YYYYMMDD'), ' '), 8)||    --DT_DISPO_FONDS
      RPAD (' ', 1)||
@@ -783,7 +783,7 @@ select
          RPAD(nvl(C_ENR.BASE_CAL_INT,' '),7)||
          -- 09/04/2018 CDS Atos (JMP) ANACREDIT Sprint 9 US24 Version finale 
         RPAD(NVL(TO_CHAR(C_ENR.DT_PREM_DBLQ_FONDS, 'YYYYMMDD'), ' '), 8)||
--- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie dï¿½blocage de fond est nul.
+-- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie d�blocage de fond est nul.
         case when C_ENR.MNT_PREM_DBLQ_FONDS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PREM_DBLQ_FONDS) end || 
 -- fin 16/07/2018 CDS ATOS (JMP) 
          RPAD(nvl(C_ENR.DEVISE_PREM_DBLQ_FONDS,'EUR'),3)||        -- bis2 donne 00000 donc il faut la devise
@@ -823,7 +823,7 @@ select
          RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)||    --DT_SIGNATURE
          RPAD (' ', 3)||
          LPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), '     '),5,'0')||    --NB_JOURS_RETARD
-         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
          RPAD(nvl(C_ENR.BUCKET_IFRS9,' '),2)||    --BUCKET_IFRS9
          RPAD (' ', 20)||
          --Fin SQN
@@ -884,7 +884,7 @@ select
 		 'N'|| -- M11667 (VFN) 09/09/2021
 		 RPAD (' ', 25)||
 		 RPAD (' ', 1)||   --fin P1 30 - 60 caracteres sur 250 seront dans lignedetail2
-		 RPAD (' ', 5)|| -- dï¿½but P1 31.a
+		 RPAD (' ', 5)|| -- d�but P1 31.a
 		 RPAD(NVL(C_ENR.REF_UNIQ_CONT, ' '), 40)||
 		 RPAD(NVL(C_ENR.REF_UNIQ_ELEM_CONT, ' '), 40)||
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT),19) || 
@@ -900,7 +900,7 @@ select
 		 RPAD (' ', 15)||
 		 RPAD (' ', 19)||
 		 RPAD (' ', 3)||
-     --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+     --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
      RPAD ('+', 1)|| -- P1 31.17a
      case when C_ENR.CD_TYPE_RISQUE like 'TRE%' 
         then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') 
@@ -911,7 +911,7 @@ select
         then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') 
         else RPAD('00000',5) 
      end|| -- P1 31.18b
-     --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+     --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
      RPAD (' ', 6)||
 		 RPAD (' ', 1)||
 	   RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P1 31.21 M71371
@@ -930,7 +930,7 @@ select
 		 RPAD (' ', 15)||
 		 RPAD (' ', 15)||--Fin 31b
 		 --RPAD(' ', 2)|| --Debut P1 31C
-     RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+     RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
      RPAD(' ',1) || -- Fin P1 31c
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 		 RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -957,7 +957,7 @@ select
 		 RPAD (' ', 3)||
 		 RPAD (' ', 19)||
 		 RPAD (' ', 3)||
-		 RPAD (' ', 2)|| --Dï¿½but 31h
+		 RPAD (' ', 2)|| --D�but 31h
 		 RPAD (' ', 2)||
 		 RPAD (' ', 2)||
 		 RPAD (' ', 20)||
@@ -969,7 +969,7 @@ select
          RPAD (' ', 3)||
 		 RPAD (' ', 19)||
 		 RPAD (' ', 3)||
-		 'EUR'|| --Dï¿½but P1 50 --M11665 modif VFN
+		 'EUR'|| --D�but P1 50 --M11665 modif VFN
 		 RPAD(NVL(C_ENR.PCEC_MNT_RISQUE, ' '), 12)||
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_RISQUE),19) ||
 		 RPAD(' ',12)||
@@ -991,51 +991,51 @@ select
 		RPAD(NVL(C_ENR.CHAMP_APPL_MRTR,' '),2)|| --P1 21.28 pos 4917
 		case when C_ENR.MNT_MRTR is not null then RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_MRTR),19) else RPAD(' ',19) end || --P1 21.30 pos 4919
 		case when C_ENR.MNT_MRTR is not null then RPAD(NVL(C_ENR.DEV_MRTR,' '),3) else RPAD(' ',3) end || --P1 21.31 pos 4938
-		RPAD(' ',15)|| --P1 21.32 pos 4941 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.33 pos 4956 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 15 pos 4959 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 16 pos 4971 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 14 pos 4983 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 50.20 pos 4995 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 50.21 pos 5007 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.34 pos 5026 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.35 pos 5027 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.36 pos 5028 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.37 pos 5047 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.47 pos 5050 - VIDE => point fermé
-		RPAD(' ',7)|| --P1 21.48 pos 5060 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.49 pos 5067 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.50 pos 5086 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.51 pos 5089 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.52 pos 5108 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.53 pos 5111 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.54 pos 5130 - VIDE => point fermé
+		RPAD(' ',15)|| --P1 21.32 pos 4941 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.33 pos 4956 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 15 pos 4959 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 16 pos 4971 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 14 pos 4983 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 50.20 pos 4995 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 50.21 pos 5007 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.34 pos 5026 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.35 pos 5027 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.36 pos 5028 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.37 pos 5047 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.47 pos 5050 - VIDE => point ferm�
+		RPAD(' ',7)|| --P1 21.48 pos 5060 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.49 pos 5067 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.50 pos 5086 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.51 pos 5089 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.52 pos 5108 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.53 pos 5111 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.54 pos 5130 - VIDE => point ferm�
 		RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1)|| --P1 21.44 pos 5133
 		RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1)|| --P1 21.45 pos 5134
 		RPAD(NVL(C_ENR.IND_CONF_CRIT_OPE,' '),1)|| --P1 21.46 pos 5135
 		RPAD(NVL(C_ENR.IND_IPRE,' '),1)|| --P1 21.38 pos 5136
 		RPAD(NVL(C_ENR.IND_EXPO_ADC,' '),1)|| --P1 21.39 pos 5137
 		RPAD(NVL(C_ENR.IND_REAL_COND_PONDERATION_PREFE,' '),1)|| --P1 21.40 pos 5138
-		RPAD(' ',1)|| --P1 21.41 pos 5139 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.42 pos 5140 - VIDE => point fermé
+		RPAD(' ',1)|| --P1 21.41 pos 5139 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.42 pos 5140 - VIDE => point ferm�
  	  RPAD(pack_utilitaire.F_FORMAT_TAUX_15(C_ENR.ETV_RATIO),15)||--P1 21.43 pos 5141
-		RPAD(' ',1)|| --P1 21.56 pos 5156 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.57 pos 5157 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.58 pos 5158 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.59 pos 5159 - VIDE => point fermé
-		RPAD(' ',15)|| --P1 21.60 pos 5160 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.61 pos 5175 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.62 pos 5185 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.63 pos 5195 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.64 pos 5214 - VIDE => point fermé
-		RPAD(' ',5)|| --P1 21.65 pos 5217 - VIDE => point fermé
-		RPAD(NVL(C_ENR.IND_UCC,' '),1)|| --P1 21.66 pos 5222 => point fermé
-		RPAD(' ',1)|| --P1 21.67 pos 5223 - VIDE => point fermé
-		RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P1 21.68 pos 5224 => point fermé
-		RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P1 21.55 pos 5225 => point fermé
-		RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)|| --P1 21.69 pos 5237 => point fermé
-		RPAD(' ',20)|| --P1 21.89 pos 5238 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.90 pos 5258 - VIDE => point fermé
+		RPAD(' ',1)|| --P1 21.56 pos 5156 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.57 pos 5157 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.58 pos 5158 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.59 pos 5159 - VIDE => point ferm�
+		RPAD(' ',15)|| --P1 21.60 pos 5160 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.61 pos 5175 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.62 pos 5185 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.63 pos 5195 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.64 pos 5214 - VIDE => point ferm�
+		RPAD(' ',5)|| --P1 21.65 pos 5217 - VIDE => point ferm�
+		RPAD(NVL(C_ENR.IND_UCC,' '),1)|| --P1 21.66 pos 5222 => point ferm�
+		RPAD(' ',1)|| --P1 21.67 pos 5223 - VIDE => point ferm�
+		RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P1 21.68 pos 5224 => point ferm�
+		RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P1 21.55 pos 5225 => point ferm�
+		RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)|| --P1 21.69 pos 5237 => point ferm�
+		RPAD(' ',20)|| --P1 21.89 pos 5238 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.90 pos 5258 - VIDE => point ferm�
 		RPAD(NVL(C_ENR.USAGE_BIEN_FINANCE,' '),1)|| --P1 8.13 pos 5268
 		RPAD(NVL(C_ENR.COMMUNE,' '),40)|| --P1 21.71 pos 5269
 		RPAD(NVL(C_ENR.NUM_VOIE,' '),40)|| --P1 21.72 pos 5309 
@@ -1047,7 +1047,7 @@ select
 		RPAD(NVL(C_ENR.LONGITUDE,' '),12)|| --P1 21.78 pos 5520
 		RPAD(' ',1)|| --P1 21.94 pos 5532 - A REMPLIR (v1.5)
 		RPAD(' ',2)|| --P1 21.95 pos 5533 - A REMPLIR (v1.5)
-		RPAD(' ',1)|| --P1 21.79 pos 5535 => point fermé
+		RPAD(' ',1)|| --P1 21.79 pos 5535 => point ferm�
 		RPAD(NVL(C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE,' '),3)|| --P1 21.80 pos 5536
 		RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10)|| --P1 21.81 pos 5539 
 		RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR_PREC),10)|| --P1 21.82 pos 5549
@@ -1095,7 +1095,7 @@ select
        'P1'||
        RPAD(' ', 10)||  -- longueur : 1+2+7	| Fin 0
        RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||
-       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||   --dans la synthese il est dit ï¿½ blanc pour les tre5 mais aujourd hui nous la renseignons pour tous
+       --RPAD(NVL(C_ENR.ID_CENTRAL_TIERS, ' '), 10)||   --dans la synthese il est dit � blanc pour les tre5 mais aujourd hui nous la renseignons pour tous
        RPAD(' ', 10)||
        RPAD(NVL(C_ENR.ID_AUTORISATION, ' '), 30)||
        RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)||
@@ -1104,7 +1104,7 @@ select
        RPAD(' ', 40)||
        RPAD(' ', 20)||	-- Fin 1
        RPAD(NVL(C_ENR.CD_METHODO_BALE2, 'STD'),7)||
-       RPAD(NVL(C_ENR.CODE_TRAIT_MOTEUR, '01'),2)|| -- M56405 change code moteur de 07 ï¿½ 01
+       RPAD(NVL(C_ENR.CODE_TRAIT_MOTEUR, '01'),2)|| -- M56405 change code moteur de 07 � 01
        'Y'||
        RPAD(C_ENR.CD_TYPE_RISQUE,6)||
        NVL(C_ENR.CD_PORTEFEUILLE_BOOKING,'B')||
@@ -1118,7 +1118,7 @@ select
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF_LOCAL)||
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_TRC)||
 --       
---       RPAD(' ', 10)||    --taux pondï¿½ration baloise
+--       RPAD(' ', 10)||    --taux pond�ration baloise
        pack_utilitaire.f_format_montant_bis2(CASE WHEN nvl((C_ENR.MNT_EAD_TOT),0) <0 THEN 0 ELSE nvl((C_ENR.MNT_EAD_TOT),0)END ) ||
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)||
        RPAD(NVL(C_ENR.CD_DEVISE_MNT_RISQ, ' '), 3)||
@@ -1161,7 +1161,7 @@ select
        --C_ENR.CD_ACHAT_FIN_LOC||
        NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')||
        NVL(C_ENR.CD_RESPECT_COND, ' ')||
-       -- 08/12/2020 - CDS ATOS (CPD) - US 238 - Anacredit Leasing- Revoir la rï¿½gle d'alimentation des montant CBI en cas d'arriï¿½rï¿½
+       -- 08/12/2020 - CDS ATOS (CPD) - US 238 - Anacredit Leasing- Revoir la r�gle d'alimentation des montant CBI en cas d'arri�r�
        Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' and C_ENR.CD_USAGE_BIEN_IMM = '2' then pack_utilitaire.f_format_montant_bis2(0) else RPAD (' ', 19) END||
        Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' and C_ENR.CD_USAGE_BIEN_IMM = '2' then RPAD(C_ENR.CD_DEV_VTR,3) else RPAD (' ', 3) END||
        Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' and C_ENR.CD_USAGE_BIEN_IMM = '2' then pack_utilitaire.f_format_montant_bis2(0) else RPAD (' ', 19) END||
@@ -1202,7 +1202,7 @@ select
          RPAD(C_ENR.TOP_ENG, 1)||
          RPAD (' ', 5)||
 		 RPAD(nvl(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-     RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+     RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
      RPAD (' ', 7)||
      RPAD(NVL(TO_CHAR(C_ENR.DT_DISPO_FONDS, 'YYYYMMDD'), ' '), 8)||    --DT_DISPO_FONDS
      RPAD (' ', 1)||
@@ -1285,7 +1285,7 @@ select
           -- 09/04/2018 CDS Atos (JMP) ANACREDIT Sprint 9 US24 Version finale 
         RPAD(NVL(TO_CHAR(C_ENR.DT_PREM_DBLQ_FONDS, 'YYYYMMDD'), ' '), 8)||
 --         RPAD(' ',8)||
--- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie dï¿½blocage de fond est nul.
+-- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie d�blocage de fond est nul.
         case when C_ENR.MNT_PREM_DBLQ_FONDS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PREM_DBLQ_FONDS) end || 
 -- fin 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 
          RPAD(nvl(C_ENR.DEVISE_PREM_DBLQ_FONDS,'EUR'),3)||        -- bis2 donne 00000 donc il faut la devise
@@ -1327,7 +1327,7 @@ select
          RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)||    --DT_SIGNATURE
          RPAD (' ', 3)||
          LPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), '     '),5,'0')||    --NB_JOURS_RETARD
-         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
          RPAD(nvl(C_ENR.BUCKET_IFRS9,' '),2)||    --BUCKET_IFRS9
          RPAD (' ', 20)||
          --Fin SQN
@@ -1391,7 +1391,7 @@ select
 		  'N'|| -- M11667 (VFN) 09/09/2021
 		 RPAD (' ', 25)||
 		 RPAD (' ', 1)||   --fin P1 30 - 60 caracteres sur 250 seront dans lignedetail2
-		 RPAD (' ', 5)|| -- dï¿½but P1 31.a
+		 RPAD (' ', 5)|| -- d�but P1 31.a
 		 RPAD(NVL(C_ENR.REF_UNIQ_CONT, ' '), 40)||
 		 RPAD(NVL(C_ENR.REF_UNIQ_ELEM_CONT, ' '), 40)||
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT),19) || 
@@ -1407,7 +1407,7 @@ select
 		 RPAD (' ', 15)||
 		 RPAD (' ', 19)||
 		 RPAD (' ', 3)||
-     --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+     --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 		 RPAD ('+', 1)|| -- P1 31.17a
      case when C_ENR.CD_TYPE_RISQUE like 'TRE%' 
         then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') 
@@ -1418,7 +1418,7 @@ select
         then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') 
         else RPAD('00000',5) 
      end|| -- P1 31.18b
-     --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+     --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 		 RPAD (' ', 6)||
 		 RPAD (' ', 1)||
      RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P1 31.21 M71371
@@ -1437,7 +1437,7 @@ select
 		 RPAD (' ', 15)||
 		 RPAD (' ', 15)||--Fin 31b
      	--RPAD(' ', 2)|| --DEbut P1 31C
-     RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+     RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
      RPAD(' ',1) || -- Fin P1 31c
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 		 RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -1498,51 +1498,51 @@ select
 		RPAD(NVL(C_ENR.CHAMP_APPL_MRTR,' '),2)|| --P1 21.28 pos 4917
 		case when C_ENR.MNT_MRTR is not null then RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_MRTR),19) else RPAD(' ',19) end || --P1 21.30 pos 4919
 		case when C_ENR.MNT_MRTR is not null then RPAD(NVL(C_ENR.DEV_MRTR,' '),3) else RPAD(' ',3) end || --P1 21.31 pos 4938
-		RPAD(' ',15)|| --P1 21.32 pos 4941 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.33 pos 4956 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 15 pos 4959 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 16 pos 4971 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 14 pos 4983 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 50.20 pos 4995 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 50.21 pos 5007 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.34 pos 5026 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.35 pos 5027 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.36 pos 5028 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.37 pos 5047 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.47 pos 5050 - VIDE => point fermé
-		RPAD(' ',7)|| --P1 21.48 pos 5060 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.49 pos 5067 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.50 pos 5086 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.51 pos 5089 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.52 pos 5108 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.53 pos 5111 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.54 pos 5130 - VIDE => point fermé
+		RPAD(' ',15)|| --P1 21.32 pos 4941 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.33 pos 4956 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 15 pos 4959 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 16 pos 4971 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 14 pos 4983 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 50.20 pos 4995 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 50.21 pos 5007 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.34 pos 5026 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.35 pos 5027 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.36 pos 5028 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.37 pos 5047 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.47 pos 5050 - VIDE => point ferm�
+		RPAD(' ',7)|| --P1 21.48 pos 5060 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.49 pos 5067 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.50 pos 5086 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.51 pos 5089 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.52 pos 5108 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.53 pos 5111 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.54 pos 5130 - VIDE => point ferm�
 		RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1)|| --P1 21.44 pos 5133 
 		RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1)|| --P1 21.45 pos 5134
 		RPAD(NVL(C_ENR.IND_CONF_CRIT_OPE,' '),1)|| --P1 21.46 pos 5135
 		RPAD(' ',1)|| --P1 21.38 pos 5136 - A REMPLIR (v1.5)
 		RPAD(NVL(C_ENR.IND_EXPO_ADC,' '),1)|| --P1 21.39 pos 5137
-		RPAD(' ',1)|| --P1 21.40 pos 5138 - A REMPLIR (v1.5) créer sur la BD?
-		RPAD(' ',1)|| --P1 21.41 pos 5139 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.42 pos 5140 - VIDE => point fermé
+		RPAD(' ',1)|| --P1 21.40 pos 5138 - A REMPLIR (v1.5) cr�er sur la BD?
+		RPAD(' ',1)|| --P1 21.41 pos 5139 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.42 pos 5140 - VIDE => point ferm�
  	  RPAD(pack_utilitaire.F_FORMAT_TAUX_15(C_ENR.ETV_RATIO),15)||--P1 21.43 pos 5141
-		RPAD(' ',1)|| --P1 21.56 pos 5156 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.57 pos 5157 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.58 pos 5158 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.59 pos 5159 - VIDE => point fermé
-		RPAD(' ',15)|| --P1 21.60 pos 5160 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.61 pos 5175 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.62 pos 5185 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.63 pos 5195 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.64 pos 5214 - VIDE => point fermé
-		RPAD(' ',5)|| --P1 21.65 pos 5217 - VIDE => point fermé
-		RPAD(NVL(C_ENR.IND_UCC,' '),1)|| --P1 21.66 pos 5222 => point fermé
-		RPAD(' ',1)|| --P1 21.67 pos 5223 - VIDE => point fermé
-		RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P1 21.68 pos 5224 => point fermé
-		RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P1 21.55 pos 5225 => point fermé
-		RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)|| --P1 21.69 pos 5237 => point fermé
-		RPAD(' ',20)|| --P1 21.89 pos 5238 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.90 pos 5258 - VIDE => point fermé
+		RPAD(' ',1)|| --P1 21.56 pos 5156 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.57 pos 5157 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.58 pos 5158 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.59 pos 5159 - VIDE => point ferm�
+		RPAD(' ',15)|| --P1 21.60 pos 5160 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.61 pos 5175 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.62 pos 5185 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.63 pos 5195 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.64 pos 5214 - VIDE => point ferm�
+		RPAD(' ',5)|| --P1 21.65 pos 5217 - VIDE => point ferm�
+		RPAD(NVL(C_ENR.IND_UCC,' '),1)|| --P1 21.66 pos 5222 => point ferm�
+		RPAD(' ',1)|| --P1 21.67 pos 5223 - VIDE => point ferm�
+		RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P1 21.68 pos 5224 => point ferm�
+		RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P1 21.55 pos 5225 => point ferm�
+		RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)|| --P1 21.69 pos 5237 => point ferm�
+		RPAD(' ',20)|| --P1 21.89 pos 5238 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.90 pos 5258 - VIDE => point ferm�
 		RPAD(NVL(C_ENR.USAGE_BIEN_FINANCE,' '),1)|| --P1 8.13 pos 5268
 		RPAD(' ',40)|| --P1 21.71 pos 5269 - A REMPLIR (v1.5)
 		RPAD(' ',40)|| --P1 21.72 pos 5309 - A REMPLIR (v1.5)
@@ -1554,7 +1554,7 @@ select
 		RPAD(' ',12)|| --P1 21.78 pos 5520 - A REMPLIR (v1.5)
 		RPAD(' ',1)|| --P1 21.94 pos 5532 - A REMPLIR (v1.5)
 		RPAD(' ',2)|| --P1 21.95 pos 5533 - A REMPLIR (v1.5)
-		RPAD(' ',1)|| --P1 21.79 pos 5535 => point fermé
+		RPAD(' ',1)|| --P1 21.79 pos 5535 => point ferm�
 		RPAD(NVL(C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE,' '),3)|| --P1 21.80 pos 5536
 		RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10)|| --P1 21.81 pos 5539 
 		RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR_PREC),10)|| --P1 21.82 pos 5549
@@ -1631,7 +1631,7 @@ select
        RPAD(NVL(TO_CHAR(C_ENR.DT_RESTRUCTURATION, 'YYYYMMDD'), ' '), 8)||
        --Fin SQN
        -- Debut 3.2Bis
-      --NVL(C_ENR.CD_ARR_PAIEMENT, 'N')|| -- US 263 - KLx Risque (VDC) - On met Ã§a pour le moment
+      --NVL(C_ENR.CD_ARR_PAIEMENT, 'N')|| -- US 263 - KLx Risque (VDC) - On met ça pour le moment
       'N'|| -- US 263 A VOIR
        NVL(C_ENR.CD_IMP_PRUDENT, 'N')||
        NVL(C_ENR.TOP_ENG_DOUTEUX, 'N')||
@@ -1661,7 +1661,7 @@ select
        --C_ENR.CD_ACHAT_FIN_LOC||
        NVL(C_ENR.CD_USAGE_BIEN_IMM,' ')||
        NVL(C_ENR.CD_RESPECT_COND, ' ')||
-       -- 08/12/2020 - CDS ATOS (CPD) - US 238 - Anacredit Leasing- Revoir la rï¿½gle d'alimentation des montant CBI en cas d'arriï¿½rï¿½
+       -- 08/12/2020 - CDS ATOS (CPD) - US 238 - Anacredit Leasing- Revoir la r�gle d'alimentation des montant CBI en cas d'arri�r�
        -- Debut 3.4Bis
        Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VTR),0)) else RPAD (' ', 19) END|| -- M65476 Removed C_ENR.CD_USAGE_BIEN_IMM = '2' and MNT_VTR_PDR
        Case when C_ENR.CD_TYPE_RISQUE = 'TRE502' then RPAD(C_ENR.CD_DEV_VTR,3) else RPAD (' ', 3) END|| -- M65476 Removed C_ENR.CD_USAGE_BIEN_IMM = '2'
@@ -1702,7 +1702,7 @@ select
      RPAD(C_ENR.TOP_ENG, 1)||	--P1 4.8
      RPAD (' ', 5)||
 		 RPAD(nvl(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-     RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+     RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
      RPAD (' ', 7)||
      RPAD(NVL(TO_CHAR(C_ENR.DT_DISPO_FONDS, 'YYYYMMDD'), ' '), 8)||    --DT_DISPO_FONDS
      RPAD (' ', 1)||
@@ -1782,7 +1782,7 @@ select
          RPAD(nvl(C_ENR.BASE_CAL_INT,' '),7)||
           -- 09/04/2018 CDS Atos (JMP) ANACREDIT Sprint 9 US24 Version finale 
         RPAD(NVL(TO_CHAR(C_ENR.DT_PREM_DBLQ_FONDS, 'YYYYMMDD'), ' '), 8)||
--- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie dï¿½blocage de fond est nul.
+-- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie d�blocage de fond est nul.
         case when C_ENR.MNT_PREM_DBLQ_FONDS is null then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PREM_DBLQ_FONDS) end || 
 -- fin 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 
          RPAD(nvl(C_ENR.DEVISE_PREM_DBLQ_FONDS,'EUR'),3)||        -- bis2 donne 00000 donc il faut la devise
@@ -1824,7 +1824,7 @@ select
          RPAD(NVL(TO_CHAR(C_ENR.DT_SIGNATURE, 'YYYYMMDD'), ' '), 8)||    --DT_SIGNATURE
          RPAD (' ', 3)||
          LPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), '     '),5,'0')||    --NB_JOURS_RETARD
-         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+         CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
          RPAD(nvl(C_ENR.BUCKET_IFRS9,' '),2)||    --BUCKET_IFRS9
          RPAD (' ', 20)||
          --Fin SQN
@@ -1901,7 +1901,7 @@ select
 		 RPAD (' ', 15)||
 		 RPAD (' ', 19)||
 		 RPAD (' ', 3)||
-     --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+     --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
      RPAD ('+', 1)|| -- P1 31.17a
 		 case when C_ENR.CD_TYPE_RISQUE like 'TRE%' 
         then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') 
@@ -1912,7 +1912,7 @@ select
         then LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0') 
         else RPAD('00000',5) 
      end|| -- P1 31.18b
-    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 		 RPAD (' ', 6)||
 		 RPAD (' ', 1)||
      RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P1 31.21 M71371
@@ -1931,7 +1931,7 @@ select
 		 RPAD (' ', 15)||
 		 RPAD (' ', 15)||--Fin 31b 
 		 --RPAD(' ', 2)|| --Debut P1 31C
-     	 RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 -P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+     	 RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 -P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
      	 RPAD(' ',1) || -- Fin P1 31c
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 		 RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -1970,7 +1970,7 @@ select
          RPAD (' ', 3)||
 		 RPAD (' ', 19)||
 		 RPAD (' ', 3)||
-		 'EUR'|| --Dï¿½but 50 --M11665 modif VFN
+		 'EUR'|| --D�but 50 --M11665 modif VFN
 		 RPAD(NVL(C_ENR.PCEC_MNT_RISQUE, ' '), 12)||
 		 RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_RISQUE),19) ||
 		 RPAD(' ',12)||
@@ -1992,51 +1992,51 @@ select
 		RPAD(NVL(C_ENR.CHAMP_APPL_MRTR,' '),2)|| --P1 21.28 pos 4917
 		case when C_ENR.MNT_MRTR is not null then RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_MRTR),19) else RPAD(' ',19) end || --P1 21.30 pos 4919
 		case when C_ENR.MNT_MRTR is not null then RPAD(NVL(C_ENR.DEV_MRTR,' '),3) else RPAD(' ',3) end || --P1 21.31 pos 4938
-		RPAD(' ',15)|| --P1 21.32 pos 4941 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.33 pos 4956 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 15 pos 4959 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 16 pos 4971 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 14 pos 4983 - VIDE => point fermé
-		RPAD(' ',12)|| --P1 50.20 pos 4995 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 50.21 pos 5007 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.34 pos 5026 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.35 pos 5027 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.36 pos 5028 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.37 pos 5047 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.47 pos 5050 - VIDE => point fermé
-		RPAD(' ',7)|| --P1 21.48 pos 5060 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.49 pos 5067 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.50 pos 5086 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.51 pos 5089 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.52 pos 5108 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.53 pos 5111 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.54 pos 5130 - VIDE => point fermé
+		RPAD(' ',15)|| --P1 21.32 pos 4941 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.33 pos 4956 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 15 pos 4959 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 16 pos 4971 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 14 pos 4983 - VIDE => point ferm�
+		RPAD(' ',12)|| --P1 50.20 pos 4995 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 50.21 pos 5007 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.34 pos 5026 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.35 pos 5027 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.36 pos 5028 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.37 pos 5047 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.47 pos 5050 - VIDE => point ferm�
+		RPAD(' ',7)|| --P1 21.48 pos 5060 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.49 pos 5067 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.50 pos 5086 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.51 pos 5089 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.52 pos 5108 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.53 pos 5111 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.54 pos 5130 - VIDE => point ferm�
 		RPAD(NVL(C_ENR.IND_EXPO_QUAL_ELEVEE,' '),1)|| --P1 21.44 pos 5133 
 		RPAD(NVL(C_ENR.IND_PHASE_OPE_PROJ_FIN,' '),1)|| --P1 21.45 pos 5134
 		RPAD(NVL(C_ENR.IND_CONF_CRIT_OPE,' '),1)|| --P1 21.46 pos 5135
 		RPAD(NVL(C_ENR.IND_IPRE,' '),1)|| --P1 21.38 pos 5136
 		RPAD(NVL(C_ENR.IND_EXPO_ADC,' '),1)|| --P1 21.39 pos 5137
 		RPAD(NVL(C_ENR.IND_REAL_COND_PONDERATION_PREFE,' '),1)|| --P1 21.40 pos 5138
-		RPAD(' ',1)|| --P1 21.41 pos 5139 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.42 pos 5140 - VIDE => point fermé
+		RPAD(' ',1)|| --P1 21.41 pos 5139 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.42 pos 5140 - VIDE => point ferm�
  	  RPAD(pack_utilitaire.F_FORMAT_TAUX_15(C_ENR.ETV_RATIO),15)||--P1 21.43 pos 5141
-		RPAD(' ',1)|| --P1 21.56 pos 5156 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.57 pos 5157 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.58 pos 5158 - VIDE => point fermé
-		RPAD(' ',1)|| --P1 21.59 pos 5159 - VIDE => point fermé
-		RPAD(' ',15)|| --P1 21.60 pos 5160 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.61 pos 5175 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.62 pos 5185 - VIDE => point fermé
-		RPAD(' ',19)|| --P1 21.63 pos 5195 - VIDE => point fermé
-		RPAD(' ',3)|| --P1 21.64 pos 5214 - VIDE => point fermé
-		RPAD(' ',5)|| --P1 21.65 pos 5217 - VIDE => point fermé
-		RPAD(NVL(C_ENR.IND_UCC,' '),1)|| --P1 21.66 pos 5222 => point fermé
-		RPAD(' ',1)|| --P1 21.67 pos 5223 - VIDE => point fermé
-		RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P1 21.68 pos 5224 => point fermé
-		RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P1 21.55 pos 5225 => point fermé
-		RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)|| --P1 21.69 pos 5237 => point fermé
-		RPAD(' ',20)|| --P1 21.89 pos 5238 - VIDE => point fermé
-		RPAD(' ',10)|| --P1 21.90 pos 5258 - VIDE => point fermé
+		RPAD(' ',1)|| --P1 21.56 pos 5156 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.57 pos 5157 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.58 pos 5158 - VIDE => point ferm�
+		RPAD(' ',1)|| --P1 21.59 pos 5159 - VIDE => point ferm�
+		RPAD(' ',15)|| --P1 21.60 pos 5160 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.61 pos 5175 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.62 pos 5185 - VIDE => point ferm�
+		RPAD(' ',19)|| --P1 21.63 pos 5195 - VIDE => point ferm�
+		RPAD(' ',3)|| --P1 21.64 pos 5214 - VIDE => point ferm�
+		RPAD(' ',5)|| --P1 21.65 pos 5217 - VIDE => point ferm�
+		RPAD(NVL(C_ENR.IND_UCC,' '),1)|| --P1 21.66 pos 5222 => point ferm�
+		RPAD(' ',1)|| --P1 21.67 pos 5223 - VIDE => point ferm�
+		RPAD(NVL(C_ENR.NIV_RISQUE_CRR3,' '),1)|| --P1 21.68 pos 5224 => point ferm�
+		RPAD(NVL(C_ENR.CD_NAT_OPE_ENG_CALC_FLOOR,' '),12)|| --P1 21.55 pos 5225 => point ferm�
+		RPAD(NVL(CASE WHEN C_ENR.CD_TYPE_RISQUE LIKE 'VAR%' THEN 'N' ELSE NULL END,' '),1)|| --P1 21.69 pos 5237 => point ferm�
+		RPAD(' ',20)|| --P1 21.89 pos 5238 - VIDE => point ferm�
+		RPAD(' ',10)|| --P1 21.90 pos 5258 - VIDE => point ferm�
 		RPAD(NVL(C_ENR.USAGE_BIEN_FINANCE,' '),1)|| --P1 8.13 pos 5268
     RPAD(NVL(C_ENR.COMMUNE,' '),40)|| --P1 21.71 pos 5269
 		RPAD(NVL(C_ENR.NUM_VOIE,' '),40)|| --P1 21.72 pos 5309 
@@ -2048,7 +2048,7 @@ select
 		RPAD(NVL(C_ENR.LONGITUDE,' '),12)|| --P1 21.78 pos 5520
 		RPAD(' ',1)|| --P1 21.94 pos 5532 - A REMPLIR (v1.5)
 		RPAD(' ',2)|| --P1 21.95 pos 5533 - A REMPLIR (v1.5)
-		RPAD(' ',1)|| --P1 21.79 pos 5535 => point fermé
+		RPAD(' ',1)|| --P1 21.79 pos 5535 => point ferm�
 		RPAD(NVL(C_ENR.CLASS_CPT_ELEMENT_COUV_DERIVE,' '),3)|| --P1 21.80 pos 5536
 		RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR),10)|| --P1 21.81 pos 5539
 		RPAD(pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_DSCR_PREC),10)|| --P1 21.82 pos 5549 
@@ -2115,7 +2115,7 @@ select
        RPAD(nvl(C_ENR.CD_NATURE_OPE,' '),12)||
        RPAD(NVL(TO_CHAR(C_ENR.DT_DEBUT_ENG, 'YYYYMMDD'), ' '), 8)||
        NVL(TO_CHAR(C_ENR.DT_FIN_ENG, 'YYYYMMDD'),'99990630')||
-       RPAD(' ', 10)||    --taux pondï¿½ration baloise
+       RPAD(' ', 10)||    --taux pond�ration baloise
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_LGD_PREDICTIF)||
        pack_utilitaire.F_FORMAT_TAUX(C_ENR.TX_CCF)||        -- 08/02/2019 - CDS ATOS (GBD)- US677 : Taux CCF (P2 18.10)  ( *100 fait a l'alimentation)
        pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_EAD)||   -- 08/02/2019 - CDS ATOS (GBD)- US677 : Montant EAD (P2 18.5) 
@@ -2336,7 +2336,7 @@ select
 	  RPAD(' ',1)|| --P2 31.20
 	  RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P2 31.21 M71371
 	  RPAD(' ',2)|| --P2 31.22
-    -- US 261 - KLx Risque (VDC) [CRRv4.3] Leasing - CRR Corporate - Score 7 'Montant des fonds remis Ã  date '
+    -- US 261 - KLx Risque (VDC) [CRRv4.3] Leasing - CRR Corporate - Score 7 'Montant des fonds remis à date '
     -- P2 32.23 
 	  case when C_ENR.MNT_FOND_REMIS_DATE is null then RPAD(' ',19) else pack_utilitaire.F_FORMAT_MONTANT_BIS2(C_ENR.MNT_FOND_REMIS_DATE) end ||
 	  case when C_ENR.DEV_FOND_REMIS_DATE is null then RPAD(' ',3) else RPAD(C_ENR.DEV_FOND_REMIS_DATE,3,' ') end ||
@@ -2631,10 +2631,10 @@ select
        case when C_ENR.MNT_CCNE_RECUS_GAR is null  then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_CCNE_RECUS_GAR) end || --M1 8.45
        RPAD(NVL(C_ENR.CD_DEV_MNT_CCNE_RECUS_GAR, ' '), 3)|| --M1 8.46
 	   --02/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	   pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT) || --M1 6.8 - Bâle 4 - MR12731 
+	   pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_INIT_SURETE_SING_CTRT) || --M1 6.8 - B�le 4 - MR12731 
 	   RPAD(' ', 19) || --M1 6.9
 	   RPAD(' ', 3) || --M1 6.10
-	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20) ||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'SystÃ¨me de gestion source' --M1 1.40
+	   RPAD(NVL(C_ENR.SYS_GEST_SRC,' '), 20) ||--KLx (GHU) - 03/12/2021 - US265 - Leasing - CRR Corporate - Score 7 'Système de gestion source' --M1 1.40
 	   RPAD(' ', 5) ||
 	   RPAD(' ', 40) ||
 	   RPAD(' ', 40) ||
@@ -2702,7 +2702,7 @@ select
     RPAD(' ', 40)||
     CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_C',40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074
     CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40)  END || -- P9 1.16 :: M72074
-    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9 
+    -- Les champs 1.11 et 1.16 ont pas la m�me regle d'alimentation que dans la table  provisions_decotes_p9 
     RPAD(' ', 20)||
     NVL(C_ENR.CD_NAT_DEPRE, ' ')||
     NVL(C_ENR.CD_PERIM_PROV, ' ')||
@@ -2776,7 +2776,7 @@ SELECT
        RPAD(' ', 40)||
        CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT || '_S',40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074 
        CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END || -- P9 1.16 :: M72074 
-    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9  -- P9 1.16
+    -- Les champs 1.11 et 1.16 ont pas la m�me regle d'alimentation que dans la table  provisions_decotes_p9  -- P9 1.16
 	   -- FIN LFD
        RPAD(' ', 20)||
        NVL(C_ENR.CD_NAT_DEPRE, ' ')||
@@ -2852,10 +2852,10 @@ SELECT
   RPAD(NVL(C_ENR.ID_LIGNE_DET, ' '), 30)                                       || -- 1.6   :: ID_LIGNE_DET
   RPAD(' ', 40)                                                                || -- 1.8   :: IDENTIFIANT SURETE RECUE
   CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT, 40)           -- 1.11  :: ID_ENGAGEMENT || M72074
-    ELSE RPAD(' ', 40)                                                            -- La regle du spool n'est pas la même que la regle 
+    ELSE RPAD(' ', 40)                                                            -- La regle du spool n'est pas la m�me que la regle 
   END                                                                          ||    -- d'alimentation de la table provisions_decotes_p9 
   CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40)           -- 1.16  :: ID_PROVISION || M72074
-    ELSE  RPAD(' ', 40)                                                         -- La regle du spool n'est pas la même que la regle
+    ELSE  RPAD(' ', 40)                                                         -- La regle du spool n'est pas la m�me que la regle
   END                                                                          ||    -- d'alimentation de la table provisions_decotes_p9 
   RPAD(' ', 20)                                                                || -- 1.99(11) + 1.98(7) + 1.97(2) = 20
   NVL(C_ENR.CD_NAT_DEPRE, ' ')                                                 || -- 2.3   :: CD_NAT_DEPRE
@@ -2937,7 +2937,7 @@ select
       RPAD(' ',2)||
       RPAD(' ',8)||    
       /*?3.2BIS- PRETS, CREDIT BAIL ET ENGAGEMENTS PAR SIGNATURE (ss titres de cr?ance)  */
-      NVL(C_ENR.CD_ARR_PAIEMENT,'N')|| --P1 5.5 -- 03/12/2021 - KLx Risque (VDC) - US 263 -  CRR Corporate - Score 7 'Indicateur ArriÃ©rÃ© de paiement' 
+      NVL(C_ENR.CD_ARR_PAIEMENT,'N')|| --P1 5.5 -- 03/12/2021 - KLx Risque (VDC) - US 263 -  CRR Corporate - Score 7 'Indicateur Arriéré de paiement' 
       RPAD(' ',1)||
       NVL(C_ENR.TOP_ENG_DOUTEUX,'N')|| -- P1 5.2 -- 14/12/2021 - KLx Risque (VDC) - US 260
       RPAD(' ',8)||  --P1 5.3
@@ -3122,7 +3122,7 @@ select
       RPAD(' ',3)||
       RPAD(' ',2)||
 	    RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE, ' '),6,' ')||
-      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
       RPAD(' ',16)||  
       RPAD(' ',20)||
       RPAD(' ',10)||
@@ -3323,12 +3323,12 @@ select
     RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')|| -- Debut 31b 31.9 -- KLx : Mantis 64749
     RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')|| -- 31.10 -- KLx : Mantis 64749
 	  RPAD(' ', 40)|| -- KLx : Mantis 64749
-    --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+    --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
     RPAD('+',1)|| -- P1 31.17a 
     RPAD('00000',5)|| -- P1 31.17b   
     RPAD('+',1)|| -- P1 31.18a 
     RPAD('00000',5)|| -- P1 31.18b
-    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 	  RPAD(' ', 6)|| --Debut P1 31.19 
 	  RPAD(' ', 1)|| --Debut P1 31.20
 	  RPAD(' ', 2)|| --Debut P1 31.21
@@ -3341,7 +3341,7 @@ select
 	  RPAD(' ', 97)|| --Fin 31b 
     -- Fin Klx US 276 CRRV4.3 - ajout champ P1 31.22
 	  --RPAD(' ', 2)|| --Debut P1 31C
-    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 -P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 -P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
     RPAD(' ',1) || -- Fin P1 31c
 	  RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 	  RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -3550,7 +3550,7 @@ select
       RPAD(NVL(C_ENR.CD_DEVISE_MNT_DECOUVERT, ' '),3,' ')||  -- 18/02/2019 - CDS ATOS (GBD) - US731  : P1 4.5
 -- 20/03/2019 - CDS AtoS FAD - CRRV4.2 US731 - Complement
 	  pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_CRD),0))||  --P1 4.9
-	  NVL(C_ENR.CD_DEVISE_CRD,'EUR')|| -- P1 4.13 Devise du capital restant dï¿½
+	  NVL(C_ENR.CD_DEVISE_CRD,'EUR')|| -- P1 4.13 Devise du capital restant d�
 -- Fin - CDS AtoS FAD - CRRV4.2 US731 - Complement
       pack_utilitaire.f_format_montant_bis3(C_ENR.MNT_LOYER) || -- 18/02/2019 - CDS ATOS (GBD) - US731 P1 4.14
       RPAD(NVL(C_ENR.CD_DEVISE_CRD, ' '), 3,' ')       		 || -- 18/02/2019 - CDS ATOS (GBD) - US731 P1 4.15
@@ -3575,7 +3575,7 @@ select
 	  	ELSE
 	  		RPAD(' ',3)
 	  	END
-	   )|| -- P1 4.7 Devise des intï¿½rï¿½ts restant dus
+	   )|| -- P1 4.7 Devise des int�r�ts restant dus
 	  -- Fin - CDS AtoS FAD - CRRV4.2 US731 - Complement
 	  RPAD(NVL(C_ENR.PCCO_INT_RD,' '),12,' ')||
 	  RPAD(' ',1)||
@@ -3591,14 +3591,14 @@ select
 	  --3.4 PRET immobilier 
 	  RPAD(' ',1)|| -- p1 3.46 ? pos 711 BALE4
 	  RPAD(' ',1)|| -- p1 3.47 ? pos 712 BALE4 
-	  --3.4Bis-CREDIT-BAIL-camp ï¿½ blanc
+	  --3.4Bis-CREDIT-BAIL-camp � blanc
 	  RPAD(' ',69)||
    	  RPAD(nvl(C_ENR.cla_comp_ref_act,' '),3)||
 --08/02/2019 - CDS AtoS FAD - CRRV4.2 US662 - TRE2_TRE4
           --RPAD(' ',122)||
 	  RPAD(' ', 34)||
 	  pack_utilitaire.f_format_montant_bis2(nvl(C_ENR.MNT_MTM, 0))|| --P1_3_52_MT_MTM_TITRE
-	  --13/02/2019 - CDS ATOS (SQN) - CRRV4.2 - Correctif : devise ï¿½ EUR par dï¿½faut.
+	  --13/02/2019 - CDS ATOS (SQN) - CRRV4.2 - Correctif : devise � EUR par d�faut.
 	  --RPAD(nvl(C_ENR.CD_DEV_MNT_MTM,' '),3, ' ')|| --P1_3_53_CODE_DEVISE_MTM_TITRE
 	  RPAD(nvl(C_ENR.CD_DEV_MNT_MTM,'EUR'),3, ' ')|| --P1_3_53_CODE_DEVISE_MTM_TITRE
 	  --Fin Correctif
@@ -3638,7 +3638,7 @@ select
 	  RPAD(' ', 3)||
 	  RPAD(' ', 2)||
 	  RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-    RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+    RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8)|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
 	  RPAD(' ', 7)||
 	  RPAD(NVL(TO_CHAR(C_ENR.DT_DISPO_FONDS,'YYYYMMDD'), ' '),8,' ')|| --P1_4_47_DATE_DISPO_FONDS
 	  --07/07/21 CDS ATOS (EMM) US 194 CRRv4.3
@@ -3727,7 +3727,7 @@ select
 --Fin - CDS AtoS FAD - AER / PALME US792
  		 -- 09/04/2018 CDS Atos (JMP) ANACREDIT Sprint 9 US24 Version finale 
 		 RPAD(NVL(TO_CHAR(C_ENR.DT_PREM_DBLQ_FONDS, 'YYYYMMDD'), ' '), 8)||
--- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie dï¿½blocage de fond est nul.
+-- 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430 => Mettre dans blancs si le montant de premie d�blocage de fond est nul.
 		case when C_ENR.MNT_PREM_DBLQ_FONDS is null  then RPAD(' ',19) else pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_PREM_DBLQ_FONDS) end || 
 -- fin 16/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US430
 		 RPAD(nvl(C_ENR.DEVISE_PREM_DBLQ_FONDS,'EUR'),3)||
@@ -3767,8 +3767,8 @@ select
 	  RPAD(' ', 2)||--P1_22_68_EVENEMENT_DECLENCHEUR_DE_LA_GARANTIE
 	  RPAD(' ', 1)||--P1_22_69_INDICATEUR_DIFFERE_CARTE_DE_PAIEMENT
 	  LPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), '     '),5,'0')|| --P1_22_70_NOMBRE_DE_JOURS_DE_RETARD_DE_PAIEMENT
-	  --US740 RPAD(NVL(C_ENR.CD_MOTIF_SCO_LC0267, ' '), 3, ' ')|| -- Rï¿½tablissement de CD_MOTIF_SCO_LC0267 --P1_22_71_MOTIF_DU_PASSAGE_EN_ENGAGEMENT_DOUTEUX
-      CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+	  --US740 RPAD(NVL(C_ENR.CD_MOTIF_SCO_LC0267, ' '), 3, ' ')|| -- R�tablissement de CD_MOTIF_SCO_LC0267 --P1_22_71_MOTIF_DU_PASSAGE_EN_ENGAGEMENT_DOUTEUX
+      CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
 	  RPAD(NVL(C_ENR.BUCKET_IFRS9, ' '), 2, ' ')|| -- Alimentation HN : p_update_origine_p1 --P1_22_72_BUCKET_IFRS9
 	  RPAD(' ', 10)||--P1 22.73
 	  RPAD(' ', 10)||--P1 22.74
@@ -3797,7 +3797,7 @@ select
 	  RPAD(NVL(C_ENR.REF_MOB_ACTIF, ' '), 3) ||
 	  RPAD(NVL(C_ENR.CD_ORGA_MOBIL, ' '), 3) ||
 	  RPAD(' ',44)|| -- Fin 26
-	  RPAD(' ',19)|| --Dï¿½but 27
+	  RPAD(' ',19)|| --D�but 27
 	  RPAD(' ',3)||
 	  --07/09/21 CDS_ATOS (EMM) MR 11666
 	  RPAD(NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2'), 1)||
@@ -3809,7 +3809,7 @@ select
 	  RPAD (nvl(C_ENR.IND_SPONSOR_FIN, ' '), 1, ' ')|| --P1_28_2_IND_SPONSOR_FINANCIER_MAJOR_AU_CAPITAL
 --Fin- CDS AtoS FAD - CRRV4.2 US662 - TRE2_TRE4
      --07/07/21 CDS ATOS (EMM) US 194 CRRv4.3
-	 RPAD(' ',19)|| --Dï¿½but 29
+	 RPAD(' ',19)|| --D�but 29
 	 RPAD(' ',3)|| -- Fin 29
 	  --MANTIS 11611 (VFN) 27/07/2021
 	 RPAD(' ',190)|| --Debut P1 30 	|189car sur 250 car dans lignedetail1 
@@ -3826,7 +3826,7 @@ select
 	  'N'|| -- M11667 (VFN) 09/09/2021
 	  RPAD (' ', 25)||
 	  RPAD (' ', 1)||   --fin P1 30 - 60 caracteres sur 250 seront dans lignedetail2
-	 RPAD(' ',5)|| --Dï¿½but 31a
+	 RPAD(' ',5)|| --D�but 31a
 	  RPAD(NVL(C_ENR.REF_UNIQ_CONT, ' '),40,' ')||
 	  RPAD(NVL(C_ENR.REF_UNIQ_ELEM_CONT,' '),40)||
 	  RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT),19) ||
@@ -3842,12 +3842,12 @@ select
 	  RPAD(' ', 15)||
 	  RPAD(' ', 19)||
 	  RPAD(' ', 3)||
-	  --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+	  --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
     RPAD ('+', 1)|| -- P1 31.17a
 		LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0')|| -- P1 31.17b
 		RPAD ('+', 1)|| -- P1 31.18a
     LPAD(nvl(CEIL((C_ENR.DT_FIN_ENG - C_ENR.DT_DEBUT_ENG) / 30),'00000'),5, '0')|| -- P1 31.18b
-    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 	  RPAD(' ', 6)||
 	  RPAD(' ', 1)||
     RPAD(NVL(C_ENR.CDTYPEGARPRINCOCTROI,' '), 2)|| --Debut P1 31.21 M71371
@@ -3866,7 +3866,7 @@ select
 	  RPAD(' ', 15)||
 	  RPAD(' ', 15)||
 	  --RPAD(' ', 2)|| --Debut P1 31C
-    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
     RPAD(' ',1) || -- Fin P1 31c
 	  RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 	  RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -4013,7 +4013,7 @@ WHERE 1     =1
   AND FLAG_HN = 'O'
   AND A_EXTRAIRE      ='O'
     and (C_ENR.cd_conso_cpt = :ENTITE or :ENTITE = 'TOTAL' )
-  --CDS_ATOS (MNE) - 20/05/2021 - Mantis 57292 - Eevolution de la rï¿½gle de gestion pour restructuration
+  --CDS_ATOS (MNE) - 20/05/2021 - Mantis 57292 - Eevolution de la r�gle de gestion pour restructuration
   --AND ( CD_TYPE_RISQUE LIKE 'TRE2%' OR CD_TYPE_RISQUE LIKE 'TRE4%' )
   AND SUBSTR(CD_TYPE_RISQUE,1,4) in ('TRE2','TRE4','TRE5')
   --FIN MNE
@@ -4073,7 +4073,7 @@ select
 			RPAD(' ',50)||
 			RPAD(' ',2)||
 			RPAD(' ',8)||
-			NVL(C_ENR.CD_ARR_PAIEMENT,'N')|| -- P1 5.5 -- us 263 - KLx Risque (VDC) - CRR Corporate - Score 7 'Indicateur ArriÃ©rÃ© de paiement'
+			NVL(C_ENR.CD_ARR_PAIEMENT,'N')|| -- P1 5.5 -- us 263 - KLx Risque (VDC) - CRR Corporate - Score 7 'Indicateur Arriéré de paiement'
 			RPAD(' ',1)|| -- P1 4.1
 			--29/04/2018 - CDS ATOS (FCU) - US787 : Top engagement douteux pour type de risque EQU101
 			RPAD(NVL(C_ENR.TOP_ENG_DOUTEUX,' '),1, ' ')||  -- P1 5.2  eng douteux
@@ -4254,7 +4254,7 @@ select
 			RPAD(' ',3)||
 			RPAD(NVL(C_ENR.INSTRUMENT_FINANCIER, ' '),2,' ')|| -- 04/11/2020 - CDSATOS (CPD) - US204 P1 3.75 
 			RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8,' ')|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8,' ')|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
 			RPAD(' ',16)||
 			RPAD(' ',20)||
 			RPAD(' ',10)||
@@ -4364,7 +4364,7 @@ select
       RPAD(' ', 8)||   -- P1 22.63 :: projet OMP - ici doit etre VIDE
       RPAD(' ', 30)||  -- P1 22.64 jusqu'au P1 22.70
       -- FIN: projet OMP - sous-tache SIRL-237
-			CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+			CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
 			RPAD(NVL(C_ENR.BUCKET_IFRS9,' '),2,' ')||--P1_22_72_BUCKET_IFRS9 -- 12/02/2019 - CDS AtoS FAD - CRRV4.2 - Correctif : BUCKET_IFRS9 sur 2 blancs au lieu de 3
 			RPAD(' ',20)||
 --Fin - CDS AtoS FAD - CRRV4.2 US662 - EQU101
@@ -4450,12 +4450,12 @@ select
       RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')|| -- Debut 31b 31.9 -- KLx : Mantis 64749
       RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')|| -- 31.10 -- KLx : Mantis 64749
       RPAD(' ', 40)|| -- KLx : Mantis 64749
-      --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+      --DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
       RPAD('+',1)|| -- P1 31.17a 
       RPAD('00000',5)|| -- P1 31.17b   
       RPAD('+',1)|| -- P1 31.18a 
       RPAD('00000',5)|| -- P1 31.18b
-      --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+      --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
       RPAD(' ', 6)|| --Debut P1 31.19 
       RPAD(' ', 1)|| --Debut P1 31.20
 	    RPAD(' ', 2)|| --Debut P1 31.21
@@ -4468,7 +4468,7 @@ select
       RPAD(' ', 97)|| --Fin 31b 
       -- Fin Klx US 276 CRRV4.3 - ajout champ P1 31.22 
 			--RPAD(' ', 2)|| --Debut P1 31C
-      RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+      RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
       RPAD(' ',1) || -- Fin P1 31c
 			RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 			RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -4728,7 +4728,7 @@ select
       RPAD(' ',3)||
       --3.6-TITRES  DERVIES
       RPAD(' ',36)||
-      --3.7.Derives -champs ï¿½ blanc 
+      --3.7.Derives -champs � blanc 
       -- DEBUT: projet OMP - sous-tache SIRL-237
       RPAD(' ',24)||                                   -- P1 3.7 jusqu'au P1 3.74
       RPAD(NVL(C_ENR.CD_METH_IFRS9_PD_ORIG,' '), 20)|| -- P1 2.99 :: projet OMP
@@ -4781,7 +4781,7 @@ select
       RPAD(' ',3)||
       RPAD(' ',2)||
 	    RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')||
-      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8,' ')|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8,' ')|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
       RPAD(' ',16)||
 	  --09/07/21 CDS ATOS (EMM) US 194 CRRv4.3
       RPAD(' ',783)||
@@ -4824,7 +4824,7 @@ select
       RPAD(' ', 1)|| --P1 22.69
       LPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), '     '),5,'0')||--P1_22_70_NOMBRE_DE_JOURS_DE_RETARD_DE_PAIEMENT
       --US740 RPAD(NVL(C_ENR.CD_MOTIF_SCO_LC0267,' '),3,' ')||--P1_22_71_MOTIF_DU_PASSAGE_EN_ENGAGEMENT_DOUTEUX
-      CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+      CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
       RPAD(NVL(C_ENR.BUCKET_IFRS9,' '),2,' ')||--P1_22_72_BUCKET_IFRS9
       RPAD(' ', 20)||
             /* 26/02/2018 CDS ATOS inihibition des ecritures de l'US33
@@ -4858,14 +4858,14 @@ select
 		RPAD(NVL(C_ENR.REF_MOB_ACTIF, ' '), 3) ||
 		RPAD(NVL(C_ENR.CD_ORGA_MOBIL, ' '), 3) ||
 		RPAD(' ',44) || --Fin 26
-		RPAD(' ', 19 ) || --Dï¿½but 27
+		RPAD(' ', 19 ) || --D�but 27
 		RPAD (' ', 3)||
 		--07/09/21 CDS_ATOS (EMM) MR 11666
 		RPAD(NVL(C_ENR.IND_ELIGI_OUTI_CTRAL_ANACRD, '2'), 1)||
 		--Fin EMM
 		RPAD(NVL(C_ENR.MOTIF_EXCLU_ANACREDIT, ' '), 2)||
 		RPAD(' ',23) || --Fin 27
-		RPAD(' ', 1 ) || --Dï¿½but 28
+		RPAD(' ', 1 ) || --D�but 28
 		RPAD (' ', 1)||
 		RPAD(' ', 22 )||  --Fin 29
 		--MANTIS 11611 (VFN) 27/07/2021
@@ -4883,7 +4883,7 @@ select
 		'N'|| -- M11667 (VFN) 09/09/2021
 		RPAD (' ', 25)||
 		RPAD (' ', 1)||   --fin P1 30 - 60 caracteres sur 250 seront dans lignedetail2		
-		RPAD(' ', 5 ) || --Dï¿½but 31a
+		RPAD(' ', 5 ) || --D�but 31a
 		RPAD(NVL(C_ENR.REF_UNIQ_CONT, ' '),40,' ')||
 		RPAD(NVL(C_ENR.REF_UNIQ_ELEM_CONT,' '),40,' ')||
 		RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_ENG_DT_SIGN_CTRT),19) ||
@@ -4894,12 +4894,12 @@ select
     RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')|| -- Debut 31b 31.9 -- KLx : Mantis 64749
     RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')|| -- 31.10 -- KLx : Mantis 64749
     RPAD(' ', 40)|| -- KLx : Mantis 64749
-		--DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+		--DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
     RPAD('+',1)|| -- P1 31.17a 
     RPAD('00000',5)|| -- P1 31.17b   
     RPAD('+',1)|| -- P1 31.18a 
     RPAD('00000',5)|| -- P1 31.18b
-    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 		-- Debut Klx US 276 CRRV4.3 - ajout champ P1 31.22
 	  RPAD(' ', 6)|| --Debut P1 31.19 
 	  RPAD(' ', 1)|| --Debut P1 31.20
@@ -4912,7 +4912,7 @@ select
 	  RPAD(' ', 97)|| --Fin 31b 
     -- Fin Klx US 276 CRRV4.3 - ajout champ P1 31.22
 		--RPAD(' ', 2)|| --Debut P1 31C
-    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
     RPAD(' ',1) || -- Fin P1 31c
 		RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 		RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -5110,7 +5110,7 @@ select
       RPAD(' ',2)||
       RPAD(' ',8)||
       --3.2BIS-PRETS CREDIT
-      NVL(C_ENR.CD_ARR_PAIEMENT,'N')|| --P1 5.5 -- 03/12/2021 - KLx Risque (VDC) - US 263 -  CRR Corporate - Score 7 'Indicateur ArriÃ©rÃ© de paiement' 
+      NVL(C_ENR.CD_ARR_PAIEMENT,'N')|| --P1 5.5 -- 03/12/2021 - KLx Risque (VDC) - US 263 -  CRR Corporate - Score 7 'Indicateur Arriéré de paiement' 
       RPAD(' ',1)||
       --29/04/2018 - CDS ATOS (FCU) - US787 : Top engagement douteux pour type de risque VAR104
       RPAD(NVL(C_ENR.TOP_ENG_DOUTEUX,' '),1, ' ')||  -- P1 5.2  eng douteux
@@ -5183,7 +5183,7 @@ select
       RPAD(' ',16)||
       RPAD(' ',2)||
       RPAD(' ',3)||
-      --3.5.Classification comptable de rï¿½fï¿½rence des actifs
+      --3.5.Classification comptable de r�f�rence des actifs
       RPAD(nvl(C_ENR.cla_comp_ref_act,' '),3)||
       RPAD(' ',12)||
       RPAD(' ',1)||
@@ -5206,7 +5206,7 @@ select
       RPAD(' ',16)||
       RPAD(' ',2)||
       RPAD(' ',3)||
-      --3.6 TITRES  cREANCE - champs ï¿½ blanc car non applicables pour ce type de risque
+      --3.6 TITRES  cREANCE - champs � blanc car non applicables pour ce type de risque
       RPAD(' ',1)||
       RPAD(' ',2)||
       --3.6 Bis -TITRES  DERIVES
@@ -5304,7 +5304,7 @@ select
       RPAD(' ',3)||
       RPAD(NVL(C_ENR.INSTRUMENT_FINANCIER, ' '),2,' ')|| --P1 3.75 position 1430
       RPAD(NVL(C_ENR.CD_TYPE_PROD_BANCAIRE,' '),6,' ')|| --P1 4.42 position 1432
-      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8,' ')|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrÃªtÃ© en cours
+      RPAD(nvl(TO_CHAR(C_ENR.DT_ARRETE, 'YYYYMMDD'),' '),8,' ')|| -- Klx US273 23/12/2021 alimenter le champ P1 3.3 'Date de valeur' avec la date d'arrêté en cours
 	  RPAD(' ',16)||
       --4.2a
       RPAD(' ',20)||
@@ -5403,7 +5403,7 @@ select
       RPAD(NVL(C_ENR.TYPE_AMOR_CAP,' '),1)||-- P1 22.16	Type d'amortissement du capital (SIRL-519)
       RPAD(' ',142)|| --
 --06/02/2019 - CDS AtoS FAD - CRRV4.2 US662 - VAR104
-      --RPAD('3',1)|| --P1 22.36 -> non alimentï¿½ dans la notice
+      --RPAD('3',1)|| --P1 22.36 -> non aliment� dans la notice
       RPAD(NVL(C_ENR.IND_RMB_ANTICIPE,' '),1,' ')||   -- 18/02/2019 - CDS ATOS (GBD) - US731 P1 22.36
       -- DEBUT: projet OMP - sous-tache SIRL-236
       RPAD(' ', 177)|| -- P1 22.37 jusq'au P1 22.62
@@ -5413,7 +5413,7 @@ select
       RPAD(NVL(C_ENR.CD_PAYS_JURIDICTION, ' '), 2, ' ')|| -- P1 22.66
       RPAD(' ', 16)||
       --US740 RPAD(NVL(C_ENR.CD_MOTIF_SCO_LC0267,' '), 3, ' ')|| -- P1 22.71
-      CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 ï¿½ gauche)
+      CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3) ELSE LPAD(C_ENR.CD_MOTIF_SCO_LC0267,3,'0') END ||  -- 26/02/2019 - CDS ATOS (GBD) - US740  P1 22.71  (col 2852) Motif passage engagemt douteux (0 � gauche)
       RPAD(NVL(C_ENR.BUCKET_IFRS9,' '), 2, ' ')|| -- P1 22.72
       RPAD(' ', 20)||
       --RPAD(' ',240)||
@@ -5502,12 +5502,12 @@ select
     RPAD(NVL(C_ENR.CD_COMMUNE_BIEN_FINAN, ' '),15,' ')|| -- Debut 31b 31.9 -- KLx : Mantis 64749
     RPAD(NVL(C_ENR.CD_PAYS_BIEN_FINAN, ' '),2,' ')|| -- 31.10 -- KLx : Mantis 64749
     RPAD(' ', 40)|| -- KLx : Mantis 64749    
-		--DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+		--DEBUT: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
     RPAD('+',1)|| -- P1 31.17a 
     RPAD('00000',5)|| -- P1 31.17b   
     RPAD('+',1)|| -- P1 31.18a 
     RPAD('00000',5)|| -- P1 31.18b
-    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 DurÃ©e initiale/totale du prÃªt
+    --FIN: KLx Risques Leasing (BA): US 275 - Score 6 Durée initiale/totale du prêt
 		-- Debut Klx US 276 CRRV4.3 - ajout champ P1 31.22
 	  RPAD(' ', 6)|| --Debut P1 31.19 
 	  RPAD(' ', 1)|| --Debut P1 31.20
@@ -5520,7 +5520,7 @@ select
 	  RPAD(' ', 97)|| --Fin 31b 
     -- Fin Klx US 276 CRRV4.3 - ajout champ P1 31.22
 		--RPAD(' ', 2)|| --Debut P1 31C
-    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITEÂ format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
+    RPAD(NVL(C_ENR.IND_GAR_SANS_LIMITE,' '),1) ||-- US 262 CRRV4.3 - P1 31.37 Ajout du champ IND_GAR_SANS_LIMITE format VARCHAR2 de longueur 1 byte - KLx Risque (VDC) - 03/12/2021
     RPAD(' ',1) || -- Fin P1 31c
 		RPAD(pack_utilitaire.f_format_montant_bis2(C_ENR.MNT_SUBV_HT),19)|| -- Debut 31d US 287 CRRV4.3 - P1 29.3 Montant des subventions  KLx (GH)
 		RPAD ('EUR', 3)|| -- P1 29.4 Devise du montant des subventions -- US 287  CRRV4.3 - P1 29.3  KLx (GH)
@@ -5655,7 +5655,7 @@ select
 		RPAD(' ',40)||
         CASE WHEN C_ENR.CD_PERIM_PROV= 'P' THEN RPAD(C_ENR.ID_ENGAGEMENT,40) ELSE RPAD(' ', 40) END || --P9 1.11 :: M72074
         CASE WHEN C_ENR.CD_PERIM_PROV= 'T' THEN RPAD(C_ENR.ID_PROVISION,40) ELSE RPAD(' ', 40) END ||  --P9 1.16 :: M72074
-    -- Les champs 1.11 et 1.16 ont pas la même regle d'alimentation que dans la table  provisions_decotes_p9 
+    -- Les champs 1.11 et 1.16 ont pas la m�me regle d'alimentation que dans la table  provisions_decotes_p9 
 		RPAD(' ',20)||
 		RPAD(NVL(C_ENR.CD_NAT_DEPRE,' '),1,' ')||
 		RPAD(NVL(C_ENR.CD_PERIM_PROV,' '),1,' ')||

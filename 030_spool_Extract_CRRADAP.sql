@@ -32,8 +32,8 @@
 -- spool fichier Export_CRRADAP
 
 /*
-Nom du fichier dâ€™export : en parametre 2 
-CrÃ©ation dans le repertoire : en parametre 1
+Nom du fichier d’export : en parametre 2 
+Création dans le repertoire : en parametre 1
 2 bind variable : 
        ENTITE  : entite a extraire (= cd_conso_cpt )
        MASYSDATE : date d'extraction (yyyymmddHHMI): idem sur ttes les lignes et l'entete
@@ -43,7 +43,7 @@ Formats  :  char 4201
   / ! \                     pas de point-virgule dans commentaires
   -----   
 
-select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limitÃ© a 4000 car 
+select ( champ1 || champ2 ) as lignedetail1 from table : lignedetail1 limité a 4000 car 
 Pour avoir les 4201 car : 
 select ( champ1 || champ2 ) as lignedetail1, champ3 as lignedetail2  from table  : 
 
@@ -64,7 +64,7 @@ set trimspool OFF
 SET COLSEP '' -- KLx M11855 GHU
 SET WRAP OFF -- KLx M11855 VDC
 --12/07/21 CDS ATOS (VFN) US 216 CRRv4.3
---SET linesize 4201   --4201  mais requete SQL limite Ã  4000 !
+--SET linesize 4201   --4201  mais requete SQL limite à 4000 !
 SET linesize 2000   --5100  mais lignedetail1 fera 4000 et lignedetail2 fera 1099
 --Fin EMM
 
@@ -77,7 +77,7 @@ spool &1/&2 append;
 ------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------------------
--- Â§01: a partir de P_UTLF_DEGRADE_A1
+-- §01: a partir de P_UTLF_DEGRADE_A1
 ------------------------------------------------------------------------------------------------------------------------
 select 
     	RPAD( to_char(C_ENR.DT_ARRETE, 'YYYYMMDD'), 8 )||
@@ -134,7 +134,7 @@ select
       RPAD( NVL(C_ENR.BUCKET_IFRS9, ' '), 2 ) || -- A1 4.17 - Bucket IFRS9 -- M73798
       RPAD( ' ', 27 )||
       -- Fin 4 - INFORMATIONS ENGAGEMENTS
-      -- DÃ©but 5 - PrÃªt immobilier et CrÃ©dit-Bail immobilier 
+      -- Début 5 - Prêt immobilier et Crédit-Bail immobilier 
       RPAD( NVL(C_ENR.CD_USAGE_BIEN_IMM, ' '), 1 )||
       RPAD( NVL(C_ENR.CD_RESPECT_COND, ' '), 1 )||
       RPAD( pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_VTR_PDR),0)), 19 )||
@@ -142,7 +142,7 @@ select
       RPAD( NVL(C_ENR.CD_ACHAT_FIN_LOC, ' '), 1 )|| -- Mantis 62434 - Retour en arriere -- RPAD( '0' , 1 )|| -- US 302 Alimentation du champ 5.4 avec un zero '0'
       RPAD( pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_VR),0)), 19 )||
       RPAD( ' ', 30 )||
-      -- Fin 5 - PrÃªt immobilier et CrÃ©dit-Bail immobilier 
+      -- Fin 5 - Prêt immobilier et Crédit-Bail immobilier 
       -- Debut 6 - INFORMATIONS SURETES 
       RPAD( NVL(C_ENR.CD_CAP_SURETE, ' '), 12 )||
       RPAD( NVL(C_ENR.CD_PAYS_SURETE, ' '), 2 )||
@@ -157,16 +157,16 @@ select
       RPAD( ' ', 1 ) ||
       RPAD( ' ', 29 )||
       -- Fin 6 - INFORMATIONS SURETES
-      -- Debut 7 - INFORMATIONS Provision spÃ©cifique
+      -- Debut 7 - INFORMATIONS Provision spécifique
       RPAD( NVL(C_ENR.CD_PCCO4, ' '), 12 )||
       RPAD( pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_PCCO4),0)), 19 )||
       RPAD( NVL(C_ENR.CD_NATURE_PROV, ' '), 12 )|| -- A1 7.3
-      -- Fin 7 - INFORMATIONS Provision spÃ©cifique
-      -- DÃ©but 8 - INFORMATIONS DÃ©cote
+      -- Fin 7 - INFORMATIONS Provision spécifique
+      -- Début 8 - INFORMATIONS Décote
       RPAD( NVL(C_ENR.CD_PCCO5, ' '), 12 )||
       RPAD( pack_utilitaire.F_FORMAT_MONTANT_BIS2(nvl((C_ENR.MNT_PCCO5),0)), 19 )||--04/08/2018      RPAD(NVL(C_ENR.CD_NATURE_DECO, ' '), 12)||
       RPAD( NVL('', ' '), 12 )||        --  CD_NATURE_DECO
-      -- Fin 8 - INFORMATIONS DÃ©cote
+      -- Fin 8 - INFORMATIONS Décote
 	--CDS ATOS (VFN) US 216 CRRV4.3 12/07/2021
       LPAD( ' ', 1164) as lignedetail--,  --4000 -836
   --    LPAD( ' ', 3164) as lignedetail,  --4000 -836
@@ -179,7 +179,7 @@ Where CD_STATUT_LIGNE = 'V'
 
 
 ------------------------------------------------------------------------------------------------------------------------
--- Â§02: a partir de P_UTLF_AUTO_A1 
+-- §02: a partir de P_UTLF_AUTO_A1 
 ------------------------------------------------------------------------------------------------------------------------
 
 SELECT
@@ -243,7 +243,7 @@ SELECT
       RPAD( NVL(C_ENR.CD_RESPECT_COND, ' '), 1 )||
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VTR_PDR),0)), 19 )||
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_HYPOTHEQUE),0)), 19 )||
-      RPAD( NVL(C_ENR.CD_ACHAT_FIN_LOC, ' '), 1 )|| -- Mantis 62434  -- RPAD( '0' , 1 )|| -- US 302 Alimentation du champ 5.4 avec un zÃ©ro '0'
+      RPAD( NVL(C_ENR.CD_ACHAT_FIN_LOC, ' '), 1 )|| -- Mantis 62434  -- RPAD( '0' , 1 )|| -- US 302 Alimentation du champ 5.4 avec un zéro '0'
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VR),0)), 19 )||
       RPAD( ' ', 30 )||    
       -- Fin 5 - Pret immobilier et Credit-Bail immobilier 
@@ -264,12 +264,12 @@ SELECT
       RPAD( NVL(C_ENR.CD_PCCO4, ' '), 12 )||
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PCCO4),0)), 19 )||
       RPAD( NVL(C_ENR.CD_NATURE_PROV, ' '), 12 )|| -- A1 7.3
-      -- Fin 7 - INFORMATIONS Provision spÃ©cifique
-      -- DÃ©but 8 - INFORMATIONS DÃ©cote      
+      -- Fin 7 - INFORMATIONS Provision spécifique
+      -- Début 8 - INFORMATIONS Décote      
       RPAD( NVL(C_ENR.CD_PCCO5, ' '), 12 )||
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_PCCO5),0)),19 )||
       RPAD( NVL(C_ENR.CD_NATURE_DECO, ' '), 12 )||
-      -- Fin 8 - INFORMATIONS DÃ©cote      
+      -- Fin 8 - INFORMATIONS Décote      
       --CDS ATOS (VFN) US 216 CRRV4.3 12/07/2021
       LPAD(' ', 1164)  as lignedetail--, --4000 -836
     --  LPAD(' ', 3164)  as lignedetail, --4000 -836
@@ -281,7 +281,7 @@ Where CD_STATUT_LIGNE = 'V'
 	AND DT_ARRETE = (select max(dt_arrete) from eng_corp_p1);
 
 ------------------------------------------------------------------------------------------------------------------------
--- Â§03: a partir de P_UTLF_A1_GMBH
+-- §03: a partir de P_UTLF_A1_GMBH
 ------------------------------------------------------------------------------------------------------------------------
 
 SELECT
@@ -336,7 +336,7 @@ SELECT
       RPAD( NVL(C_ENR.CD_RESPECT_COND, ' '), 1)||
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VTR_PDR),0)),19)||
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_HYPOTHEQUE),0)),19)||
-      RPAD( NVL(C_ENR.CD_ACHAT_FIN_LOC, ' '), 1 )|| -- Mantis 62434 -- RPAD( '0' , 1 )|| -- US 302 Alimentation du champ 5.4 avec un zÃ©ro '0'
+      RPAD( NVL(C_ENR.CD_ACHAT_FIN_LOC, ' '), 1 )|| -- Mantis 62434 -- RPAD( '0' , 1 )|| -- US 302 Alimentation du champ 5.4 avec un zéro '0'
       RPAD( pack_utilitaire.f_format_montant_bis2(nvl((C_ENR.MNT_VR),0)),19 )||
       RPAD( ' ', 30 )||
       RPAD( NVL(C_ENR.CD_CAP_SURETE, ' '), 12 )||

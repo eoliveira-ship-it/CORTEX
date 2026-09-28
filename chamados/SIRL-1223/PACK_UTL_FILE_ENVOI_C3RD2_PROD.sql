@@ -26,7 +26,7 @@
 -- 21/01/2022 CUNHAVI  : CRRv4.3 + US 283									  --
 -- 16/12/2021 ALMEIDBR : US 269 + M11792 + M11793                             --
 -- 16/12/2021 ALMEIDBR : M11793 - Devise Liasse                               --
--- 16/12/2021 ALMEIDBR : M11792 - Devise Loyers Avec/Hors ArriÃ©rÃ© Paiement  --
+-- 16/12/2021 ALMEIDBR : M11792 - Devise Loyers Avec/Hors Arriéré Paiement  --
 -- 13/12/2021 ALMEIDBR : v1.16 + US 269 (CRRv4.3)                             --
 -- 09/12/2021 ALMEIDBR : US 269 - Score 7 'Code INSEE de la commune'          --
 -- 02/12/2021 ALMEIDBR : correction v1.15                                     --
@@ -366,7 +366,7 @@ IS
 		 ETAT_PROC_JUD 					, -- 30/01/2018 CDS ATOS (JMP) ANACREDIT US 45
 		 DT_PROC_JUD 					 -- 30/01/2018 CDS ATOS (JMP) ANACREDIT US 45
 										
-		,NB_SALARIE 		  -- 29/05/2018 CDS Atos (JMP) ANACREDIT US346 Ajout du nombre de salariÃ©s
+		,NB_SALARIE 		  -- 29/05/2018 CDS Atos (JMP) ANACREDIT US346 Ajout du nombre de salariés
 		,ID_TIERS_CALC -- 27/11/2018 - CDS ATOS (LFD) - ANACREDIT US 593
 		,CD_NUTS -- 09/01/2019 - CDS ATOS (LFD) - US 625
     -- US196 
@@ -405,7 +405,7 @@ IS
 	,CD_MOTIF_ENTREE_WL		   as CD_MOTIF_ENTREE_WL
 	,CD_MOTIF_SORTIE_WL        as CD_MOTIF_SORTIE_WL
 	From  TIE_TIERS_C2 where cd_conso_cpt=p_cd_conso_cpt
-	--18/12/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise aï¿½ jour de l'utlfile, ajout de la condition A_EXTRAIRE = 'O'
+	--18/12/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise a? jour de l'utlfile, ajout de la condition A_EXTRAIRE = 'O'
 		AND A_EXTRAIRE = 'O'
 	-- Fin - CDS AtoS FAD - ANACREDIT US600
 	;
@@ -468,13 +468,13 @@ BEGIN
 		   RPAD(nvl(C_ENR.ETAT_PROC_JUD,' '),1)	||';'|| 
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_PROC_JUD, 'YYYYMMDD'), ' '), 8)	||';'|| 
 		  -- FIN LFD
-/* BloquÃ© en recette retour ancien C3RD		  
+/* Bloqué en recette retour ancien C3RD		  
 		  RPAD(' ',5)										||';'||  -- CDS ATOS (JMP) ANACREDIT US45 (C2 4.32)
 		  RPAD(nvl(C_ENR.ETAT_PROC_JUD,' '),1)				||';'||  -- CDS ATOS (JMP) ANACREDIT US45 (C2 4.33)
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_PROC_JUD, 'YYYYMMDD'), ' '), 8)	||';'||  -- CDS ATOS (JMP) ANACREDIT US45 (C2 4.34)		  
 		  RPAD(' ',1)										||';'||  -- Modif MEPHO mai 201018 CDS ATOS (JMP) ANACREDIT US45 (C2 4.32)
 		  RPAD(' ',8)										||';'||  -- Modif MEPHO mai 201018 CDS ATOS (JMP) ANACREDIT US45 (C2 4.32)
-BloquÃ© en recette retour ancien C3RD */
+Bloqué en recette retour ancien C3RD */
 		  RPAD(nvl(C_ENR.RAISON_SOCIALE,' '),114)			||';'||
 		  RPAD(nvl(C_ENR.CD_PAYS_NATIONALITE,' '),2)		||';'||
 		  RPAD(nvl(C_ENR.CD_PAYS_RESIDENCE,' '),2)			||';'||
@@ -521,7 +521,7 @@ BloquÃ© en recette retour ancien C3RD */
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_ENTREE_DEFAUT, 'YYYYMMDD'), ' '), 8)||';'||
 		  RPAD(NVL(C_ENR.CD_METHODO_NOTE,'999'),3)					||';'||
 -- 06/07/2018 CDS Atos (JMP) ANACREDIT Sprint 12 US382 
--- Activation de l'Ã©criture
+-- Activation de l'écriture
 		  RPAD(NVL(C_ENR.CD_MOTIF_NOTE,' '),3)					||';'||
 --                  RPAD(' ',3)                                                                   ||';'||
 -- 06/07/2018 CDS Atos (JMP) ANACREDIT Sprint 12 US382 
@@ -649,7 +649,7 @@ IS
 	   CD_GRILLE_NOTE				,
 	   CD_SEGMENT_NOTE				,
 	   PD							
-	-- 18/08/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise Ã  jour de lâ€™utlfile, ajout du champ ID_TIERS_CALC
+	-- 18/08/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise à jour de l’utlfile, ajout du champ ID_TIERS_CALC
 	   , ID_TIERS_CALC
 	-- Fin - CDS AtoS FAD - ANACREDIT US600
 	   --11/01/2019 CDS Atos (SQN) US 630
@@ -677,7 +677,7 @@ IS
 	 ,CD_MOTIF_ENTREE_WL		   as CD_MOTIF_ENTREE_WL
 	 ,CD_MOTIF_SORTIE_WL        as CD_MOTIF_SORTIE_WL	 
 	From  TIE_TIERS_C3 where cd_conso_cpt=p_cd_conso_cpt
-	-- 18/08/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise Ã  jour de lâ€™utlfile, filtre sur A_EXTRAIRE ='O'
+	-- 18/08/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise à jour de l’utlfile, filtre sur A_EXTRAIRE ='O'
 		AND A_EXTRAIRE = 'O'
 	---- Fin - CDS AtoS FAD - ANACREDIT US600
 	;
@@ -700,7 +700,7 @@ BEGIN
   P_UTLF_REMOVE_FILE(p_chemin, p_nom_fichier||cd_cpt(CD_CONSO));
 
   --ouverture du fichier en mode Append.
-  --le fichier rÃ¯Â¿Â½sultat est supprimÃ¯Â¿Â½ avant l'appel de ces procÃ¯Â¿Â½dures.
+  --le fichier rï¿½sultat est supprimï¿½ avant l'appel de ces procï¿½dures.
   v_crr_descripteur := UTL_FILE.FOPEN (p_chemin, p_nom_fichier||cd_cpt(CD_CONSO), 'A',32767);
   
 
@@ -726,7 +726,7 @@ BEGIN
     BEGIN
     	v_ligne :=
 			'01'||';'|| -- C3 0.0
-			-- 18/08/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise Ã  jour de lâ€™utlfile, Modifier l'alimentation du segment C3 dans le fichier
+			-- 18/08/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise à jour de l’utlfile, Modifier l'alimentation du segment C3 dans le fichier
 			--  RPAD(nvl(to_char(C_ENR.ID_TIERS),' '),20)				||';'||
 			--  RPAD(nvl(to_char(C_ENR.ID_TIERS),' '),20)					||';'||
 			RPAD(NVL(C_ENR.ID_TIERS_CALC, ' '), 20)||';'|| -- C3 1.1
@@ -747,7 +747,7 @@ BEGIN
 			RPAD(NVL(TO_CHAR(C_ENR.DT_ENTREE_DEFAUT, 'YYYYMMDD'), ' '), 8)||';'|| -- C3 4.15
 			RPAD(NVL(C_ENR.CD_METHODO_NOTE,'999'),3)					||';'|| -- C3 4.3
 			-- 07/06/2018 CDS Atos (JMP) ANACREDIT Sprint 12 US380 
-			-- Activation de l'Ã©criture
+			-- Activation de l'écriture
 			RPAD(NVL(C_ENR.CD_MOTIF_NOTE,' '),3)					||';'|| -- C3 4.4
 			--        RPAD(' ',3)                                                                   ||';'||
 			-- Fin 07/06/2018 CDS Atos (JMP) ANACREDIT Sprint 12 US380 
@@ -973,10 +973,10 @@ IS
 			DT_SIGNATURE				, 		--30/01/2018 CDS ATOS (JMP) ANACREDIT US45
 			DT_PL_NPL							--30/01/2018 CDS ATOS (JMP) ANACREDIT US45 
 			-- 06/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US380
-			-- DÃ©ja fait P3 21.8				,DT_DER_RESTRUCT_COM
+			-- Déja fait P3 21.8				,DT_DER_RESTRUCT_COM
 			,IND_RBT_ANTICIPE
-			-- DÃ©ja fait P3 22.82				,DT_IMP_PRUDENT
-			-- DÃ©ja fait P3 5.5				,CD_ARR_PAIMENT
+			-- Déja fait P3 22.82				,DT_IMP_PRUDENT
+			-- Déja fait P3 5.5				,CD_ARR_PAIMENT
 			,MNT_BIEN_OCTROI
 			-- Fin 06/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US380
 			-- 11/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US418
@@ -1165,7 +1165,7 @@ BEGIN
   P_UTLF_REMOVE_FILE(p_chemin, p_nom_fichier||cd_cpt(CD_CONSO));
 
   --ouverture du fichier en mode Append.
-  --le fichier resultat est supprime avant l'appel de ces procÃ¯Â¿Â½dures.
+  --le fichier resultat est supprime avant l'appel de ces procï¿½dures.
   v_crr_descripteur := UTL_FILE.FOPEN (p_chemin, p_nom_fichier||cd_cpt(CD_CONSO), 'A',32767);
   
 
@@ -1192,12 +1192,12 @@ BEGIN
     	v_ligne :=
 		'01'||';'||
 		  RPAD(nvl(C_ENR.ID_ENGAGEMENT,' '),40)				||';'|| -- P3 1.7
-		-- 18/12/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise Ã  jour de lâ€™utlfile, modifier l'alimentation du segment P3 dans le fichier
+		-- 18/12/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise à jour de l’utlfile, modifier l'alimentation du segment P3 dans le fichier
 		  ---- 05/11/2018 - CDS ATOS (LFD) - ANACREDIT US 593
 		  --CASE WHEN C_CPT.CD_CONSO_CPT = '00357' THEN RPAD(nvl(to_char(C_ENR.ID_TIERS_CALC),' '),20) ELSE RPAD(nvl(to_char(C_ENR.ID_TIERS),' '),20)	END		||';'||
 		  ----FIN LFD
 		  RPAD(nvl(to_char(C_ENR.ID_TIERS_CALC),' '),20) ||';'|| -- P3 1.1
-		-- 18/12/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise Ã  jour de lâ€™utlfile, modifier l'alimentation du segment P3 dans le fichier
+		-- 18/12/2018 - CDS AtoS FAD - ANACREDIT US600 : Mise à jour de l’utlfile, modifier l'alimentation du segment P3 dans le fichier
 		  RPAD(nvl(C_ENR.CD_SYS_INT,' '),20)				||';'|| -- P3 1.20
 		  RPAD(' ',7)										||';'|| -- P3 1.29
 		  RPAD(nvl(C_ENR.ID_ENGAGEMENT,' '),40)				||';'|| -- P3 1.21
@@ -1246,7 +1246,7 @@ BEGIN
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_PREM_DEB_FD, 'YYYYMMDD'), ' '), 8)||';'|| -- P3 22.31
 		  pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_PREM_DEB_FD,0))||';'||  -- P3 22.32
 		  RPAD(nvl(C_ENR.CD_DEV_PREM_DEB_FD,'EUR'),3)       ||';'||   -- P3 22.33 devise 1er deblocage fond    -- 18/02/2019 - CDS ATOS (GBD) - US731
-		  RPAD('ECH',3)||';'||   -- P3 22.56 Indicateur produit Ã©chÃ©ancÃ©  
+		  RPAD('ECH',3)||';'||   -- P3 22.56 Indicateur produit échéancé  
 		  RPAD(nvl(C_ENR.IND_ECH,' '),1)					||';'|| -- P3 22.12
 		  RPAD(nvl(C_ENR.IND_PAL,' '),1)					||';'|| -- P3 22.57
 		  RPAD(nvl(C_ENR.CD_TYPE_TAUX,' '),1)				||';'|| -- P3 8.11
@@ -1277,14 +1277,14 @@ BEGIN
 		  pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_CRD,0))||';'|| -- P3 22.34
 		  RPAD(' ',19)||	';'|| -- P3 22.60
 		  RPAD(' ',3)||	';'|| -- P3 22.61
-		  --DEBUT: KLx_Risques(BA) - US 296: Score 6 - Montants DÃ©couvert, Capital et Loyer
-		  RPAD(' ', 19)															||';'|| --P3 8.17 - Montant du dÃ©couvert :: AVANT: pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_DECOUVERT,0))
-		  RPAD(' ', 3)															||';'|| --P3 8.18 - Devise du dÃ©couvert  :: AVANT: nvl(C_ENR.CD_DEVISE_CRD,' ')	  
+		  --DEBUT: KLx_Risques(BA) - US 296: Score 6 - Montants Découvert, Capital et Loyer
+		  RPAD(' ', 19)															||';'|| --P3 8.17 - Montant du découvert :: AVANT: pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_DECOUVERT,0))
+		  RPAD(' ', 3)															||';'|| --P3 8.18 - Devise du découvert  :: AVANT: nvl(C_ENR.CD_DEVISE_CRD,' ')	  
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI103')
 		    then pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_CRD, 0))
 			else RPAD(' ', 19)
-		  end																	||';'|| --P3 8.19 * Montant du Capital restant dÃ» 
-		  RPAD(nvl(C_ENR.CD_DEVISE_CRD, 'EUR'), 3)||';'|| --P3 8.20 - Devise du Capital restant dÃ»	-M12701 Ble 4	   
+		  end																	||';'|| --P3 8.19 * Montant du Capital restant dû 
+		  RPAD(nvl(C_ENR.CD_DEVISE_CRD, 'EUR'), 3)||';'|| --P3 8.20 - Devise du Capital restant dû	-M12701 Ble 4	   
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI105','TRE504') 
 		    then pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_LOYER, 0))
 			else RPAD(' ', 19)
@@ -1293,7 +1293,7 @@ BEGIN
 		    then RPAD(nvl(C_ENR.CD_DEVISE_LOY, 'EUR'), 3)
 			else RPAD(' ', 3)
 		  end																	||';'|| --P3 8.22 - Devise des loyers
-		  --FIN: KLx_Risques(BA) - US 296: Score 6 - Montants DÃ©couvert, Capital et Loyer
+		  --FIN: KLx_Risques(BA) - US 296: Score 6 - Montants Découvert, Capital et Loyer
 		  pack_utilitaire.f_format_montant_BIS2(0)||';'|| -- P3 6.1
 		  RPAD(nvl(C_ENR.CD_DEVISE_IRD,' '),3)				||	';'|| -- P3 6.2
 		  pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_PNU,0))||';'|| -- P3 3.5
@@ -1303,7 +1303,7 @@ BEGIN
 -- 06/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US380 
 --		  RPAD(' ',19)										||	';'||
           pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_MTM,0))||';'|| -- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 3.52   
-		  RPAD(nvl(C_ENR.CD_DEV_MNT_MTM,'EUR'),3)				||';'||-- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 3.53  -- 12/02/2019 - CDS AtoS FAD - CRRV4.2 - Correctif : devise Ã  EUR par dÃ©faut.
+		  RPAD(nvl(C_ENR.CD_DEV_MNT_MTM,'EUR'),3)				||';'||-- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 3.53  -- 12/02/2019 - CDS AtoS FAD - CRRV4.2 - Correctif : devise à EUR par défaut.
 		pack_utilitaire.f_format_montant_BIS3(C_ENR.MNT_BIEN_OCTROI)||';'||  -- P3 22.44 (84 em champ)
 -- Fin 06/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US380 
 -- 31/07/2018 CDS ATOS (PSR) ANACREDIT -
@@ -1351,7 +1351,7 @@ BEGIN
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_IMP_PRUDENT, 'YYYYMMDD'), ' '), 8)||';'|| -- P3 22.82
 -- 06/07/2018 CDS ATOS (JMP) ANACREDIT Sprint 12 US380
 --		  RPAD(nvl(C_ENR.CD_NEW_DEFAUT,' '),1)				||';'||
-		 -- 12/02/2019 - CDS AtoS FAD - CRRV4.2 - Correctif : CD_MOTIF_SCO_LC0267 : complÃ©ter le code Ã  gauche Ã  0.
+		 -- 12/02/2019 - CDS AtoS FAD - CRRV4.2 - Correctif : CD_MOTIF_SCO_LC0267 : compléter le code à gauche à 0.
   		  --LPAD(nvl(C_ENR.CD_MOTIF_SCO_LC0267,' '),3,'0')		||';'||   -- 31/01/2019 - CDS ATOS (GBD) - US 671     P3 22.71     cdPasEngDout
 		--15/02/19 CDS ATOS (EMM) Correctif 2 score 7
 		CASE WHEN C_ENR.CD_MOTIF_SCO_LC0267 is NULL then RPAD(' ', 3)
@@ -1363,16 +1363,16 @@ BEGIN
 		  RPAD(NVL(to_char(C_ENR.NB_JOURS_RETARD), '0'), 5)      ||';'||-- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 22.70 < exemple  ;+123;    
 		  pack_utilitaire.f_format_montant_BIS2( CASE WHEN nvl(C_ENR.MNT_ENC_ARR_PAIE,0) > 0 THEN nvl(C_ENR.MNT_ENC_ARR_PAIE,0) ELSE 0 END)||';'|| -- P3 9.3
 		  RPAD(nvl(C_ENR.CD_DEVISE_ARR_PAIE,' '),3)			||';'|| -- P3 9.4
-		  --DEBUT: KLx_Risques(BA) - US 296: Score 6 - Montants DÃ©couvert, Capital et Loyer
+		  --DEBUT: KLx_Risques(BA) - US 296: Score 6 - Montants Découvert, Capital et Loyer
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI103')
 			then pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_CAPITAL_ARR, 0))
 			else RPAD(' ', 19)
-		  end																			||';'|| --P3 9.31 - Montant du capital en arriÃ©rÃ© de paiement :: AVANT: CDS ATOS (GBD) - US 671
+		  end																			||';'|| --P3 9.31 - Montant du capital en arriéré de paiement :: AVANT: CDS ATOS (GBD) - US 671
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI103')
 		    then RPAD(nvl(C_ENR.CD_DEV_MNT_CAPITAL_ARR, 'EUR'), 3)
 			else RPAD(' ', 3)
-		  end																			||';'|| --P3 9.41 - Devise du capital en arriÃ©rÃ© de paiement  :: AVANT: CDS ATOS (GBD) - US 671
-		  --FIN: KLx_Risques(BA) - US 296: Score 6 - Montants DÃ©couvert, Capital et Loyer
+		  end																			||';'|| --P3 9.41 - Devise du capital en arriéré de paiement  :: AVANT: CDS ATOS (GBD) - US 671
+		  --FIN: KLx_Risques(BA) - US 296: Score 6 - Montants Découvert, Capital et Loyer
 		  pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_INT_ARR,0))||';'||   --31/01/2019 - CDS ATOS (GBD) - US 671     p3 9.32
 		  RPAD(nvl(C_ENR.CD_DEV_MNT_INT_ARR,'EUR'),3)			||';'||                --31/01/2019 - CDS ATOS (GBD) - US 671     p3 9.42
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_DTCO, 'YYYYMMDD'), ' '), 8)   ||';'||          -- 18/02/2019 - CDS ATOS (GBD) - US731     P3 22.38
@@ -1386,26 +1386,26 @@ BEGIN
 		  RPAD(nvl(C_ENR.TOP_EVT_CREDIT,' '),1)				||';'|| -- P3 21.3
 		  RPAD(nvl(C_ENR.CD_NATURE_EVT,' '),1)				||';'|| -- P3 21.4
 		  RPAD(nvl(C_ENR.CD_STATUT_CREDIT,' '),1)				||';'||	-- P3 21.5			--14/04/2018 CDS ATOS (EMM) Sprint 7 US 279 (P3 21.5)
-		  --RPAD(' ', 1)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US279
+		  --RPAD(' ', 1)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US279
 		  RPAD(nvl(C_ENR.CD_TYPE_CREANCE,' '),2)				||';'|| -- P3 21.6
 		  RPAD(nvl(C_ENR.CD_TYPE_RESTRUCT,' '),2)				||';'|| -- P3 8.28
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_RESTRUCTURATION, 'YYYYMMDD'), ' '), 8)||';'|| -- P3 21.2
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_DER_RESTRUCT_COM, 'YYYYMMDD'), ' '), 8)||';'|| -- P3 21.8
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_DER_RESTRUCT_RISK, 'YYYYMMDD'), ' '), 8)||';'|| -- P3 21.9
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_PREM_ACT_FORB, 'YYYYMMDD'), ' '), 8)	||';'||		--03/01/2018 CDS ATOS (EMM) Sprint 2 US 29 (P3 21.7)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US29
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US29
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PURG, 'YYYYMMDD'), ' '), 8) ||';'||	--14/04/2018 CDS ATOS (EMM) Sprint 7 US 279 (P3 21.10)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US279
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US279
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PURG, 'YYYYMMDD'), ' '), 8) ||';'||	--14/04/2018 CDS ATOS (EMM) Sprint 7 US 279 (P3 21.11)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US279
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US279
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_ENTR_PER_PROB, 'YYYYMMDD'), ' '), 8) ||';'||	--14/04/2018 CDS ATOS (EMM) Sprint 7 US 279 (P3 21.12)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US279
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US279
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_PER_PROB, 'YYYYMMDD'), ' '), 8) ||';'||	--14/04/2018 CDS ATOS (EMM) Sprint 7 US 279 (P3 21.13)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US279
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US279
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_THEO_FIN_FORB, 'YYYYMMDD'), ' '), 8) ||';'||	--14/04/2018 CDS ATOS (EMM) Sprint 7 US 279 (P3 21.14)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US279
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US279
 		  RPAD(NVL(TO_CHAR(C_ENR.DATE_SORT_EFF_FORB, 'YYYYMMDD'), ' '), 8)	||';'||		--03/01/2018 CDS ATOS (EMM) Sprint 2 US 29 (P3 21.15)
-		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 ItÃ©ration 2 - Inhibition US29
+		  -- RPAD(' ', 8)	||';'|| -- 08/06/2018 - CDS AtoS (LFD) - V18S27 Itération 2 - Inhibition US29
 		  --19/04/18 CDS Atos (EMM) US 279 inhibition du code du C3RD 1.1 pour revenir au C3RD initial
 		  RPAD(NVL(TO_CHAR(C_ENR.DT_PL_NPL, 'YYYYMMDD'), ' '), 8)	||';'||	-- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 21.16
 		  RPAD(nvl(C_ENR.CD_MOTIF_PL_NPL,' '),2)				||';'||     -- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 21.17
@@ -1419,7 +1419,7 @@ BEGIN
 		  RPAD(' ',3)										||	';'|| -- P3 8.40
 		  RPAD(' ',1)										||	';'|| -- P3 8.41
 		  pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.MNT_IDEMNITE_RES,0))  ||';'||  --31/01/2019 - CDS ATOS (GBD) - US 671       P3 29.1
-		  -- 13/02/2019 - CDS ATOS (SQN) CRRV4.2 - correctif scores 6 : forcer CD_DEV_MNT_INDEMNITE Ã  EUR
+		  -- 13/02/2019 - CDS ATOS (SQN) CRRV4.2 - correctif scores 6 : forcer CD_DEV_MNT_INDEMNITE à EUR
 		  RPAD(nvl(C_ENR.CD_DEV_MNT_INDEMNITE,'EUR'),3)		||';'||		                 --31/01/2019 - CDS ATOS (GBD) - US 671       P3 29.2
 		  RPAD(nvl(C_ENR.CLE_COMPTABLE,' '),40)			||';'|| -- P3 23.7
 		  RPAD(' ',5)	||';'|| -- P3 23.12
@@ -1427,7 +1427,7 @@ BEGIN
 		  RPAD(' ',1)		||';'|| -- P3 22.10
 		  RPAD(nvl(C_ENR.IND_REVOLVING,' '),1)				||';'||     -- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 5.6
 		  RPAD(nvl(C_ENR.IND_HISTO_IMP,' '),2)				||';'||     -- 31/01/2019 - CDS ATOS (GBD) - US 671  P3 40.11
-		  --RPAD(' ',95);	   												-- 31/01/2019 - CDS ATOS (GBD) - US 671  reduit de 100 Ã  95
+		  --RPAD(' ',95);	   												-- 31/01/2019 - CDS ATOS (GBD) - US 671  reduit de 100 à 95
 		  -- US196
           RPAD(NVL(C_ENR.idLocalTiers                   ,' '), 20)           ||';'|| -- P3 1.3
           RPAD(NVL(C_ENR.CdEntSucc                      ,' '),  5)           ||';'|| -- P3 31.1
@@ -1478,36 +1478,36 @@ BEGIN
           RPAD(NVL(C_ENR.IndPosEntPortRisq              ,' '),  1)           ||';'|| -- P3 41.14
           pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtCtEuroOri ,0))   ||';'|| -- P3 31.4
           RPAD(NVL(C_ENR.cdMetRev                       ,' '),  1)           ||';'|| -- P3 31.20
-		  --DEBUT: KLx_Risques(BA) - US 296: Score 6 - Montants DÃ©couvert, Capital et Loyer
+		  --DEBUT: KLx_Risques(BA) - US 296: Score 6 - Montants Découvert, Capital et Loyer
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI103')
 		    then pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtCapHorsArPai, 0))
 			else RPAD(' ', 19)
-		  end																			||';'|| --P3 9.33 - Montant du capital hors arriÃ©rÃ© de paiement      
+		  end																			||';'|| --P3 9.33 - Montant du capital hors arriéré de paiement      
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI103')
 			then RPAD(NVL(C_ENR.cdDevCapHorsArPai, 'EUR'), 3)
 			else RPAD(' ', 3)
-		  end											          						||';'|| --P3 9.43 - Devise du capital hors arriÃ©rÃ© de paiement    :: AVANT: M11705 CDS ATOS
-		  RPAD(' ', 19)																	||';'|| --P3 9.35 - Montant du dÃ©couvert en arriÃ©rÃ© de paiement   :: AVANT: pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtDecArPai ,0))
-		  RPAD(' ', 3)																	||';'|| --P3 9.45 - Devise du dÃ©couvert en arriÃ©rÃ© de paiement    :: AVANT: RPAD(NVL(C_ENR.cdDevDecArPai,'EUR'),3)
-		  RPAD(' ', 19)																	||';'|| --P3 9.36 - Montant du dÃ©couvert hors arriÃ©rÃ© de paiement :: AVANT: pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtDecHorsArPai ,0))
-		  RPAD(' ', 3)																	||';'|| --P3 9.46 - Devise du dÃ©couvert hors arriÃ©rÃ© de paiement  :: AVANT: RPAD(NVL(C_ENR.cdDevDecHorsArPai,'EUR'),3)		  
+		  end											          						||';'|| --P3 9.43 - Devise du capital hors arriéré de paiement    :: AVANT: M11705 CDS ATOS
+		  RPAD(' ', 19)																	||';'|| --P3 9.35 - Montant du découvert en arriéré de paiement   :: AVANT: pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtDecArPai ,0))
+		  RPAD(' ', 3)																	||';'|| --P3 9.45 - Devise du découvert en arriéré de paiement    :: AVANT: RPAD(NVL(C_ENR.cdDevDecArPai,'EUR'),3)
+		  RPAD(' ', 19)																	||';'|| --P3 9.36 - Montant du découvert hors arriéré de paiement :: AVANT: pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtDecHorsArPai ,0))
+		  RPAD(' ', 3)																	||';'|| --P3 9.46 - Devise du découvert hors arriéré de paiement  :: AVANT: RPAD(NVL(C_ENR.cdDevDecHorsArPai,'EUR'),3)		  
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI105','TRE504')
 		    then pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtLoyersArPai, 0))
 			else RPAD(' ', 19)
-		  end																			||';'|| --P3 9.37 - Montant des loyers en arriÃ©rÃ© de paiement
+		  end																			||';'|| --P3 9.37 - Montant des loyers en arriéré de paiement
 		  case when C_ENR.CD_TYPE_RISQUE in ('PRI105','TRE504')
 		    then RPAD(NVL(C_ENR.cdDevLoyersArPai, 'EUR'), 3)
 			else RPAD(' ', 3)
-		  end   				       											 		||';'|| --P3 9.47 - Devise des loyers en arriÃ©rÃ© de paiement      :: AVANT: KLxRisqLeasing (BA) - M11792
+		  end   				       											 		||';'|| --P3 9.47 - Devise des loyers en arriéré de paiement      :: AVANT: KLxRisqLeasing (BA) - M11792
           case when C_ENR.CD_TYPE_RISQUE in ('PRI105','TRE504')
 		    then pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtLoyersHorsArPai, 0))
 			else RPAD(' ', 19)
-		  end																			||';'|| --P3 9.38 - Montant des loyers hors arriÃ©rÃ© de paiement
+		  end																			||';'|| --P3 9.38 - Montant des loyers hors arriéré de paiement
           case when C_ENR.CD_TYPE_RISQUE in ('PRI105','TRE504')
 		    then RPAD(NVL(C_ENR.cdDevLoyersHorsArPai, 'EUR'), 3)
 			else RPAD(' ', 3)
-		  end																			||';'|| --P3 9.48 - Devise des loyers hors arriÃ©rÃ© de paiement    :: AVANT: KLxRisqLeasing (BA) - M11792
-		  --FIN: KLx_Risques(BA) - US 296: Score 6 - Montants DÃ©couvert, Capital et Loyer
+		  end																			||';'|| --P3 9.48 - Devise des loyers hors arriéré de paiement    :: AVANT: KLxRisqLeasing (BA) - M11792
+		  --FIN: KLx_Risques(BA) - US 296: Score 6 - Montants Découvert, Capital et Loyer
           pack_utilitaire.f_format_montant_BIS2(nvl(C_ENR.mtIntHorsArPai ,0))||';'|| -- P3 9.34
           RPAD(NVL(C_ENR.cdDevIntHorsArPai ,'EUR'),  3)||';'|| -- P3 9.44 -- M11706 CDS ATOS (VFN) 21/09/2021 - M12701 Ble 4s
           RPAD(NVL(C_ENR.cdAnaCred                      ,' '),  1)           ||';'|| -- P3 27.3
@@ -1764,7 +1764,7 @@ cd_cpt := liste_cd_conso('00399','00936','00357','00472','00370'); -- 13/11/2018
   P_UTLF_REMOVE_FILE(p_chemin, p_nom_fichier||cd_cpt(CD_CONSO));
 
   --ouverture du fichier en mode Append.
-  --le fichier rÃ¯Â¿Â½sultat est supprimÃ¯Â¿Â½ avant l'appel de ces procÃ¯Â¿Â½dures.
+  --le fichier rï¿½sultat est supprimï¿½ avant l'appel de ces procï¿½dures.
   v_crr_descripteur := UTL_FILE.FOPEN (p_chemin, p_nom_fichier||cd_cpt(CD_CONSO), 'A',32767);
 
   IF UTL_FILE.IS_OPEN (v_crr_descripteur) != TRUE THEN
@@ -1956,7 +1956,7 @@ cd_cpt := liste_cd_conso('00399','00936','00357','00472','00370'); -- 13/11/2018
   P_UTLF_REMOVE_FILE(p_chemin, p_nom_fichier||cd_cpt(CD_CONSO));
 
   --ouverture du fichier en mode Append.
-  --le fichier rÃ¯Â¿Â½sultat est supprimÃ¯Â¿Â½ avant l'appel de ces procÃ¯Â¿Â½dures.
+  --le fichier rï¿½sultat est supprimï¿½ avant l'appel de ces procï¿½dures.
   v_crr_descripteur := UTL_FILE.FOPEN (p_chemin, p_nom_fichier||cd_cpt(CD_CONSO), 'A',32767);
 
   IF UTL_FILE.IS_OPEN (v_crr_descripteur) != TRUE THEN
@@ -2070,7 +2070,7 @@ BEGIN
   P_UTLF_REMOVE_FILE(p_chemin, p_nom_fichier);
 
   --ouverture du fichier en mode Append.
-  --le fichier rÃ¯Â¿Â½sultat est supprimÃ¯Â¿Â½ avant l'appel de ces procÃ¯Â¿Â½dures.
+  --le fichier rï¿½sultat est supprimï¿½ avant l'appel de ces procï¿½dures.
   v_crr_descripteur := UTL_FILE.FOPEN (p_chemin, p_nom_fichier, 'A',32767);
 
   IF UTL_FILE.IS_OPEN (v_crr_descripteur) != TRUE THEN
