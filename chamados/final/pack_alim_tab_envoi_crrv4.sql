@@ -1,5 +1,5 @@
 
-create or replace PACKAGE pack_alim_tab_envoi_crrv4_new IS
+create or replace PACKAGE pack_alim_tab_envoi_crrv4 IS
 	  /******************************************************************************
 		Nom :    pack_alim_tab_cibles_envoi_crrv4
 		 But :    A partir des tables BTR, alimentations des tables cibles DDR avec
@@ -51,10 +51,10 @@ create or replace PACKAGE pack_alim_tab_envoi_crrv4_new IS
 
 	   PROCEDURE P_ALIM_ENG_CORP_P1_BIS;
 
-	  END pack_alim_tab_envoi_crrv4_new;
+	  END pack_alim_tab_envoi_crrv4;
 /
 
-create or replace PACKAGE BODY pack_alim_tab_envoi_crrv4_new IS
+create or replace PACKAGE BODY pack_alim_tab_envoi_crrv4 IS
 	  /******************************************************************************
 		 Nom :    pack_alim_tab_cibles_envoi_crrv4 (body)
 		 But :    A partir des tables BTR, alimentations des tables cibles DDR avec
@@ -3000,7 +3000,7 @@ create or replace PACKAGE BODY pack_alim_tab_envoi_crrv4_new IS
 					null DT_PASSAGE_DOUTEUX_COMPROMIS,    -- Date de passage en douteux compromis
 					--05/06/2020 - CDS ATOS (LFD) - US 41 MCO/ANACREDIT
 					-- 24/01/2018 CDS Atos (JMP) ANACRIT US33
-					pack_alim_tab_envoi_crrv4_new.f_cd_motif_sco_lc0267(
+					pack_alim_tab_envoi_crrv4.f_cd_motif_sco_lc0267(
 					T.CD_CATEG_CPT,
 					t.cd_motif_sco,
 					-- On ne tient compte du nombre de jours d'impay?s que si, comme pour le calcul de la date d'exigibilite du premier impaye,
@@ -3860,7 +3860,7 @@ create or replace PACKAGE BODY pack_alim_tab_envoi_crrv4_new IS
 					-- fin FAD
 					--05/06/2020 - CDS ATOS (LFD) - US 41 MCO/ANACREDIT
 					-- 24/01/2018 CDS Atos (JMP) ANACREDIT US33
-					  , pack_alim_tab_envoi_crrv4_new.f_cd_motif_sco_lc0267(
+					  , pack_alim_tab_envoi_crrv4.f_cd_motif_sco_lc0267(
 					  T.CD_CATEG_CPT,
 					  t.cd_motif_sco,
 			  -- On ne tient compte du nombre de jours d'impay?s que si, comme pour le calcul de la date d'exigibilite du premier impaye,
@@ -5021,7 +5021,7 @@ create or replace PACKAGE BODY pack_alim_tab_envoi_crrv4_new IS
 							'N' ,
 							-- 26/03/2018 CDS Atos (JMP) ANACREDIT US33 Sprint 7
 
-							pack_alim_tab_envoi_crrv4_new.f_cd_motif_sco_lc0267(
+							pack_alim_tab_envoi_crrv4.f_cd_motif_sco_lc0267(
 							  T.CD_CATEG_CPT,
 							  t.cd_motif_sco,
 							  null, -- Pour le P2 on ne prend pas en compte le nombre de jours d'impay?s
@@ -15867,5 +15867,5 @@ BEGIN
     COMMIT;
 END P_ALIM_ENG_CORP_P1_BIS;
 
-	  END pack_alim_tab_envoi_crrv4_new;
+	  END pack_alim_tab_envoi_crrv4;
 /
