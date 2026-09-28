@@ -2,7 +2,7 @@
 ## CAL-Version : 1.7                                                          ##
 ################################################################################
 ################################################################################
-## Script        : 030_CREATION_SPOOL_CRRADAP.sh                              ##
+## Script        : 030_CREATION_SPOOL_CRRADAP_vPACT                           ##
 ## Objet         : Creation fichier spool CRRADAP                             ##
 ##                                                                            ##
 ## Type          : Traitement Shell                                           ##
@@ -10,40 +10,32 @@
 ## Domaine       : RINT                                                       ##
 ## Application   : 030  - Declarations Des Risques                            ##
 ################################################################################
-## Creation      : le 18/05/2021 par DUGUET MARC                              ##
+## Creation      : le 28/09/2026 par OLIVEIRA ELDERSON                        ##
 ##                                                                            ##
 ## Modifications                                                              ##
 ## -------------                                                              ##
-## 16/01/2026 MESQUIPE: SIRL-712 - MERCA                                      ##
-## 10/01/2024 GOMESHU : BALE4 - entete 43 => 44                               ##
-################################################################################
-## 04/02/2022 CUNHAVI : Mantis 11841 - Correction Taille Ligne                ##
-## 13/07/2021 MIPAMES : Correction US 216 CRRv4.3                             ##
-## 13/07/2021 MIPAMES : US 216 CRRv4.3                                        ##
-##                                                                            ##
-##                                                                            ##
 ################################################################################
 # -- Nom de ce shell
-nom_shell=030_CREATION_SPOOL_CRRADAP.sh
+nom_shell=030_CREATION_SPOOL_CRRADAP_vPACT.sh
 
 
 # -- Nom du fichier d'envoi
 # /!\ sans extension spool creera un .lst  
-V30ENVOICRRFIC="CRRADAP.dat"
+V30ENVOICRRFIC="CRRADAP_vPACT.dat"
 #export V30ENVOICRRV4FIC
 
 # -- Nom du fichier log
-V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP.log
+V30ENVOICRRV4LOG=030_CREATION_SPOOL_CRRADAP_vPACT.log
 #export V30ENVOICRRV4LOG
 file_log="${LOG}/${V30ENVOICRRV4LOG}"
 
 # -- Nom du fichier log sql
-V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql.log
+V30ENVOICRRV4ERR=030_CREATION_SPOOL_CRRADAP_sql_vPACT.log
 #export V30ENVOICRRV4ERR
 
 # requete pour les fichiers spool 
 
-spool_sql="${SQL}/030_spool_Extract_CRRADAP.sql"
+spool_sql="${SQL}/030_spool_Extract_CRRADAP_vPACT.sql"
 
 # entite de depart (cherche suivante) et compteur
 entite="00000"
@@ -583,21 +575,6 @@ if [ -f ${LOG}/$V30ENVOICRRV4ERR ]
     exit $CRP
   fi
 fi
-
-trace_log "INF" "Lancement du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
-
-sh $SHL/030_CREATION_SPOOL_CRRADAP_vPACT.sh
-RC=$?
-
-if [ $RC -ne 0 ]
-then
-    ERR $RC "Erreur lors de l'exécution du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
-    exit $RC
-fi
-
-trace_log "INF" "Fin du script 030_CREATION_SPOOL_CRRADAP_vPACT.sh"
-
-
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"
 trace_log "INF" 0 "$DATE_TRT - FIN CREATION FICHIER ENVOI POUR CASA" $nom_shell
