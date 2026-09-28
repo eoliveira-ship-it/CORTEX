@@ -37,17 +37,18 @@ isso.
 Gerado a partir do ficheiro de producao, o passo nao se perde: esta la porque
 esta la no original.
 
-E CORRER DUAS VEZES?
---------------------
-Numa corrida normal o P_ALIM_PERIM_ENVOI_CRR_P1 passa a correr duas vezes -- uma
-no shell de producao, outra aqui. E inofensivo, e a procedure di-lo na primeira
-linha:
+O PASSO DO RSE_LOT3 NAO VEM PARA CA
+-----------------------------------
+O shell de producao tem um passo que nao e nosso -- o RSE_LOT3 / SIRL-153, que
+enche a PERIM_ENVOI_CRR_P1. Esse passo NAO entra neste ficheiro: quem o corre e o
+shell de producao, que e quem chama este. Repeti-lo aqui custava oito varrimentos
+da ENG_CORP_P1 com UNION (nao UNION ALL) em cada corrida, para reescrever a
+tabela com o mesmo conteudo.
 
-    execute immediate 'truncate table PERIM_ENVOI_CRR_P1';
-    insert into PERIM_ENVOI_CRR_P1( ... ) SELECT ... FROM ENG_CORP_P1 ...
-
-Esvazia e reenche a partir da ENG_CORP_P1, que nao muda entretanto. Uma vez ou
-duas, o conteudo e o mesmo. Custa um truncate e um insert.
+No lugar dele fica um comentario, que nao corre nada, a dizer que falta e porque.
+E para o dia em que este shell substituir o de producao -- que e o fim do
+SIRL-1224. Nesse dia ha que o trazer, senao a PERIM_ENVOI_CRR_P1 deixa de ser
+enchida sem dar erro: fica com o conteudo do arrete anterior.
 
 A ORDEM DO PASSO NOVO
 ---------------------
@@ -83,6 +84,22 @@ RENOMES = [
 
 # o bloco entra antes desta linha: a extraccao, que e quem chama o spool
 ANCORA = 'extract_entite()'
+
+# o passo de producao que se poe dentro da guarda: do comentario do RSE_LOT3 ate
+# ao DATE_TRT que fecha o tratamento
+PERIM_INICIO = ('## RSE_LOT3: SIRL-153 - 29/05/2025 - Remplissage de la table '
+                'PERIM_ENVOI_CRR_P1')
+PERIM_FIM = "DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `"
+# No lugar do passo do RSE_LOT3 fica so um aviso. Nao corre nada: e uma linha de
+# comentario, para quem vier nao ter de descobrir sozinho que o passo falta.
+AVISO = NL.join([
+    '## SIRL-1224 - le pas RSE_LOT3 / SIRL-153 (P_ALIM_PERIM_ENVOI_CRR_P1) n\'est',
+    '## PAS ici : il tourne dans le shell de production, qui appelle celui-ci.',
+    '## Le jour ou ce shell remplacera celui de la production, il faudra le',
+    '## remettre -- sinon la table PERIM_ENVOI_CRR_P1 ne sera plus alimentee, et',
+    '## sans erreur : elle gardera le contenu de l\'arrete precedent.',
+    '',
+])
 
 BLOCO = NL.join([
     '## SIRL-1224 - Remplissage de la table ENG_CORP_P1_BIS (toutes les entites, un seul appel)',
@@ -141,6 +158,17 @@ def main():
     i = t.index(ANCORA)
     i = t.rfind(NL, 0, i) + len(NL)          # inicio da linha
     t = t[:i] + BLOCO + t[i:]
+
+    # o passo do RSE_LOT3 sai, e fica o aviso no lugar dele
+    a = t.find(PERIM_INICIO)
+    if a < 0:
+        raise SystemExit('nao achei o passo do RSE_LOT3 em %s:\n  %s'
+                         % (FONTE, PERIM_INICIO))
+    b = t.find(PERIM_FIM, a)
+    if b < 0:
+        raise SystemExit('nao achei o fim do passo do RSE_LOT3 (o %s a seguir)'
+                         % PERIM_FIM)
+    t = t[:a] + AVISO + NL + t[b:]
 
     io.open(SAIDA, 'w', encoding='cp1252', newline='').write(t)
 

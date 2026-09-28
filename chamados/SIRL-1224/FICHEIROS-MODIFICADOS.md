@@ -46,52 +46,51 @@ O mesmo vale para o shell: o `030_CREATION_SPOOL_CRRCORP.sh` desta pasta é o de
 produção **+** a chamada ao `_vPACT`, posta pelo
 [`gen_chamada_vpact.py`](../../gen_chamada_vpact.py).
 
-## ⚠ O `_vPACT` tinha um passo de produção a menos
+## O passo do RSE_LOT3 fica no shell de produção, não aqui
 
-Vale a pena guardar, porque esteve no repositório sem se notar.
+O shell de produção tem um passo que não é nosso — o **RSE_LOT3 / SIRL-153**, de
+29/05/2025, que enche a tabela `PERIM_ENVOI_CRR_P1`:
 
-O `030_CREATION_SPOOL_CRRCORP_vPACT.sh` era uma cópia do shell de produção feita
-à mão, e quem a fez pôs o nosso `execute` **no lugar** do de produção em vez de o
-pôr ao lado:
-
-| no shell de produção | no `_vPACT`, antes |
-|---|---|
-| `execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_PERIM_ENVOI_CRR_P1;` — RSE_LOT3, SIRL-153, 29/05/2025 | **não existia** |
-| — | `execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_ENG_CORP_P1_BIS;` |
-
-**Hoje não fazia mal.** No desenho em paralelo o shell de produção corre
-primeiro, enche a `PERIM_ENVOI_CRR_P1`, e só depois chama o `_vPACT`. E nada da
-nossa cadeia lê essa tabela — nem o spool, nem a procedure.
-
-**Fazia mal no dia em que o `_vPACT` substituísse o shell de produção**, que é o
-fim deste chamado. Nesse dia a `PERIM_ENVOI_CRR_P1` deixava de ser enchida, e sem
-erro nenhum: ficava com o conteúdo do arrêté anterior.
-
-Está resolvido pela raiz: o shell passou a sair de
-[`gen_shell_vpact.py`](../../gen_shell_vpact.py), a partir do de produção. O
-passo do RSE_LOT3 está lá porque está no original — não há como o perder.
-
-Numa corrida normal o `P_ALIM_PERIM_ENVOI_CRR_P1` passa a correr **duas vezes**,
-uma em cada shell. É inofensivo, e a procedure di-lo na primeira linha:
-
-```sql
-execute immediate 'truncate table PERIM_ENVOI_CRR_P1';
-insert into PERIM_ENVOI_CRR_P1( ... ) SELECT ... FROM ENG_CORP_P1 ...
+```ksh
+execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_PERIM_ENVOI_CRR_P1;
 ```
 
-Esvazia e reenche a partir da `ENG_CORP_P1`, que não muda entretanto. Uma vez ou
-duas, o conteúdo é o mesmo.
+Esse passo **não entra** no `030_CREATION_SPOOL_CRRCORP_vPACT.sh`, e é de
+propósito: quem o corre é o shell de produção, que é quem chama o `_vPACT`. Numa
+corrida normal ele já correu quando o nosso começa.
+
+Repeti-lo aqui não estragava nada — a procedure começa com
+`truncate table PERIM_ENVOI_CRR_P1` e reenche a partir da `ENG_CORP_P1` — mas
+custava, em cada corrida, **oito varrimentos** da `ENG_CORP_P1` com `UNION` (não
+`UNION ALL`, logo mais o *sort* para desduplicar), para reescrever a tabela com o
+mesmo conteúdo.
+
+No lugar dele, o gerador deixa **um comentário**, que não corre nada:
+
+```ksh
+## SIRL-1224 - le pas RSE_LOT3 / SIRL-153 (P_ALIM_PERIM_ENVOI_CRR_P1) n'est
+## PAS ici : il tourne dans le shell de production, qui appelle celui-ci.
+## Le jour ou ce shell remplacera celui de la production, il faudra le
+## remettre -- sinon la table PERIM_ENVOI_CRR_P1 ne sera plus alimentee, et
+## sans erreur : elle gardera le contenu de l'arrete precedent.
+```
+
+**Porque é que isto está escrito no ficheiro.** O fim natural deste chamado é o
+`_vPACT` substituir o shell de produção. Nesse dia o passo desaparece com ele, e
+a `PERIM_ENVOI_CRR_P1` deixa de ser enchida **sem dar erro** — fica com o
+conteúdo do arrêté anterior. Nada da nossa cadeia lê essa tabela, por isso não
+seríamos nós a dar por isso. Fica decidido nessa altura; o comentário é só para
+não haver que o descobrir outra vez.
 
 ### A ordem dos passos, na corrida completa
 
 ```
 ./030_CREATION_SPOOL_CRRCORP.sh
-   210  @spool antigo                 ->  CRRCORP.dat
-   521  P_ALIM_PERIM_ENVOI_CRR_P1     ->  enche a PERIM_ENVOI_CRR_P1
+   210  @spool antigo                  ->  CRRCORP.dat
+   521  P_ALIM_PERIM_ENVOI_CRR_P1      ->  enche a PERIM_ENVOI_CRR_P1
    545  chama o _vPACT:
-          201  P_ALIM_ENG_CORP_P1_BIS ->  enche a ENG_CORP_P1_BIS
-          245  @spool novo            ->  CRRCORP_vPACT.dat
-          556  P_ALIM_PERIM_ENVOI_CRR_P1  (outra vez, inofensivo)
+          201  P_ALIM_ENG_CORP_P1_BIS  ->  enche a ENG_CORP_P1_BIS
+          245  @spool novo             ->  CRRCORP_vPACT.dat
 ```
 
 O nosso passo entra **antes** do `extract_entite()`, e portanto antes do
