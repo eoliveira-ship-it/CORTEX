@@ -43,6 +43,7 @@ ENTREGA = os.path.join(RAIZ, 'chamados')
 # TODO O FICHEIRO COM SUFIXO SAI DE UM GERADOR
 #   gen_pack_1224.py       pack_alim_tab_envoi_crrv4_1224.sql
 #   gen_chamada_vpact.py   os dois shells que passam a chamar o _vPACT
+#   gen_shell_vpact.py     030_CREATION_SPOOL_CRRCORP_vPACT.sh
 #   gen_spool_vpact.py     030_spool_Extract_CRRCORP_vPACT.sql
 #   gen_spool_1222.py      030_spool_Extract_CRRCORP_1222.sql
 #   gen_spool_adap.py      030_spool_Extract_CRRADAP_vPACT.sql

@@ -18,7 +18,7 @@ procedure, que enche uma tabela nova; o spool só lê a tabela e formata.
 | `pack_alim_tab_envoi_crrv4_PROD.sql` | — | o package de produção, intacto: a base de que o de cima sai |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | **novo** | a mesma procedure isolada, para rever sem abrir o package inteiro |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | **novo** | o spool que lê a tabela. Os 8 `SELECT` do P1 passam a 2 |
-| `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | **novo** | o shell que chama a procedure e depois o spool |
+| `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | **gerado** | o shell de produção com os nomes trocados **+** o passo que enche a tabela, antes do spool |
 | `030_CREATION_SPOOL_CRRCORP.sh` | **gerado** | o shell de produção **+** a chamada ao `_vPACT` no fim. Sem ele o novo nunca corre |
 | `TESTES.sql` | **novo** | os quatro testes de validação |
 
@@ -45,6 +45,59 @@ python gen_pack_1224.py
 O mesmo vale para o shell: o `030_CREATION_SPOOL_CRRCORP.sh` desta pasta é o de
 produção **+** a chamada ao `_vPACT`, posta pelo
 [`gen_chamada_vpact.py`](../../gen_chamada_vpact.py).
+
+## ⚠ O `_vPACT` tinha um passo de produção a menos
+
+Vale a pena guardar, porque esteve no repositório sem se notar.
+
+O `030_CREATION_SPOOL_CRRCORP_vPACT.sh` era uma cópia do shell de produção feita
+à mão, e quem a fez pôs o nosso `execute` **no lugar** do de produção em vez de o
+pôr ao lado:
+
+| no shell de produção | no `_vPACT`, antes |
+|---|---|
+| `execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_PERIM_ENVOI_CRR_P1;` — RSE_LOT3, SIRL-153, 29/05/2025 | **não existia** |
+| — | `execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_ENG_CORP_P1_BIS;` |
+
+**Hoje não fazia mal.** No desenho em paralelo o shell de produção corre
+primeiro, enche a `PERIM_ENVOI_CRR_P1`, e só depois chama o `_vPACT`. E nada da
+nossa cadeia lê essa tabela — nem o spool, nem a procedure.
+
+**Fazia mal no dia em que o `_vPACT` substituísse o shell de produção**, que é o
+fim deste chamado. Nesse dia a `PERIM_ENVOI_CRR_P1` deixava de ser enchida, e sem
+erro nenhum: ficava com o conteúdo do arrêté anterior.
+
+Está resolvido pela raiz: o shell passou a sair de
+[`gen_shell_vpact.py`](../../gen_shell_vpact.py), a partir do de produção. O
+passo do RSE_LOT3 está lá porque está no original — não há como o perder.
+
+Numa corrida normal o `P_ALIM_PERIM_ENVOI_CRR_P1` passa a correr **duas vezes**,
+uma em cada shell. É inofensivo, e a procedure di-lo na primeira linha:
+
+```sql
+execute immediate 'truncate table PERIM_ENVOI_CRR_P1';
+insert into PERIM_ENVOI_CRR_P1( ... ) SELECT ... FROM ENG_CORP_P1 ...
+```
+
+Esvazia e reenche a partir da `ENG_CORP_P1`, que não muda entretanto. Uma vez ou
+duas, o conteúdo é o mesmo.
+
+### A ordem dos passos, na corrida completa
+
+```
+./030_CREATION_SPOOL_CRRCORP.sh
+   210  @spool antigo                 ->  CRRCORP.dat
+   521  P_ALIM_PERIM_ENVOI_CRR_P1     ->  enche a PERIM_ENVOI_CRR_P1
+   545  chama o _vPACT:
+          201  P_ALIM_ENG_CORP_P1_BIS ->  enche a ENG_CORP_P1_BIS
+          245  @spool novo            ->  CRRCORP_vPACT.dat
+          556  P_ALIM_PERIM_ENVOI_CRR_P1  (outra vez, inofensivo)
+```
+
+O nosso passo entra **antes** do `extract_entite()`, e portanto antes do
+`@$spool_sql`: o spool lê a tabela, tem de a encontrar cheia.
+
+---
 
 ## O que NÃO foi tocado
 

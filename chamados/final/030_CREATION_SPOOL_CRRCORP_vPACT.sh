@@ -192,8 +192,6 @@ numenvoi=`echo "${execution_requete}" | tr -d '\r\n'`
 # 
 # ---------------------------------------------------
 
-
-
 ## SIRL-1224 - Remplissage de la table ENG_CORP_P1_BIS (toutes les entites, un seul appel)
 sqlplus $V30LOGIN <<EOF  >>$V30RACINE/log/$V30ENVOICRRV4ERR
 set serveroutput on size 1000000;
@@ -227,7 +225,6 @@ DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"
 trace_log "INF" 0 "$DATE_TRT - FIN ALIMENTATION ENG_CORP_P1_BIS" $nom_shell
 trace_log "INF" 0 "-----------------------------------------------------------"
-
 
 
 extract_entite()
@@ -549,6 +546,35 @@ if [ -f $V30RACINE/log/$V30ENVOICRRV4ERR ]
   fi
 fi
 
+
+## RSE_LOT3: SIRL-153 - 29/05/2025 - Remplissage de la table PERIM_ENVOI_CRR_P1
+sqlplus $V30LOGIN <<EOF  >>$V30RACINE/log/$V30ENVOICRRV4ERR
+set serveroutput on size 1000000;
+whenever oserror exit 9;
+whenever sqlerror exit sql.sqlcode;
+
+execute PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_PERIM_ENVOI_CRR_P1;
+
+spool off;
+
+EXIT;
+EOF
+
+# -------------------------------
+#   Analyse erreur
+# -------------------------------
+if [ -f $V30RACINE/log/$V30ENVOICRRV4ERR ]
+then
+  V99015FICLOG=$V30RACINE/log//$V30ENVOICRRV4ERR
+  export V99015FICLOG
+  $EXECRP
+  CRP=$?
+  if [ $CRP != 0 ]
+  then
+    echo "Erreur dans 030_CREATION_SPOOL_CRRCORP durant P_ALIM_PERIM_ENVOI_CRR_P1"
+    exit 1
+  fi
+fi
 
 DATE_TRT=`date '+%d/%m/%Y  %H:%M:%S' `
 trace_log "INF" 0 "-----------------------------------------------------------"

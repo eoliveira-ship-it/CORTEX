@@ -131,7 +131,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `pack_utilitaire` | Package com as funcoes de formato (`F_FORMAT_*`) |
 | `explicacao.md` | Como a tabela sai da Notice, e a fórmula de Excel explicada passo a passo |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | O spool sem regras de negocio: 2 SELECT sobre a tabela |
-| `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Shell do spool vPACT (identico ao original, muda so os nomes) |
+| `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | Gerado: o shell de produção, com os nomes trocados **+** o passo que enche a `ENG_CORP_P1_BIS` |
 | `comparar_ficheiros.sh` | Compara os dois CRRCORP.dat por conteúdo: neutraliza o horodatage e a linha ENTETE e ordena as linhas. **Deteta o formato** (com ou sem `;`) e recusa-se a comparar um de cada |
 | `gen_spool_1222.py` | SIRL-1222: gera o pave P1 com `;` entre todos os campos, a partir da Notice |
 | `comparar_1222.py` | SIRL-1222: valida o `.dat` gerado (censo, `;` nas posicoes da Notice, cauda em branco) e compara o P1 com o ficheiro de referencia |
@@ -149,6 +149,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `gen_p3_1223.py` | SIRL-1223: as duas linhas do P3 **sobre a versão de produção** do package |
 | `gen_pack_1224.py` | SIRL-1224: mete a procedure no package **de produção** (duas inserções, nada mais) |
 | `gen_chamada_vpact.py` | Põe nos dois shells de produção a chamada ao shell `_vPACT` |
+| `gen_shell_vpact.py` | SIRL-1224: gera o `030_CREATION_SPOOL_CRRCORP_vPACT.sh` a partir do shell **de produção** |
 | `enc.py` | Lê um ficheiro do DDR sem adivinhar a codificação: UTF-8 primeiro, cp1252 depois |
 | `para_cp1252.py` | Põe os `.sql` e os `.sh` em cp1252, a regra do projeto. `--aplicar` converte |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |
