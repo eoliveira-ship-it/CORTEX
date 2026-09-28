@@ -115,7 +115,7 @@ cheia.
 No SQL Developer, **F5 (Run Script)**, não F9:
 
 ```
-1.1  ENG_CORP_P1_BIS.sql                cria a tabela (666 colunas)
+1.1  ENG_CORP_P1_BIS.sql                cria a tabela (668 colunas)
 1.2  pack_alim_tab_envoi_crrv4.sql      compila o package com a procedure
 1.3  PACK_UTL_FILE_ENVOI_C3RD2.sql      recompila o package do P3 (SIRL-1223)
 ```

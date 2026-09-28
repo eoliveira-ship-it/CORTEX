@@ -23,9 +23,9 @@ COLUMN column_name FORMAT A14
 COLUMN esperado    FORMAT A14
 COLUMN instalado   FORMAT A14
 
--- T1.1  contagem : esperado 667 colunas
-SELECT 667 AS esperado_colunas, COUNT(*) AS instalado_colunas,
-       CASE WHEN COUNT(*) = 667 THEN 'OK' ELSE 'FALHA' END AS veredicto
+-- T1.1  contagem : esperado 668 colunas
+SELECT 668 AS esperado_colunas, COUNT(*) AS instalado_colunas,
+       CASE WHEN COUNT(*) = 668 THEN 'OK' ELSE 'FALHA' END AS veredicto
   FROM ALL_TAB_COLUMNS WHERE table_name = 'ENG_CORP_P1_BIS';
 
 -- T1.2  as colunas alargadas (as que causaram ORA-01438 ou perda de

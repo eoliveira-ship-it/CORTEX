@@ -8,3 +8,8 @@ __pycache__/
 # boa, e estes ficheiros entram pelo carregamento da web do GitHub, que nao
 # olha para o .gitignore. Fica a politica, e o criterio e de quem carrega.
 # Para trazer uma de volta:  git show <commit>:<ficheiro> > <ficheiro>
+
+# Saida solta do gen_procedure.py: um teste antigo da procedure, que o
+# TESTES.sql substituiu (quatro testes, com o T4 round-trip). Nao entra em
+# nenhuma pasta de entrega e reaparece a cada corrida do gerador.
+test_P_ALIM_ENG_CORP_P1_BIS.sql

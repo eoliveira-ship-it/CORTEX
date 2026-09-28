@@ -13,7 +13,7 @@ procedure, que enche uma tabela nova; o spool só lê a tabela e formata.
 
 | ficheiro | novo ou alterado | o que é |
 |---|---|---|
-| `ENG_CORP_P1_BIS.sql` | **novo** | DDL da tabela: 662 colunas do P1 (uma por campo da Notice V45) + 4 técnicas = 666 |
+| `ENG_CORP_P1_BIS.sql` | **novo** | DDL da tabela: **668** colunas — 5 técnicas + 20 do cabeçalho técnico do P1 (`X.Y (P1)`) + 643 do corpo (`P1 X.Y`, a Notice V45). Cada uma com o seu `COMMENT ON COLUMN`, 668 também |
 | `pack_alim_tab_envoi_crrv4.sql` | **gerado** | o package de **produção** com a procedure `P_ALIM_ENG_CORP_P1_BIS` inserida |
 | `pack_alim_tab_envoi_crrv4_PROD.sql` | — | o package de produção, intacto: a base de que o de cima sai |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | **novo** | a mesma procedure isolada, para rever sem abrir o package inteiro |

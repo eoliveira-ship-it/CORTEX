@@ -67,7 +67,7 @@ PACK_ALIM_TAB_ENVOI_CRRV4.P_ALIM_ENG_CORP_P1_BIS;
 
 | Arquivo | O que é |
 |---|---|
-| `ENG_CORP_P1_BIS.sql` | Cria a tabela: **667 colunas** (662 campos P1 + 5 técnicas), com `COMMENT ON COLUMN` em todas |
+| `ENG_CORP_P1_BIS.sql` | Cria a tabela: **668 colunas** (663 campos P1 + 5 técnicas), com `COMMENT ON COLUMN` em todas |
 | `pack_alim_tab_envoi_crrv4.sql` | Package completo, já com a procedure nova |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | Só a procedure, para leitura |
 | `030_spool_Extract_CRRCORP_vPACT.sql` | Spool novo, que lê a tabela |
@@ -252,7 +252,7 @@ Estes pontos custaram tempo e vão se repetir nos outros spools.
 
 | Teste | O que verifica | Último resultado registrado |
 |---|---|---|
-| T1 Estrutura | 667 colunas; as alargadas com a precisão certa | OK (a lista agora tem **16** colunas) |
+| T1 Estrutura | 668 colunas; as alargadas com a precisão certa | OK (a lista agora tem **16** colunas) |
 | T2 Package | package `VALID`, procedure sem parâmetros (eram 3 antes de 2026-09-17), `ALL_ERRORS` vazio | OK |
 | T3 Volumetria | linhas na tabela = linhas que os 8 `WHERE` do spool devolvem | écart 0 |
 | T4 Round-trip | o valor gravado reproduz o que o spool escreve (196 colunas × 200 engajamentos) | tudo conforme |
