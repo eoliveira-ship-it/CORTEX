@@ -22,7 +22,8 @@ com o nome que têm no repositório.
 | `030_spool_Extract_CRRADAP_vPACT.sql` | `${SQL}/` | **1222** |
 | `030_CREATION_SPOOL_CRRADAP_vPACT.sh` | o diretório dos shells | **1222** |
 | `030_CREATION_SPOOL_CRRADAP.sh` | o diretório dos shells | **1222** — **é quem chama o de cima** |
-| `TESTES.sql` | correr no SQL Developer | 1224 |
+| `run_procedure.sql` | correr no SQL Developer | 1224 — a chamada à procedure, sozinha |
+| `TESTES.sql` | correr no SQL Developer | 1224 — os quatro testes |
 
 ### Todos estes ficheiros saem da versão de PRODUÇÃO
 
@@ -104,15 +105,12 @@ cheia.
 
 ### 1 — Base de dados
 
-> **O nome do package.** Aqui o package chama-se `pack_alim_tab_envoi_crrv4` —
-> o nome de produção, o que ele substitui. No repositório, na raiz, leva o
-> sufixo `_new`: é a versão de teste, que no DEV2 compila **ao lado** do de
-> produção em vez de o substituir. Quem faz a troca é o
-> [`montar_entrega.py`](../../montar_entrega.py), ao montar esta pasta, e nos
-> quatro ficheiros ao mesmo tempo — o package, o `run_procedure.sql`, o
-> `TESTES.sql` e o `030_CREATION_SPOOL_CRRCORP_vPACT.sh`, que também o chama.
-> Não edite o nome à mão num só: instala-se com um nome e chama-se com outro,
-> e dá `PLS-00201`.
+> **O nome do package.** Aqui chama-se `pack_alim_tab_envoi_crrv4` — o nome de
+> produção, o que ele substitui. No repositório esse nome é o do ficheiro **de
+> produção**, intacto, e o que se instala chama-se lá `..._1224.sql`. Quem lhes
+> troca o nome é o [`montar_entrega.py`](../../montar_entrega.py) ao montar esta
+> pasta. Não edite nomes à mão: o `030_CREATION_SPOOL_CRRCORP_vPACT.sh` também
+> chama o package, e instalado com um nome e chamado com outro dá `PLS-00201`.
 
 No SQL Developer, **F5 (Run Script)**, não F9:
 

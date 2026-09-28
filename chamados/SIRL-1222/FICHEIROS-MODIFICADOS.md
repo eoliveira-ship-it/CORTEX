@@ -14,7 +14,7 @@ diferente da referência depois de se desfazer os separadores.
 
 | ficheiro | o que é no servidor | marca `VERSAO` |
 |---|---|---|
-| `030_spool_Extract_CRRCORP_1222.sql` | vai como `${SQL}/030_spool_Extract_CRRCORP_vPACT.sql` | `2026-09-27b` |
+| `030_spool_Extract_CRRCORP_vPACT.sql` | `${SQL}/` — **já com o nome do servidor** (no repositório é o `..._1222.sql`) | `2026-09-27b` |
 | `030_spool_Extract_CRRADAP_vPACT.sql` | ficheiro **novo** em `${SQL}/` | `2026-09-27a` |
 | `030_CREATION_SPOOL_CRRADAP_vPACT.sh` | shell **novo** | — |
 | `030_CREATION_SPOOL_CRRADAP.sh` | o shell de sempre, com **a chamada ao `_vPACT` no fim** | — |
@@ -58,7 +58,7 @@ E o shell do Adapté passou a registá-lo no log de cada corrida, antes de corre
 
 ## O que mudou em cada um
 
-### `030_spool_Extract_CRRCORP_1222.sql`
+### `030_spool_Extract_CRRCORP_vPACT.sql`
 
 - **662 `;`** no P1, e 397 / 157 / 97 / 72 / 45 / 38 nos outros seis pavés;
 - **1024 `TRANSLATE(x, ';', '.')`** nos campos de texto — a defesa que a DSID
