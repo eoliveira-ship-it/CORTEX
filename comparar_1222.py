@@ -2,7 +2,10 @@
 """SIRL-1222: valida o CRRCORP.dat gerado com ';' em TODOS os paves.
 
 Uso:
-    python comparar_1222.py <CRRCORP_vPACT.dat novo> <o de referencia, 22/09>
+    python comparar_1222.py <CRRCORP_vPACT.dat novo> <o de referencia> [--ref-sem-1223]
+
+A referencia de PRODUCAO nao tem o SIRL-1223: e preciso o --ref-sem-1223. Sem ele
+o P1 diverge nas 122 225 linhas a partir do octeto 5222 -- o script diz-no.
 
 O que faz:
 
@@ -44,6 +47,9 @@ sys.stdout = b
 import gen_spool_1222 as g           # noqa: E402  (a regua do P1, com o filler 1176)
 sys.stdout = o
 
+SEM_1223 = '--ref-sem-1223' in sys.argv
+if SEM_1223:
+    sys.argv.remove('--ref-sem-1223')
 if len(sys.argv) != 3:
     raise SystemExit(__doc__)
 NOVO, REF = sys.argv[1], sys.argv[2]
@@ -56,7 +62,12 @@ L, CHAVE, LINHA = 8001, 3900, 8000
 # provou-o: sem encolher nada, o M1 reconstroi byte a byte nas 65 559 linhas e o
 # C1 em 38 735 das 40 856. O alinhamento campo a campo sobre o ficheiro de
 # referencia confirma -- nenhum dos sete sai da largura da notice.
-ANTIGO = {}
+#
+# O SIRL-1223 alarga o P1 21.65 de 5 para 50. A regua (a da notice V45) ja o tem
+# com 50; um ficheiro de referencia gerado ANTES do 1223 escreve-o com 5, e a
+# reconstrucao tem de o cortar a 5 -- senao entram 45 brancos a mais e tudo o que
+# vem depois aparece deslocado 45 octetos, em todas as linhas do P1.
+ANTIGO = {'P1 21.65': 5} if SEM_1223 else {}
 
 PAVES = ('P1', 'P2', 'M1', 'C1', 'F1', 'F2', 'P9')
 CODIGO = (43, 45)          # onde esta o codigo do pave na linha nova (campo 0.6)

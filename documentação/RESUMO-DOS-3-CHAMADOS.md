@@ -81,9 +81,9 @@ SIRL-1223 não teve de alterar a tabela.
 |---|---|
 | linhas | **554 045** (8000 octetos cada) |
 | tipos de registo | P1, P2, M1, C1, F1, F2, P9 |
-| separadores no P1 | 662 |
-| última corrida | `00025`, 27/09 17:12 |
-| resultado | **idêntica à referência de 22/09, zero diferenças** |
+| separadores | P1 662, P2 397, M1 157, C1 97, F1 72, F2 45, P9 38 |
+| última corrida | `00000533`, 28/09 17:15 — **com os três chamados juntos** |
+| resultado | **P1 idêntico nas 122 225 linhas**; os outros seis pavés sem uma linha por emparelhar |
 
 ### Adapté — `CRRADAP.dat`
 
@@ -91,15 +91,16 @@ SIRL-1223 não teve de alterar a tabela.
 |---|---|
 | linhas | **1 777** (2000 octetos cada) |
 | separadores | cabeçalho 14, detalhe 90, `Z9` 8, rodapé 2 |
-| última corrida | 28/09 00:20 |
-| resultado | **as 1 774 linhas de detalhe idênticas à referência** |
+| última corrida | 28/09 17:25 |
+| resultado | **erros: 0** — as 1 774 linhas de detalhe idênticas, e o `Z9` com 8 `;` |
 
 ### P3 — `C3RD`
 
 | entidade | linhas | resultado |
 |---|---|---|
-| 00370 | 170 419 | idêntico ao esperado |
+| 00370 | 170 419 | idêntico |
 | 00357, 00472, 00936, 00399 | 1 511 | idênticos |
+| **total** | **171 930** | cinco ficheiros, não seis: o 00372 saiu no SIRL-667 |
 
 ---
 
