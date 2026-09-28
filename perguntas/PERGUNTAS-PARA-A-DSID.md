@@ -1,8 +1,8 @@
 # Perguntas para a DSID — CORTEX PACT 4.5
 
 Situação em **28/09/2026**. Os três chamados estão feitos e provados no DEV2.
-**Nenhuma destas perguntas impede a entrega** — são confirmações, e uma delas
-pode dar retrabalho se a resposta for diferente do que implementámos.
+**Nenhuma destas perguntas impede a entrega** — são confirmações, e duas delas
+podem dar retrabalho se a resposta for diferente do que implementámos.
 
 Cada pergunta está escrita para ser lida em voz alta numa reunião: o que é,
 por que precisamos de resposta, e o que muda conforme a resposta.
@@ -115,45 +115,53 @@ spool do Adapté e uma corrida.
 
 ---
 
-## Pergunta 5 — O P3 passou a gerar 6 ficheiros em vez de 5
+## Pergunta 5 — A cópia do package do P3 que temos está atrasada em relação à produção
+
+**Isto já não é uma dúvida sobre o ficheiro, é sobre o processo.** A resposta
+técnica está encontrada; o que falta é confirmar como se evita outra vez.
 
 **Perguntar assim:**
 
-> A corrida do P3 no DEV2 passou a escrever **seis** ficheiros `UC2_P3`, e antes
-> escrevia cinco. O que apareceu é o da entidade **00372**, e vem **vazio** —
-> só cabeçalho e rodapé, com `99;0000000002`. A entidade não tem uma linha na
-> `CREDIT_P3`. O package `PACK_UTL_FILE_ENVOI_C3RD2` que está no nosso
-> repositório tem a lista das seis entidades escrita no código
-> (`'00399','00936','00357','00472','00370','00372'`) e gera ficheiro para todas,
-> mesmo sem dados. A versão que estava compilada no DEV2 não gerava o da 00372.
-> Confirmam que o CASA aceita o ficheiro vazio da 00372, ou a 00372 não deve ser
-> enviada?
+> A cópia do `PACK_UTL_FILE_ENVOI_C3RD2` que nos foi passada do DDR está
+> **atrasada** em relação à que está em produção. Aplicámos o SIRL-1223 nessa
+> cópia; instalada como estava, ela desfazia três alterações que ninguém pediu.
+> Já refizemos a alteração **sobre a versão de produção**. A pergunta é: qual é a
+> fonte que devemos usar para os outros ficheiros dos três chamados — em
+> particular o `030_spool_Extract_CRRCORP.sql` e o `030_spool_Extract_CRRADAP.sql`,
+> que também vieram do DDR? Podem passar-nos a versão de produção dos dois?
 
-**Por que isto apareceu agora.** Não é o SIRL-1223. O chamado mexeu em **duas
-linhas** do package (o `21.65` de 5 para 50 e o filler BALE4 de 1132 para 1087)
-— está no commit, e a lista de entidades é byte a byte a mesma. O que mudou foi
-que a recompilação do ficheiro do repositório substituiu no DEV2 uma versão mais
-antiga, que escolhia as entidades **pelos dados** e não pela lista:
+**O que a cópia do DDR desfazia**, ponto por ponto:
 
-```sql
--- PACK_UTL_FILE_ENVOI_C3RD2.sql, linhas 794-796, comentadas no nosso ficheiro:
---CURSOR C_CONSO
---is select distinct cd_conso_cpt from credit_p3;
-```
+| | em produção | na cópia do DDR |
+|---|---|---|
+| a entidade `'00372'` | **retirada** das cinco listas, `-- 29/04/2026 -- SIRL-667 - Code 00372 supprimé` | ainda lá |
+| `v_ligne` do C2 | `VARCHAR2(2002)`, e a linha acaba com `\|\|';'` | `VARCHAR2(2000)`, sem o `;` final |
+| `v_ligne` do C3 | `VARCHAR2(1002)`, e o mesmo `;` final | `VARCHAR2(1000)`, sem ele |
+| `IND_WL` (C2 4.60 e C3 4.60) | default `'9'` | default `' '` |
 
-Com esse cursor, uma entidade sem linhas nunca aparecia — e portanto não saía
-ficheiro. Com a lista no código, aparece e sai um ficheiro de 2 linhas. É a
-regra que o próprio package escreve na linha 68: *«ENVOYER SOCIETE MEME SI ELLE
-EST ABSENTE … ALORS GENERER FICHIER VIDE»*.
+**Como isto se descobriu.** Uma corrida do P3 no DEV2 passou a escrever **seis**
+ficheiros `UC2_P3` em vez de cinco. O que apareceu foi o da entidade `00372`, e
+vinha **vazio** — só cabeçalho e rodapé, `99;0000000002`, porque a entidade não
+tem uma linha na `CREDIT_P3`.
 
-**A corrida não falhou.** Verificado: a entidade `00370`, a que vem antes da
-00372 na lista, tem nos dois lados o mesmo rodapé `99;0000170421` e o mesmo
-tamanho ao octeto. Nenhuma corrida abortou a meio, nenhum ficheiro ficou
-truncado, e os cinco pares antes/depois dão `IDENTICOS`.
+Não foi o SIRL-1223: o chamado mexe em duas linhas, e o `00372` estava na cópia
+desde 2019. Foi a **recompilação** que pôs no DEV2 uma versão anterior ao
+SIRL-667 e ressuscitou a entidade.
 
-**O que muda com a resposta:** se a 00372 não deve ir, é tirar `'00372'` da
-lista do package. Se deve, não se toca em nada — mas convém dizê-lo ao CASA,
-porque é um ficheiro que eles nunca receberam.
+E não foi corrida falhada: a entidade `00370`, a que vem antes da `00372` na
+lista, tem nos dois lados o mesmo rodapé `99;0000170421` e o mesmo tamanho ao
+octeto. Os cinco pares antes/depois dão `IDENTICOS`.
+
+**O que já está feito.** A base passou a ser o ficheiro de produção e a alteração
+é aplicada por um script que **para** se a linha que procura não estiver
+exactamente uma vez ([`gen_p3_1223.py`](../gen_p3_1223.py)). O ficheiro entregue
+difere da produção em **duas linhas** — as do chamado — e o `00372` continua
+fora.
+
+**O que muda com a resposta:** se as versões de produção dos dois spools também
+estiverem à frente das cópias que temos, há que refazer o mesmo exercício neles
+antes da MEP. É meio dia de trabalho, e é a diferença entre entregar o chamado e
+entregar o chamado mais um retrocesso silencioso.
 
 ---
 

@@ -47,7 +47,9 @@ PLANO = {
     ],
     'SIRL-1223': [
         ('030_spool_Extract_CRRCORP_vPACT.sql', None),
-        ('PACK_UTL_FILE_ENVOI_C3RD2.sql', None),
+        # o nome de destino e o de producao: o gerado substitui o package
+        ('PACK_UTL_FILE_ENVOI_C3RD2_1223.sql', 'PACK_UTL_FILE_ENVOI_C3RD2.sql'),
+        ('PACK_UTL_FILE_ENVOI_C3RD2_PROD.sql', None),
         ('VALIDAR_1223_P3.sql', None),
     ],
     'SIRL-1222': [
@@ -80,7 +82,7 @@ PLANO = {
         ('030_spool_Extract_CRRADAP_vPACT.sql', None),
         ('030_CREATION_SPOOL_CRRADAP_vPACT.sh', None),
         ('030_CREATION_SPOOL_CRRADAP.sh', None),
-        ('PACK_UTL_FILE_ENVOI_C3RD2.sql', None),
+        ('PACK_UTL_FILE_ENVOI_C3RD2_1223.sql', 'PACK_UTL_FILE_ENVOI_C3RD2.sql'),
         ('run_procedure.sql', None),
         ('TESTES.sql', None),
     ],

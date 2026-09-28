@@ -145,6 +145,7 @@ No SQL Developer usar **F5** (Run Script), não F9.
 | `comparar_1223.py` | Nao-regressao do SIRL-1223: aplica o alargamento ao ficheiro de antes e compara com o de depois. Recusa um ficheiro com `;` |
 | `comparar_spools.sql` | Corre os dois spools com os mesmos binds, para o diff de nao-regressao |
 | `gen_spool_vpact.py` | Gera o spool vPACT e a lista de campos que o teste usa |
+| `gen_p3_1223.py` | SIRL-1223: as duas linhas do P3 **sobre a versão de produção** do package |
 | `layout_variantes.py` | Onde o layout da linha difere entre as 8 variantes — fonte única |
 | `run_procedure.sql` | Executa so a procedure (a chamada pronta a correr) |
 | `CONSULTAS_CLIENTE.sql` | Consultas para levar ao cliente: TRE502 sem devise e tipos de risco sem dados |

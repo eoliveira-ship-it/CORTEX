@@ -1,6 +1,9 @@
 #!/bin/ksh
 ################################################################################
 ## Compara dois CRRCORP.dat.                            SIRL-1224 / SIRL-1222 ##
+## Este ficheiro tem fim de linha LF, e nao CRLF como os .sh do cliente: corre
+## no servidor, chamado por sh/ksh, e um  no fim do #!/bin/ksh ou de uma
+## atribuicao quebra-o. Nao converter.
 ##                                                                            ##
 ##   ./comparar_ficheiros.sh  CRRCORP.dat  CRRCORP_vPACT.dat                  ##
 ##                                                                            ##

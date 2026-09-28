@@ -133,7 +133,7 @@ ao lado dá 122 138 diferenças. Um teste que não falha quando devia não prova
 | 2 | o C1 não tem linha na tabela do chamado | meio dia |
 | 3 | a versão do fluxo fica em `44` ou passa a `45`? | meia hora |
 | 4 | o campo `A1 500` do Adapté | uma linha |
-| 5 | o P3 passou a gerar 6 ficheiros: o da entidade 00372, vazio | tirar uma entidade da lista |
+| 5 | a cópia do package do P3 estava atrasada — e talvez os dois spools também | **meio dia**, se os spools também estiverem |
 
 E, fora dos três chamados:
 

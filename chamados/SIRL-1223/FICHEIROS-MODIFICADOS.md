@@ -15,7 +15,34 @@
 |---|---|
 | `030_spool_Extract_CRRCORP_vPACT.sql` | `P1 21.65`: `RPAD(' ',5)` → `RPAD(' ',50)`, nos 6 `SELECT` do P1 |
 | `PACK_UTL_FILE_ENVOI_C3RD2.sql` | `P3C 21.65`: `RPAD(' ',5)` → `RPAD(' ',50)`<br>filler BALE4: `RPAD(' ',1132)` → `RPAD(' ',1087)` |
+| `PACK_UTL_FILE_ENVOI_C3RD2_PROD.sql` | **a versão de produção, sem alterações** — a base de que o de cima sai |
 | `VALIDAR_1223_P3.sql` | **novo** — gera o par antes/depois do P3, com nomes próprios |
+
+### ⚠ A base do package é a versão de PRODUÇÃO, e isso não é um detalhe
+
+A cópia do package que veio do DDR estava **atrasada** em relação à produção. As
+duas linhas do chamado estavam certas nela, mas o ficheiro inteiro, instalado,
+desfazia três alterações que ninguém pediu:
+
+| | em produção | na cópia do DDR |
+|---|---|---|
+| a entidade `'00372'` | **retirada**, `-- 29/04/2026 -- SIRL-667` | ainda lá → saía um 6.º `UC2_P3`, vazio |
+| `v_ligne` do C2 | `VARCHAR2(2002)`, linha com `;` final | `VARCHAR2(2000)`, sem ele |
+| `v_ligne` do C3 | `VARCHAR2(1002)`, o mesmo | `VARCHAR2(1000)` |
+| `IND_WL` (C2 4.60, C3 4.60) | default `'9'` | default `' '` |
+
+Nada disto aparece num diff do chamado. Só aparece comparando a **base** com a
+produção — e o que deu o alerta foi o 6.º ficheiro `UC2_P3` numa corrida do DEV2.
+
+Por isso o ficheiro entregue sai de um gerador,
+[`gen_p3_1223.py`](../../gen_p3_1223.py), que parte do `_PROD.sql` e **para** se a
+linha que procura não estiver exactamente uma vez:
+
+```bash
+python gen_p3_1223.py
+```
+
+O resultado difere da produção em **duas linhas**. Mais nada.
 
 As duas linhas do P3 estão marcadas no ficheiro:
 

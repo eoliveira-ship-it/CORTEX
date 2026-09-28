@@ -10,9 +10,13 @@
 -- UC2_P3_DEPOIS em vez de UC2_P3). A procedure apaga o ficheiro antes de
 -- escrever (P_UTLF_REMOVE_FILE no inicio), por isso nao acumula linhas.
 --
--- O ficheiro sai com o codigo da entidade colado no fim do nome. O shell
--- 030_CREATION_ENVOI_C3RD2.sh trata seis: 00399, 00936, 00357, 00472,
--- 00370, 00372. Chega levar um par (o 00357 e o maior).
+-- O ficheiro sai com o codigo da entidade colado no fim do nome. Em producao
+-- o P_UTLF_CREDIT_P3 trata CINCO: 00399, 00936, 00357, 00472, 00370. A 00372
+-- foi retirada pelo SIRL-667 em 29/04/2026. Chega levar um par (o 00357 e o
+-- maior).
+--
+-- Se sairem SEIS ficheiros, o package compilado NAO e o de producao: e uma
+-- versao anterior ao SIRL-667, e o sexto (o da 00372) sai vazio.
 --
 -- No SQL Developer: F5 (Run Script), nao F9.
 -- =====================================================================
@@ -30,10 +34,20 @@ select 'largura do P3C 21.65 em base: ' ||
    and type = 'PACKAGE BODY'
    and text like '%P3C 21.65%';
 
+-- E que e mesmo a versao de producao: as listas de entidades tem de ter
+-- CINCO codigos, sem o 00372.
+select line, text
+  from all_source
+ where name = 'PACK_UTL_FILE_ENVOI_C3RD2'
+   and type = 'PACKAGE BODY'
+   and text like '%liste_cd_conso(%'
+ order by line;
+
 execute pack_utl_file_envoi_c3RD2.P_UTLF_CREDIT_P3('&&diretorio', 'UC2_P3_ANTES');
 
 -- ---------------------------------------------------------------------
--- PASSO 2 - recompilar o PACK_UTL_FILE_ENVOI_C3RD2.sql (o do repositorio)
+-- PASSO 2 - recompilar o PACK_UTL_FILE_ENVOI_C3RD2_1223.sql (o gerado pelo
+--           gen_p3_1223.py a partir da versao de producao)
 --           e so depois correr o PASSO 3
 -- ---------------------------------------------------------------------
 
