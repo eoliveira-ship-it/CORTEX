@@ -1,0 +1,5 @@
+# O comparar_ficheiros.sh corre NO SERVIDOR, por #!/bin/ksh. Com CRLF o
+# shebang fica "/bin/ksh" e da "bad interpreter" -- por isso fica pregado a
+# LF, senao o core.autocrlf=true converte-o num clone novo em Windows.
+# Os outros .sh e .sql seguem a convencao das bases de producao.
+comparar_ficheiros.sh text eol=lf
