@@ -17,7 +17,7 @@ procedure, que enche uma tabela nova; o spool só lê a tabela e formata.
 | `pack_alim_tab_envoi_crrv4.sql` | **gerado** | o package de **produção** com a procedure `P_ALIM_ENG_CORP_P1_BIS` inserida |
 | `pack_alim_tab_envoi_crrv4_PROD.sql` | — | o package de produção, intacto: a base de que o de cima sai |
 | `pack_alim_tab_envoi_crrv4_P_ALIM_ENG_CORP_P1_BIS.sql` | **novo** | a mesma procedure isolada, para rever sem abrir o package inteiro |
-| `030_spool_Extract_CRRCORP_vPACT.sql` | **novo** | o spool que lê a tabela. Os 8 `SELECT` do P1 passam a 2 |
+| `030_spool_Extract_CRRCORP_vPACT.sql` | **novo** | o spool que lê a tabela. Os 8 `SELECT` do P1 passam a **6** |
 | `030_CREATION_SPOOL_CRRCORP_vPACT.sh` | **gerado** | o shell de produção com os nomes trocados **+** o passo que enche a tabela, antes do spool |
 | `030_CREATION_SPOOL_CRRCORP.sh` | **gerado** | o shell de produção **+** a chamada ao `_vPACT` no fim. Sem ele o novo nunca corre |
 | `run_procedure.sql` | **novo** | a chamada à procedure, sozinha, para carregar a tabela sem abrir o `TESTES.sql` |
