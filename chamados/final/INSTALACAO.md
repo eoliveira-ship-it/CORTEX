@@ -4,7 +4,8 @@ Esta pasta tem a **versão final** de cada ficheiro, já com os três chamados
 empilhados. Os ficheiros estão com **o nome que têm de ter no servidor** — não
 com o nome que têm no repositório.
 
-> Resumo do que cada chamado faz:
+> **O que foi feito e porquê:** [`EXPLICACAO.md`](EXPLICACAO.md) — nesta pasta.
+> Detalhe por chamado:
 > [`documentação/RESUMO-DOS-3-CHAMADOS.md`](../../documentação/RESUMO-DOS-3-CHAMADOS.md)
 
 ---
