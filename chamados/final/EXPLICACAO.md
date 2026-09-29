@@ -32,8 +32,50 @@ P_ALIM_ENG_CORP_P1_BIS   calcula  ->  enche a ENG_CORP_P1_BIS
   V45 do P1 e 5 técnicas;
 * procedure nova **`P_ALIM_ENG_CORP_P1_BIS`** dentro do
   `pack_alim_tab_envoi_crrv4`: uma chamada, sem parâmetros, 8 `INSERT`;
-* no spool, os **8 `SELECT`** do P1 passam a **6** (as três variantes do NAT02
-  juntam-se numa só).
+* no spool, os **8 `SELECT`** do P1 passam a **6**.
+
+### Quais se juntaram, e porque não são 8 nem 2
+
+Juntaram-se as **três do NAT02** — as variantes 1, 2 e 3 — numa só, com
+`where CD_PERIMETRE = 'NAT02'`. As cinco do Hors NAT02 continuam uma cada:
+
+| variante | o que seleciona | no spool novo |
+|---|---|---|
+| 1 | NAT02, `CD_ARR_PAIEMENT = 'N'` | as três numa só: |
+| 2 | NAT02, arriéré `'Y'`, por saldo (`MNT_SOLD_K_A >= 1`) | `where CD_PERIMETRE = 'NAT02'` |
+| 3 | NAT02, arriéré `'Y'`, por CRD/VR | |
+| 4 | Hors NAT02, `CD_TYPE_RISQUE = 'TRE100'` | `where NO_VARIANTE = 4` |
+| 5 | Hors NAT02, `TRE2` / `TRE4` / `TRE5` | `where NO_VARIANTE = 5` |
+| 6 | Hors NAT02, `EQU101` | `where NO_VARIANTE = 6` |
+| 7 | Hors NAT02, `SIG201` / `INR101` | `where NO_VARIANTE = 7` |
+| 8 | Hors NAT02, `CD_TYPE_RISQUE LIKE '%VAR1%'` | `where NO_VARIANTE = 8` |
+
+**Porque é que as três do NAT02 se juntam.** Os três blocos do spool antigo eram
+quase iguais — 404, 402 e 403 linhas de expressão — e **tudo o que diferia era
+que valor vai na posição**, nunca a posição nem a largura:
+
+```
+variante 1                                  variante 2
+ID_ENGAGEMENT || '_C'                       ID_ENGAGEMENT || '_S'
+DT_FIN_ENG                                  add_months(DT_ARRETE, 12)
+f_format_montant_bis2(MNT_RISQUE)           f_format_montant_bis2(0)
+PCCO_MNT_CRD                                PCCO_MNT_SOLDE
+```
+
+Isso é **regra de negócio** — precisamente o que este chamado tira do spool.
+Calculada na procedure e guardada na tabela, a formatação das três fica
+idêntica, e um `SELECT` só serve as três. O `order by NO_VARIANTE` devolve-as na
+ordem em que o ficheiro as tem hoje.
+
+**Porque não são 2** (um NAT02 + um Hors NAT02). As cinco do Hors NAT02 têm
+formatação **diferente umas das outras**: escrevem 108, 192, 112, 111 e 160
+campos, e o resto da linha em branco — 382, 219, 405, 259 e 318 fillers. Juntá-las
+exigia um `CASE` sobre o `NO_VARIANTE` em centenas de posições: mais código, não
+menos, e reescrevia a formatação, que é justamente o que não se pode tocar.
+
+**Porque não ficam 8.** As três do NAT02 passariam a ser três cópias da mesma
+formatação. Não há nada a ganhar: a ordem das linhas já vem do
+`order by NO_VARIANTE`.
 
 **Prova:** o ficheiro sai igual ao de antes, nas **554 045** linhas, octeto a
 octeto. É mais forte do que comparar valor a valor, porque compara o produto
