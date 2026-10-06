@@ -72,6 +72,15 @@ PLANO = {
         ('PACK_UTL_FILE_ENVOI_C3RD2_PROD.sql', None),
         ('VALIDAR_1223_P3.sql', None),
     ],
+    # O 1472 nao entra em final/: essa pasta e a entrega dos TRES chamados do
+    # PACT 4.5, que ja esta fechada e provada. O 1472 e um chamado novo, com a
+    # sua propria instalacao -- e so o lado DDR esta feito.
+    'SIRL-1472': [
+        ('PACK_HIST_ENG_CORP_P1_BIS.sql', None),
+        ('HIST_ENG_CORP_P1_BIS.sql', None),
+        ('HIST_ENG_CORP_P1_BIS.ctl', None),
+        ('030_CREATION_HIST_CRR_P1BIS.sh', None),
+    ],
     'SIRL-1222': [
         ('030_spool_Extract_CRRCORP_1222.sql', '030_spool_Extract_CRRCORP_vPACT.sql'),
         ('030_spool_Extract_CRRADAP_vPACT.sql', None),
