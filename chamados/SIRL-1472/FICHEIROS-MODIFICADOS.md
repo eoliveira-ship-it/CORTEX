@@ -5,9 +5,24 @@
 
 > Detalhe, medições e o que falta: [`documentação/SIRL-1472.md`](../../documentação/SIRL-1472.md)
 
-> ⚠ **Esta pasta é só o lado DDR** — o ponto 1 das cinco modificações do chamado,
-> mais o contrato que o ponto 2 vai usar. Os pontos 2, 3 e 4 são dentro do HCRR,
-> e não temos o código dessa aplicação.
+---
+
+## O encadeamento, que é o que manda no desenho
+
+```
+DDR                                           HCRR
+---                                           ----
+P_ALIM_ENG_CORP_P1_BIS  enche a tabela
+030_spool_data.sql      escreve o ficheiro
+   $SORTIE/030_FLUX_2M_ENG_CORP_P1_BIS.txt  ->  SQL*Loader  ->  CRR.ENG_CORP_P1_BIS
+                                                 pack_histo_crr.p_histo_eng_corp_p1_bis
+                                                   -> CRR_2A.HIS_ENG_CORP_P1_BIS
+                                                   -> CRR_10A.HIS_ENG_CORP_P1_BIS
+```
+
+A procedure de historização **não lê o ficheiro**: lê a tabela já carregada, e
+faz `INSERT ... SELECT`. É assim nas 180 procedures que o `pack_histo_crr` já
+tem, e é assim nesta.
 
 ---
 
@@ -15,93 +30,105 @@
 
 | ficheiro | onde instala | o que é |
 |---|---|---|
-| `PACK_HIST_ENG_CORP_P1_BIS.sql` | base **DDR** | package novo: escreve a tabela num ficheiro com `UTL_FILE`, 668 campos separados por `;` |
-| `030_CREATION_HIST_CRR_P1BIS.sh` | o diretório dos shells, **DDR** | corre a procedure e nomeia o ficheiro com a data do arrêté |
-| `HIST_ENG_CORP_P1_BIS.sql` | base **HCRR** | DDL da tabela de histórico: as mesmas 668 colunas + um índice por `DT_ARRETE` |
-| `HIST_ENG_CORP_P1_BIS.ctl` | **HCRR** | o `SQL*Loader` que carrega o ficheiro, com os 668 campos na mesma ordem |
+| `030_spool_data.sql` | **DDR** | o de produção **mais** o nosso bloco de extração, antes do `spool off;` final |
+| `745_create_pack_histo_crr.sql` | **HCRR** | o de produção **mais** a `p_histo_eng_corp_p1_bis` (1 linha na spec, 1250 no corpo) |
+| `030_create_table_ENG_CORP_P1_BIS_HCRR.sql` | **HCRR** | a tabela de receção `CRR.ENG_CORP_P1_BIS`, onde o loader carrega |
+| `745_create_table_HIS_ENG_CORP_P1_BIS.sql` | **HCRR** | as duas tabelas de histórico, 2 anos e 10 anos, com índice por `DT_ARRETE` |
+| `*_PROD.sql` | — | as bases de produção, para quem instalar poder fazer o diff |
 
-### ⚠ Os três ficheiros SQL saem do mesmo gerador
+### ⚠ Não há shell novo
 
-São 668 campos em três ficheiros, e a ordem tem de ser **a mesma** nos três.
-Por isso saem todos de [`gen_hcrr.py`](../../gen_hcrr.py), que lê o
-`ENG_CORP_P1_BIS.sql` — a única fonte de verdade:
+O `030_spool_data.sql` **já é chamado pela cadeia mensal**. O nosso bloco entra
+nele e passa a correr sozinho, no sítio certo da sequência. Zero ficheiros novos
+no diretório dos shells.
+
+### ⚠ Os quatro saem do mesmo gerador
+
+São 301 campos repetidos em quatro ficheiros (o spool, a tabela de receção, as
+duas de histórico, e duas vezes dentro da procedure — lista do `INSERT` e do
+`SELECT`). A ordem tem de ser **a mesma nos oito sítios**. Por isso saem todos de
+[`gen_hcrr.py`](../../gen_hcrr.py), que lê o `ENG_CORP_P1_BIS.sql`:
 
 ```bash
-python gen_hcrr.py        # os tres ficheiros
+python gen_hcrr.py        # os quatro ficheiros
 python valida_hcrr.py     # confere que nao divergiram  -> erros: 0
 ```
 
-**Porque é que isto importa.** Um campo a mais ou a menos no loader **não dá
-erro**: carrega tudo deslocado uma coluna, e a data vai para o campo do montante.
-Nenhuma verificação de formato apanha isso. Testei a tirar um campo do `.ctl` — o
-`valida_hcrr.py` aponta logo o primeiro fora de ordem.
+**Porque é que isto importa.** Um campo deslocado entre o spool e a tabela de
+receção **não dá erro**: o SQL\*Loader carrega tudo uma coluna ao lado, e a data
+vai para o campo do montante. Testado: a trocar **duas colunas seguidas** de
+ordem no DDL, o `valida_hcrr.py` aponta logo `o primeiro e o 297 (P1_50_3, nao
+P1_50_2)`. A tirar um campo, aponta a contagem.
 
 ---
 
-## Porque é um package novo, e não uma procedure dentro de um existente
+## As decisões, e porquê
+
+### Só 301 das 668 colunas
+
+A tabela tem 668 colunas e a linha daria **8 912** octetos. Uma expressão SQL não
+passa de **4 000** — é por isso que o maior ficheiro da cadeia tem `linesize
+3215` (`BTR_OPERATION`) e nenhum passa dos 4 000.
+
+Das 668, a `P_ALIM_ENG_CORP_P1_BIS` alimenta **301**; as outras 367 ficam sempre
+`NULL` e **nenhum spool do CRR as lê** (medido: 0). Extraindo só as alimentadas a
+linha dá **3 231** octetos — cabe, e fica ao lado do maior que já existe.
+
+> O dia em que um campo da V45 ganhar origem, há que o acrescentar aqui. É assim
+> que a cadeia faz: o histórico do `030_spool_data.sql` é uma lista de *«ajout
+> colonne X»*. O separador vai à **frente** do campo novo — `||'~'||COLUNA` —
+> para não mexer na linha anterior.
+
+### O formato é o da cadeia, não o nosso
+
+Medido no `030_spool_data.sql`, não escolhido:
+
+| | |
+|---|---|
+| separador | `~` — 2 173 vezes no ficheiro; `;` zero |
+| datas | `YYYYMMDD` — zero `HH24` em todo o ficheiro |
+| comprimento | variável, com `SET linesize` no máximo exato |
+| cabeçalho/rodapé | não existem |
+| nome | `030_FLUX_2M_<TABELA>.txt` em `$SORTIE` |
+
+### Porque é que não há proteção do separador
+
+Nenhum dos 2 173 campos da cadeia tem `TRANSLATE` nem `REPLACE`. A convenção
+assume que o `~` não aparece nos dados. Não a contrariámos num chamado de
+historização.
+
+### Impacto nulo no que já existe
 
 O critério de aceitação diz **«aucun impact sur l'historisation des données
-existantes»**. Num package novo não se toca em nada que já corre: o impacto é
-nulo **por construção**, e não por verificação.
+existantes»**. O `valida_hcrr.py` prova isso por construção, no ponto 5: o diff
+contra os dois ficheiros de produção é **só acrescentos** — nenhuma linha
+removida nem alterada, e os 130 acentos do package intactos (uma escrita em
+cp1252 convertê-los-ia sem dizer nada, e o gerador por isso escreve na
+codificação da origem).
 
-## Porque é `UTL_FILE` e não um spool
-
-A linha tem **9 170** octetos no máximo (8 503 de dados + 667 separadores). Uma
-expressão SQL não pode passar de **4 000** — é por isso que o
-`030_spool_Extract_CRRCORP.sql` parte a linha em duas colunas e enche tudo com
-`RPAD`, que é a única forma de o SQL\*Plus não meter espaços pelo meio. Isso dava
-um ficheiro de largura fixa: 9 170 × 122 225 = **1,1 GB por arrêté**.
-
-Com `UTL_FILE` em PL/SQL o limite é 32 767 e não há enchimento: cada campo vai
-com o tamanho que tem. É o padrão que o `P_UTLF_CREDIT_P3` já usa neste projeto.
-
-## Como os valores vão para o ficheiro, sem perder nada
-
-| tipo | expressão | porquê |
-|---|---|---|
-| texto | `TRANSLATE(x, ';', '.')` | um `;` nos dados partia o ficheiro — é a mesma resposta que a DSID deu no SIRL-1222 |
-| data | `TO_CHAR(x, 'YYYYMMDDHH24MISS')` | a `DATE` do Oracle tem precisão ao segundo; só `YYYYMMDD` perdia a hora |
-| número | `TO_CHAR(x, 'TM9', 'NLS_NUMERIC_CHARACTERS=''.,''')` | o `TM9` dá a representação mínima sem arredondar, e o NLS forçado impede que o separador decimal dependa da sessão |
-
-Um campo `NULL` sai **vazio** — dois `;` seguidos. São 367 das 668 colunas, as
-que a V45 criou e ainda não têm origem.
+---
 
 ## Ordem de instalação
 
 ```
 No DDR
-1. PACK_HIST_ENG_CORP_P1_BIS.sql     compila o package     (F5, nao F9)
-2. 030_CREATION_HIST_CRR_P1BIS.sh    o diretorio dos shells
+1. 030_spool_data.sql                        substitui o de producao
 
 No HCRR
-3. HIST_ENG_CORP_P1_BIS.sql          cria a tabela de historico
-4. HIST_ENG_CORP_P1_BIS.ctl          o controle do SQL*Loader
-```
-
-### ⚠ Quando correr, na cadeia mensal
-
-A `P_ALIM_ENG_CORP_P1_BIS` começa com `DELETE FROM ENG_CORP_P1_BIS`: a tabela
-guarda **só o arrêté corrente**. A extração tem de correr **depois** de a tabela
-estar cheia e **antes** do enchimento seguinte — senão o arrêté perde-se, e
-perde-se **sem erro**.
-
-```
-030_CREATION_SPOOL_CRRCORP.sh      enche a tabela, escreve o ficheiro oficial
-  ... e chama o _vPACT no fim
-030_CREATION_HIST_CRR_P1BIS.sh     <- AQUI
+2. 030_create_table_ENG_CORP_P1_BIS_HCRR.sql cria a tabela de recepcao
+3. 745_create_table_HIS_ENG_CORP_P1_BIS.sql  cria as duas de historico
+4. 745_create_pack_histo_crr.sql             substitui o package (F5, nao F9)
 ```
 
 ---
 
 ## O que é proposta, e não medida
 
-Não temos o `030_spool_data.sql` nem o processo de carga do HCRR, por isso estas
-três coisas são escolha nossa e não cópia do que lá está:
+| o que | porquê | onde se muda |
+|---|---|---|
+| o **tablespace** das três tabelas | o único modelo que temos (`030_create_table_BTR_OPE_PARTENAIRE_POOL.sql`) é do **DDR**: diz `DDR_DATA`. Não sabemos o do HCRR | vai **comentado** nos dois DDL, com um `-- A CONFIRMAR` |
+| os **GRANT** | os roles do modelo são `ROLE_DDR_*`. Um GRANT a um role inexistente dá `ORA-01919` e para o script **com a tabela já criada** | idem, comentados |
+| o passo de **SQL\*Loader** | não está no repositório para nenhuma das 180 tabelas — é gerado ou genérico do lado HCRR | a confirmar com a DSID |
+| **quem chama** a `p_histo_eng_corp_p1_bis` | o `pack_histo_crr` não tem despachante interno: as 180 procedures são chamadas de fora | a confirmar com a DSID |
 
-| o que | onde se muda |
-|---|---|
-| o formato do cabeçalho (`00;...`) e do rodapé (`99;...`) | `gen_hcrr.py`, num sítio só |
-| o nome do ficheiro (`HCRR_P1BIS_<arrete>.dat`) | `V30HISTFIC`, no shell |
-| o diretório e o transporte para o HCRR | `V30HISTDIR`, no shell |
-
-Nenhuma delas muda os 668 campos — mudam o invólucro.
+Nenhuma delas muda os 301 campos — mudam o invólucro.

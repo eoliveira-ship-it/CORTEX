@@ -74,12 +74,25 @@ PLANO = {
     ],
     # O 1472 nao entra em final/: essa pasta e a entrega dos TRES chamados do
     # PACT 4.5, que ja esta fechada e provada. O 1472 e um chamado novo, com a
-    # sua propria instalacao -- e so o lado DDR esta feito.
+    # sua propria instalacao.
+    #
+    # NAO HA SHELL NOVO NESTE CHAMADO
+    # O 030_spool_data.sql ja e chamado pela cadeia mensal DDR->HCRR. O nosso
+    # bloco entra nele, antes do "spool off;" final, e passa a correr sozinho.
+    # O primeiro desenho criava um shell e um package proprios com UTL_FILE --
+    # foi fora quando o 030_spool_data.sql e o pack_histo_crr.sql chegaram e
+    # mostraram que a convencao e outra (separador '~', spool, YYYYMMDD).
     'SIRL-1472': [
-        ('PACK_HIST_ENG_CORP_P1_BIS.sql', None),
-        ('HIST_ENG_CORP_P1_BIS.sql', None),
-        ('HIST_ENG_CORP_P1_BIS.ctl', None),
-        ('030_CREATION_HIST_CRR_P1BIS.sh', None),
+        # Os dois primeiros sao ficheiros DE PRODUCAO com o nosso bloco dentro:
+        # o nome de destino e o nome de producao, e o sufixo _1472 e so nome de
+        # repositorio, para conviverem na raiz com a base de que saem.
+        ('030_spool_data_1472.sql', '030_spool_data.sql'),
+        ('pack_histo_crr_1472.sql', '745_create_pack_histo_crr.sql'),
+        ('030_create_table_ENG_CORP_P1_BIS_HCRR.sql', None),
+        ('745_create_table_HIS_ENG_CORP_P1_BIS.sql', None),
+        # as bases, para quem instalar poder fazer o diff
+        ('030_spool_data.sql', '030_spool_data_PROD.sql'),
+        ('pack_histo_crr.sql', '745_create_pack_histo_crr_PROD.sql'),
     ],
     'SIRL-1222': [
         ('030_spool_Extract_CRRCORP_1222.sql', '030_spool_Extract_CRRCORP_vPACT.sql'),
